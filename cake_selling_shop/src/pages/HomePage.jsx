@@ -10,6 +10,10 @@ import SecondSection from '../components/home_components/SecondSection.jsx';
 import ThirdSection from '../components/home_components/ThirdSection.jsx';
 import FourthSection from '../components/home_components/FourthSection.jsx';
 import FifthSection from '../components/home_components/FifthSection.jsx';
+import SixSection from '../components/home_components/SixthSection.jsx';
+import SevenSection from '../components/home_components/SevenSection.jsx';
+import EighthSection from '../components/home_components/EighthSection.jsx';
+import NinthSection from '../components/home_components/NinthSection.jsx';
 
 const HomePage = () => {
     return (
@@ -23,6 +27,10 @@ const HomePage = () => {
             <ThirdSection />
             <FourthSection />
             <FifthSection />
+            <SixSection />
+            <SevenSection />
+            <EighthSection />
+            <NinthSection />
 
             <Footer />
             <CopyRight />
