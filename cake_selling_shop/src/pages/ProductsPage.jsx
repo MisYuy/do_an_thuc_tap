@@ -5,16 +5,16 @@ import Navbar from '../components/Navbar.jsx';
 import CopyRight from '../components/CopyRight.jsx';
 import BackToTop from '../components/BackToTop.jsx';
 import Search from '../components/Search.jsx';
-import HeaderSection from '../components/error_components/HeaderSection.jsx';
-import ContentSection from '../components/error_components/ContentSection.jsx';
+import HeaderSection from '../components/product_components/HeaderSection';
+import ContentSection from '../components/product_components/ContentSection';
 
-const ErrorPage = () => {
+const ProductsPage = () => {
     return (
         <div>
             <Spinner />
             <Navbar />
             <Search />
-
+            
             <HeaderSection />
             <ContentSection />
 
@@ -25,4 +25,4 @@ const ErrorPage = () => {
     );
 };
 
-export default ErrorPage;
+export default ProductsPage;

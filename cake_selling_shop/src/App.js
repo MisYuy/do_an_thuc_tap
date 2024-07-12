@@ -4,6 +4,7 @@ import logo from './logo.svg';
 import './App.css';
 import ErrorPage from './pages/ErrorPage';
 import HomePage from './pages/HomePage';
+import ProductsPage from './pages/ProductsPage';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/home" element={<HomePage />} />
+            <Route path="/product" element={<ProductsPage />} />
             <Route path="/error" element={<ErrorPage />} />
           </Routes>
     </Router>
