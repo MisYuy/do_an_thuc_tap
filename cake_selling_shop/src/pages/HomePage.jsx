@@ -1,13 +1,15 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import Spinner from '../components/Spinner.jsx';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar.jsx';
 import CopyRight from '../components/CopyRight.jsx';
 import BackToTop from '../components/BackToTop.jsx';
 import Search from '../components/Search.jsx';
-import OwlCarousel from 'react-owl-carousel';
-import 'owl.carousel/dist/assets/owl.carousel.css';
-import 'owl.carousel/dist/assets/owl.theme.default.css';
+import FirstSection from '../components/home_components/FirstSection.jsx';
+import SecondSection from '../components/home_components/SecondSection.jsx';
+import ThirdSection from '../components/home_components/ThirdSection.jsx';
+import FourthSection from '../components/home_components/FourthSection.jsx';
+import FifthSection from '../components/home_components/FifthSection.jsx';
 
 const HomePage = () => {
     return (
@@ -16,6 +18,12 @@ const HomePage = () => {
             <Navbar />
             <Search />
             
+            <FirstSection />
+            <SecondSection />
+            <ThirdSection />
+            <FourthSection />
+            <FifthSection />
+
             <Footer />
             <CopyRight />
             <BackToTop />
