@@ -2,25 +2,25 @@ import React  from "react";
 
 const SixSection = () => {
     return (
-        <div class="container-fluid banner bg-secondary my-5">
-            <div class="container py-5">
-                <div class="row g-4 align-items-center">
-                    <div class="col-lg-6">
-                        <div class="py-4">
-                            <h1 class="display-3 text-white">Fresh Exotic Fruits</h1>
-                            <p class="fw-normal display-3 text-dark mb-4">in Our Store</p>
-                            <p class="mb-4 text-dark">The generated Lorem Ipsum is therefore always free from repetition injected humour, or non-characteristic words etc.</p>
-                            <a href="#" class="banner-btn btn border-2 border-white rounded-pill text-dark py-3 px-5">BUY</a>
+        <div className="container-fluid banner bg-secondary my-5">
+            <div className="container py-5">
+                <div className="row g-4 align-items-center">
+                    <div className="col-lg-6">
+                        <div className="py-4">
+                            <h1 className="display-3 text-white">Fresh Exotic Fruits</h1>
+                            <p className="fw-normal display-3 text-dark mb-4">in Our Store</p>
+                            <p className="mb-4 text-dark">The generated Lorem Ipsum is therefore always free from repetition injected humour, or non-characteristic words etc.</p>
+                            <a href="#" className="banner-btn btn border-2 border-white rounded-pill text-dark py-3 px-5">BUY</a>
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="position-relative">
-                            <img src="img/baner-1.png" class="img-fluid w-100 rounded" alt=""/>
-                            <div class="d-flex align-items-center justify-content-center bg-white rounded-circle position-absolute" style={{ width: '140px', height: '140px', top: '0px', left: '0px'}}>
+                    <div className="col-lg-6">
+                        <div className="position-relative">
+                            <img src="img/baner-1.png" className="img-fluid w-100 rounded" alt=""/>
+                            <div className="d-flex align-items-center justify-content-center bg-white rounded-circle position-absolute" style={{ width: '140px', height: '140px', top: '0px', left: '0px'}}>
                                 <h1 style={{ fontSize: '100px'}}>1</h1>
-                                <div class="d-flex flex-column">
-                                    <span class="h2 mb-0">50$</span>
-                                    <span class="h4 text-muted mb-0">kg</span>
+                                <div className="d-flex flex-column">
+                                    <span className="h2 mb-0">50$</span>
+                                    <span className="h4 text-muted mb-0">kg</span>
                                 </div>
                             </div>
                         </div>
