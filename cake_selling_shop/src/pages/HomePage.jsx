@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Spinner from '../components/Spinner.jsx';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar.jsx';
@@ -15,7 +15,34 @@ import SevenSection from '../components/home_components/SevenSection.jsx';
 import EighthSection from '../components/home_components/EighthSection.jsx';
 import NinthSection from '../components/home_components/NinthSection.jsx';
 
+import axios from 'axios';
+
 const HomePage = () => {
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        axios.get('http://127.0.0.1:3500/api/test')
+            .then(response => {
+                setData(response.data);
+                setLoading(false);
+            })
+            .catch(error => {
+                setError(error);
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) {
+        return <Spinner />;
+    }
+
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    }
+
+
     return (
         <div>
             <Spinner />
@@ -35,6 +62,11 @@ const HomePage = () => {
             <Footer />
             <CopyRight />
             <BackToTop />
+
+            <div>
+                <h2>Data from API:</h2>
+                <pre>{JSON.stringify(data, null, 2)}</pre>
+            </div>
         </div>
     );
 };
