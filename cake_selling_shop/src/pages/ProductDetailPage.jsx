@@ -5,10 +5,10 @@ import Navbar from '../components/Navbar.jsx';
 import CopyRight from '../components/CopyRight.jsx';
 import BackToTop from '../components/BackToTop.jsx';
 import Search from '../components/Search.jsx';
-import HeaderSection from '../components/product_components/HeaderSection.jsx';
-import ContentSection from '../components/product_components/ContentSection.jsx';
+import HeaderSection from '../components/product_detail_components/HeaderSecton.jsx';
+import ContentSection from '../components/product_detail_components/ContentSection.jsx';
 
-const ProductsPage = () => {
+const ProductDetailPage = () => {
     return (
         <div>
             <Spinner />
@@ -25,4 +25,4 @@ const ProductsPage = () => {
     );
 };
 
-export default ProductsPage;
+export default ProductDetailPage;
