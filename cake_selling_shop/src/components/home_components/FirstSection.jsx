@@ -6,11 +6,11 @@ const FirstSection = () => {
             <div className="container py-5">
                 <div className="row g-5 align-items-center">
                     <div className="col-md-12 col-lg-7">
-                        <h4 className="mb-3 text-secondary">100% Organic Foods</h4>
-                        <h1 className="mb-5 display-3 text-primary">Organic Veggies & Fruits Foods</h1>
+                        <h4 className="mb-3 text-secondary">100% Nguyên liệu sạch và tươi ngon</h4>
+                        <h1 className="mb-5 display-3 text-primary">Ăn là nhớ, nhớ là ăn</h1>
                         <div className="position-relative mx-auto">
-                            <input className="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill" type="number" placeholder="Search" />
-                            <button type="submit" className="btn btn-primary border-2 border-secondary py-3 px-4 position-absolute rounded-pill text-white h-100" style={{ top: '0px', right: '25%'}}>Submit Now</button>
+                            <input className="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill" type="number" placeholder="Tìm kiếm" />
+                            <button type="submit" className="btn btn-primary border-2 border-secondary py-3 px-4 position-absolute rounded-pill text-white h-100" style={{ top: '0px', right: '25%'}}>Chấp thuận</button>
                         </div>
                     </div>
                     <div className="col-md-12 col-lg-5">

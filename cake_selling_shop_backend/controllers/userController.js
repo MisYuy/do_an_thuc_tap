@@ -1,11 +1,6 @@
 const db = require('../models');
 const User = db.User;
 
-exports.test = async (req, res) => {
-  console.log("adasdsa");
-  res.json("Test");
-};
-
 exports.getAllUsers = async (req, res) => {
   const users = await User.findAll();
   res.json(users);

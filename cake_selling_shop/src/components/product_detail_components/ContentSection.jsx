@@ -1,7 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import OwlCarousel from 'react-owl-carousel'; // Make sure you have installed react-owl-carousel
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import Spinner from '../../components/Spinner.jsx';
+import { URL } from '../../utils/constant.js'
 
 const ContentSection = () => {
+    const { productId } = useParams();
+    const [product, setProduct] = useState(null);
+
+    useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                const response = await axios.get(`${URL}/api/product/get-by-id?id=${productId}`);
+                setProduct(response.data);
+            } catch (error) {
+                console.error('Error fetching product:', error);
+            }
+        };
+
+        fetchProduct();
+    }, [productId]);
+
     const options = {
         autoplay: true,
         smartSpeed: 2000,
@@ -33,6 +53,18 @@ const ContentSection = () => {
         }
     };
 
+    if (!product) {
+        return <Spinner />;
+    }
+
+    const hasPromotion = product.promotions && product.promotions.length > 0;
+    const originalPrice = parseFloat(product.price);
+    const totalDiscountPercentage = hasPromotion
+        ? product.promotions.reduce((total, promo) => total + parseFloat(promo.discount_percentage), 0)
+        : 0;
+    const discount = (originalPrice * totalDiscountPercentage) / 100;
+    const discountedPrice = originalPrice - discount;
+
     return (
         <div className="container-fluid py-5 mt-5">
             <div className="container py-5">
@@ -47,9 +79,12 @@ const ContentSection = () => {
                                 </div>
                             </div>
                             <div className="col-lg-6">
-                                <h4 className="fw-bold mb-3">Broccoli</h4>
+                                <h4 className="fw-bold mb-3">{product.name}</h4>
                                 <p className="mb-3">Category: Vegetables</p>
-                                <h5 className="fw-bold mb-3">3.35 $</h5>
+                                <h5 className="fw-bold me-2">{discountedPrice.toFixed(2)} $</h5>
+                                {hasPromotion && (
+                                    <h5 className="text-danger text-decoration-line-through">{originalPrice.toFixed(2)} $</h5>
+                                )}
                                 <div className="d-flex mb-4">
                                     <i className="fa fa-star text-secondary"></i>
                                     <i className="fa fa-star text-secondary"></i>
@@ -57,8 +92,7 @@ const ContentSection = () => {
                                     <i className="fa fa-star text-secondary"></i>
                                     <i className="fa fa-star"></i>
                                 </div>
-                                <p className="mb-4">The generated Lorem Ipsum is therefore always free from repetition injected humour, or non-characteristic words etc.</p>
-                                <p className="mb-4">Suspendisse ultricies nisi vel quam suscipit. Sabertooth peacock flounder; chain pickerel hatchetfish, pencilfish snailfish</p>
+                                <p className="mb-4">{product.description}</p>
                                 <div className="input-group quantity mb-5" style={{ width: '100px' }}>
                                     <div className="input-group-btn">
                                         <button className="btn btn-sm btn-minus rounded-circle bg-light border">
@@ -87,10 +121,7 @@ const ContentSection = () => {
                                 </nav>
                                 <div className="tab-content mb-5">
                                     <div className="tab-pane active" id="nav-about" role="tabpanel" aria-labelledby="nav-about-tab">
-                                        <p>The generated Lorem Ipsum is therefore always free from repetition injected humour, or non-characteristic words etc. 
-                                            Suspendisse ultricies nisi vel quam suscipit </p>
-                                        <p>Sabertooth peacock flounder; chain pickerel hatchetfish, pencilfish snailfish filefish Antarctic 
-                                            icefish goldeye aholehole trumpetfish pilot fish airbreathing catfish, electric ray sweeper.</p>
+                                        <p>{product.description}</p>
                                         <div className="px-2">
                                             <div className="row g-4">
                                                 <div className="col-6">
