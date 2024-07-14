@@ -9,6 +9,27 @@ exports.createCartItem = async (req, res) => {
     }
 };
 
+exports.getAllCartItems = async (req, res) => {
+  try {
+    const userId = req.query.userId;
+
+    if (!userId) {
+      return res.status(400).json({ error: "userId query parameter is required" });
+    }
+
+    const cartItems = await CartItem.findAll({
+      where: {
+        user_id: userId
+      }
+    });
+
+    res.json(cartItems);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 exports.addProductToCart = async (req, res) => {
     try {
         const { userId, productId, quantity } = req.body;

@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { URL } from '../../utils/constant.js';
 import axios from 'axios';
+import PopupSuccess from '../../components/PopupSuccess.jsx';
 
 const ContentSection = ({ products }) => {
     const [currentPage, setCurrentPage] = useState(1);
+    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     const productsPerPage = 9;
     const navigate = useNavigate();
 
@@ -34,21 +36,26 @@ const ContentSection = ({ products }) => {
                 quantity: 1,
             });
     
-            // Handle success (optional)
-            console.log('Product added to cart:', response.data);
-    
-            // Optionally, you can navigate to another page or show a confirmation message
-            // navigate('/cart'); // Example navigation to cart page after adding product
-    
+            setShowSuccessPopup(true); // Hiển thị Popup Success
+            
+            // Tự động ẩn Popup sau 2 giây
+            setTimeout(() => {
+                setShowSuccessPopup(false);
+            }, 3000);
         } catch (error) {
             // Handle error (optional)
             console.error('Error adding product to cart:', error);
         }
     };
     
+     // Xử lý đóng Popup Success
+     const handleClosePopup = () => {
+        setShowSuccessPopup(false);
+    };
 
     return (
         <div className="container-fluid fruite py-5">
+            {showSuccessPopup && <PopupSuccess onClose={handleClosePopup} message={"Bạn đã thêm vào giỏ hàng thành công"}/>}
             <div className="container py-5">
                 <h1 className="mb-4">Fresh fruits shop</h1>
                 <div className="row g-4">
