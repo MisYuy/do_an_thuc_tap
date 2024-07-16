@@ -18,8 +18,8 @@ const PopupSuccess = ({ onClose, message }) => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            zIndex: '1000' // Đảm bảo lớp phủ nằm trên các nội dung khác
-        }}>
+            zIndex: '1000',// Đảm bảo lớp phủ nằm trên các nội dung khá
+            }}>
             <div className="card" style={{
                 background: 'white',
                 padding: '60px',

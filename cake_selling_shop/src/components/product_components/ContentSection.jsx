@@ -30,18 +30,24 @@ const ContentSection = ({ products }) => {
 
     const handleAddToCart = async (productId) => {
         try {
+                
+            const user = JSON.parse(sessionStorage.getItem('user'));
+            console.log(sessionStorage.getItem('user'));
+
             const response = await axios.put(`${URL}/api/cart/add-product`, {
-                userId: 1,
+                userId: user.user_id,
                 productId: productId,
                 quantity: 1,
             });
-    
-            setShowSuccessPopup(true); // Hiển thị Popup Success
+
+            if(response){
+                setShowSuccessPopup(true); // Hiển thị Popup Success
             
-            // Tự động ẩn Popup sau 2 giây
-            setTimeout(() => {
-                setShowSuccessPopup(false);
-            }, 3000);
+                // Tự động ẩn Popup sau 2 giây
+                setTimeout(() => {
+                    setShowSuccessPopup(false);
+                }, 3000);
+            }
         } catch (error) {
             // Handle error (optional)
             console.error('Error adding product to cart:', error);
@@ -264,16 +270,13 @@ const ContentSection = ({ products }) => {
                                                             {hasPromotion && (
                                                                 <h5 className="text-danger text-decoration-line-through">{originalPrice.toFixed(2)} $</h5>
                                                             )}
-                                                            <a
-    href="#"
-    className="btn border border-secondary rounded-pill px-3 text-primary"
-    onClick={(e) => {
-        e.preventDefault(); // Prevent the default behavior of the link
-        handleAddToCart(product.product_id); // Call your function to handle adding to cart
-    }}
->
-    <i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
-</a>
+                                                            <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary" onClick={(e) => {
+                                                                e.preventDefault(); // Prevent the default behavior of the link
+                                                                handleAddToCart(product.product_id); // Call your function to handle adding to cart
+                                                            }}
+                                                            >
+                                                            <i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
+                                                            </a>
                                                         </div>
                                                     </div>
                                                 </div>

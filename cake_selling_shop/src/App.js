@@ -8,13 +8,13 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
 import ContactPage from './pages/ContactPage';
 import CheckoutPage from './pages/CheckoutPage';
-import DiscountedProducts from './pages/TestPage';
+import AuthenticatePage from './pages/AuthenticatePage';
 
 function App() {
   return (
     <Router>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<AuthenticatePage />} />
             <Route path="/home" element={<HomePage />} />
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/product-detail/:productId" element={<ProductDetailPage />} />
@@ -22,8 +22,6 @@ function App() {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/error" element={<ErrorPage />} />
-
-            <Route path="/test" element={<DiscountedProducts />} />
           </Routes>
     </Router>
   );

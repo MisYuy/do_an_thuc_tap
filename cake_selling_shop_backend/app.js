@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(cors()); // Use CORS middleware
 
 // Register your routes
-app.use('/api', userRoutes);
+app.use('/api/user', userRoutes);
 app.use('/api/product', productRoutes);
 app.use('/api/cart', cartRoutes);
 

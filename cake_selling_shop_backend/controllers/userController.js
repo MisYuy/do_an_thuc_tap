@@ -1,5 +1,46 @@
 const db = require('../models');
+const user = require('../models/user');
 const User = db.User;
+
+exports.checkLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    let user = await User.findOne({
+      where: {
+          email: email,
+          password: password
+      }
+    });
+
+    if(user) {
+      res.json(user);
+    }
+    else {
+      return res.status(404).json({ error: 'Login failed' });
+    }
+
+  } catch (error) {
+    console.log("@@" + error);
+    res.status(500).json({ error: 'Login failed' });
+  }
+};
+
+exports.signUp = async (req, res) => {
+  try {
+    const user = await User.create(req.body);
+
+    if(user) {
+      res.json(user);
+    }
+    else {
+      return res.status(404).json({ error: 'Signup failed' });
+    }
+
+  } catch (error) {
+    res.status(500).json({ error: 'Signup failed' });
+  }
+};
 
 exports.getAllUsers = async (req, res) => {
   const users = await User.findAll();
