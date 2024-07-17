@@ -1,4 +1,4 @@
-const { CartItem } = require('../models');
+const { CartItem, Product } = require('../models');
 
 exports.createCartItem = async (req, res) => {
     try {
@@ -20,7 +20,11 @@ exports.getAllCartItems = async (req, res) => {
     const cartItems = await CartItem.findAll({
       where: {
         user_id: userId
-      }
+      },
+      include: [{
+        model: Product,
+        attributes: ['product_id', 'name', 'description', 'price', 'stock_quantity', 'category_id', 'status', 'created_at', 'updated_at']
+      }]
     });
 
     res.json(cartItems);

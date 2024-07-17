@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
           foreignKey: 'product_id',
           timestamps: false  // Disable timestamps for the join table
       });
+      Product.hasMany(models.CartItem, { foreignKey: 'product_id' });
   };
 
   return Product;
