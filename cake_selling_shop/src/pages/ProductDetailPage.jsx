@@ -9,6 +9,7 @@ import Search from '../components/Search.jsx';
 import HeaderSection from '../components/product_detail_components/HeaderSecton.jsx';
 import ContentSection from '../components/product_detail_components/ContentSection.jsx';
 import { Nav_Item } from '../utils/constant.js';
+import './style.css';
 
 const ProductDetailPage = () => {
     return (

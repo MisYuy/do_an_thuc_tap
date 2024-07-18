@@ -12,6 +12,8 @@ import axios from 'axios';
 import { Nav_Item } from '../utils/constant.js';
 import { URL } from '../utils/constant.js';
 
+import './style.css';
+
 const ProductsPage = () => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);

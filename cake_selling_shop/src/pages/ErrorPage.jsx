@@ -7,6 +7,7 @@ import BackToTop from '../components/BackToTop.jsx';
 import Search from '../components/Search.jsx';
 import HeaderSection from '../components/error_components/HeaderSection.jsx';
 import ContentSection from '../components/error_components/ContentSection.jsx';
+import './style.css';
 
 const ErrorPage = () => {
     return (

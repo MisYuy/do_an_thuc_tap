@@ -7,6 +7,7 @@ import BackToTop from '../components/BackToTop.jsx';
 import Search from '../components/Search.jsx';
 import HeaderSection from '../components/contact_components/HeaderSecton.jsx';
 import ContentSection from '../components/contact_components/ContentSection.jsx';
+import './style.css';
 
 const ContactPage = () => {
     return (

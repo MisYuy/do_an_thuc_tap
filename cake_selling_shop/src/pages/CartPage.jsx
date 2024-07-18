@@ -7,6 +7,7 @@ import BackToTop from '../components/BackToTop.jsx';
 import Search from '../components/Search.jsx';
 import HeaderSection from '../components/cart_components/HeaderSecton.jsx';
 import ContentSection from '../components/cart_components/ContentSection.jsx';
+import './style.css';
 
 const CartPage = () => {
     return (

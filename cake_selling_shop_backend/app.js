@@ -16,6 +16,8 @@ app.use('/api/cart', cartRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 3500;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+const HOST = '0.0.0.0'; // Bind to all network interfaces
+
+app.listen(PORT, HOST, () => {
+  console.log(`Server is running on http://${HOST}:${PORT}`);
 });

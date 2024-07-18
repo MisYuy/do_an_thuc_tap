@@ -15,6 +15,7 @@ import SevenSection from '../components/home_components/SevenSection.jsx';
 import EighthSection from '../components/home_components/EighthSection.jsx';
 import NinthSection from '../components/home_components/NinthSection.jsx';
 import { Nav_Item } from '../utils/constant.js';
+import './style.css';
 
 const HomePage = () => {
     return (
