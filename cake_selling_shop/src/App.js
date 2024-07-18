@@ -9,6 +9,7 @@ import CartPage from './pages/CartPage';
 import ContactPage from './pages/ContactPage';
 import CheckoutPage from './pages/CheckoutPage';
 import AuthenticatePage from './pages/AuthenticatePage';
+import M_HomePage from './m_pages/M_HomePage';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/error" element={<ErrorPage />} />
+            <Route path="/test" element={<M_HomePage />} />
           </Routes>
     </Router>
   );

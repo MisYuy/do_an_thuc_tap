@@ -60,10 +60,15 @@ const AuthenticatePage = () => {
                 password
             });
 
-            if(response){            
-                sessionStorage.setItem('user', JSON.stringify(response.data));
+            if(response){      
+                const user = response.data;      
+                sessionStorage.setItem('user', JSON.stringify(user));
+                
+                if(user.role === 'user')
+                    navigate(`../home`);
+                else
+                    navigate(`../m/home`)
 
-                navigate(`../home`);
                 setError(null);
             }
 

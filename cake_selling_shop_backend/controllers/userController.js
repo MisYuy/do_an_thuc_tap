@@ -28,7 +28,16 @@ exports.checkLogin = async (req, res) => {
 
 exports.signUp = async (req, res) => {
   try {
-    const user = await User.create(req.body);
+    const { email, password } = req.body;
+    const newUser = {
+      email,
+      password,
+      role: 'User',
+      created_at: new Date(),
+      updated_at: new Date()
+    }
+
+    const user = await User.create(newUser);
 
     if(user) {
       res.json(user);
