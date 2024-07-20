@@ -9,13 +9,15 @@ import CartPage from './pages/CartPage';
 import ContactPage from './pages/ContactPage';
 import CheckoutPage from './pages/CheckoutPage';
 import AuthenticatePage from './pages/AuthenticatePage';
-import M_HomePage from './m_pages/M_HomePage';
+import M_AccountsPage from './m_pages/M_AccountsPage';
+import M_ProductPage from './m_pages/M_ProductPage';
 
 function App() {
   return (
     <Router>
           <Routes>
             <Route path="/" element={<AuthenticatePage />} />
+            
             <Route path="/home" element={<HomePage />} />
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/product-detail/:productId" element={<ProductDetailPage />} />
@@ -23,7 +25,9 @@ function App() {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/error" element={<ErrorPage />} />
-            <Route path="/test" element={<M_HomePage />} />
+
+            <Route path="/m/account" element={<M_AccountsPage />} />
+            <Route path="/m/product" element={<M_ProductPage />} />
           </Routes>
     </Router>
   );

@@ -32,7 +32,7 @@ exports.signUp = async (req, res) => {
     const newUser = {
       email,
       password,
-      role: 'User',
+      role: 'Customer',
       created_at: new Date(),
       updated_at: new Date()
     }
@@ -48,6 +48,25 @@ exports.signUp = async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ error: 'Signup failed' });
+  }
+};
+
+exports.getAllCustomers = async (req, res) => {
+  try {
+    const users = await User.findAll({
+      where: {
+        role: 'customer'
+      }
+    });
+    if(users) {
+      res.json(users);
+    }
+    else {
+      return res.status(404).json({ error: 'Get all customers failed' });
+    }
+
+  } catch (error) {
+    res.status(500).json({ error: 'Get all customers failed' });
   }
 };
 

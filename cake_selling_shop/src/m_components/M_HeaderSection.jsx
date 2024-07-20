@@ -6,8 +6,8 @@ const M_HeaderSection = () => {
                 <header id="header" className="header">
                     <div className="top-left">
                         <div className="navbar-header">
-                            <a className="navbar-brand" href="./"><img src="logo_web.png" alt="Logo" style={{ maxWidth: '100px'}}/></a>
-                            <a className="navbar-brand hidden" href="./"><img src="img/hero-img-1.png" alt="Logo" /></a>
+                            <a className="navbar-brand" href="./"><img src="/images/logo_web.png" alt="Logo" style={{ maxWidth: '100px'}}/></a>
+                            <a className="navbar-brand hidden" href="./"><img src="/images/logo_web.png" alt="Logo" /></a>
                             <a id="menuToggle" className="menutoggle"><i className="fa fa-bars"></i></a>
                         </div>
                     </div>
@@ -86,7 +86,7 @@ const M_HeaderSection = () => {
                             </div>
                             <div className="user-area dropdown float-right">
                                 <a href="#" className="dropdown-toggle active" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <img className="user-avatar rounded-circle" src="admin.jpg" alt="User Avatar" />
+                                    <img className="user-avatar rounded-circle" src="/img/avatar.jpg" alt="User Avatar" />
                                 </a>
                                 <div className="user-menu dropdown-menu">
                                     <a className="nav-link" href="#"><i className="fa fa- user"></i>My Profile</a>

@@ -4,7 +4,7 @@ import M_LeftSection from '../m_components/M_LeftSection.jsx';
 import M_HeaderSection from '../m_components/M_HeaderSection.jsx';
 import M_AccountsSection from '../m_components/M_AccountsSection.jsx';
 
-const M_HomePage = () => {
+const M_AccountsPage = () => {
     return (
         <div>
             <M_LeftSection />
@@ -13,9 +13,10 @@ const M_HomePage = () => {
             {/* Header*/}
             <M_HeaderSection />
             {/* /#header */}
+            <M_AccountsSection />
             </div>
         </div>
     );
 };
 
-export default M_HomePage;
+export default M_AccountsPage;

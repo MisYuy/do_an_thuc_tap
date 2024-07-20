@@ -10,17 +10,23 @@ const M_LeftSection = () => {
                         <ul className="nav navbar-nav">
                             <li className="menu-title">Welcome</li>
                             <li className="active">
-                                <a href="index.html"><i className="menu-icon fa fa-laptop"></i>Dashboard </a>
+                                <a href="index.html"><i className="menu-icon fa fa-eye"></i>Thống kê </a>
                             </li>
                             <li className="menu-title">Chức năng</li>
                             <li className="deactive">
-                                <a href="index.html"><i className="menu-icon fa fa-user"></i>Tài khoản </a>
+                                <a href="index.html"><i className="menu-icon fa fa-user"></i>Khách hàng </a>
+                            </li>
+                            <li className="deactive">
+                                <a href="index.html"><i className="menu-icon fa fa-users"></i>Nhân viên </a>
                             </li>
                             <li className="deactive">
                                 <a href="index.html"><i className="menu-icon fa fa-check"></i>Đơn hàng </a>
                             </li>
                             <li className="deactive">
                                 <a href="index.html"><i className="menu-icon fa fa-shopping-cart"></i>Sản phẩm </a>
+                            </li>
+                            <li className="deactive">
+                                <a href="index.html"><i className="menu-icon fa fa-gift"></i>Khuyến mãi </a>
                             </li>
                         </ul>
                     </div>
