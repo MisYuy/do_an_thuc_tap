@@ -24,7 +24,7 @@ const M_LeftSection = () => {
                             </li>
                             <li className="menu-title">Chức năng</li>
                             <li className="deactive">
-                                <a href="index.html"><i className="menu-icon fa fa-user"></i>Khách hàng </a>
+                                <a href="/m/account"><i className="menu-icon fa fa-user"></i>Khách hàng </a>
                             </li>
                             <li className="deactive">
                                 <a href="index.html"><i className="menu-icon fa fa-users"></i>Nhân viên </a>
@@ -33,7 +33,7 @@ const M_LeftSection = () => {
                                 <a href="index.html"><i className="menu-icon fa fa-check"></i>Đơn hàng </a>
                             </li>
                             <li className="deactive">
-                                <a href="index.html"><i className="menu-icon fa fa-shopping-cart"></i>Sản phẩm </a>
+                                <a href="/m/product"><i className="menu-icon fa fa-shopping-cart"></i>Sản phẩm </a>
                             </li>
                             <li className="deactive">
                                 <a href="index.html"><i className="menu-icon fa fa-gift"></i>Khuyến mãi </a>

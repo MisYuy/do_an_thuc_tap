@@ -63,7 +63,9 @@ const M_ProductSection = () => {
                                             <tr key={product.product_id}>
                                                 <td style={{alignContent: 'center', textAlign: 'center'}}>{product.product_id}</td>
                                                 <td style={{alignContent: 'center', textAlign: 'center'}}>
-                                                    <a href={`/operation-product/${product.product_id}`}><img className="rounded-circle" src="/img/avatar.jpg" alt="avatar" /></a>
+                                                    <a href={`/m/operation-product/${product.product_id}`}>
+                                                    <img className="rounded-circle" src={product.image ? `/images/product/${product.image}` : "/img/none_image.png"} style={{ minWidth: '100px', minHeight: "100px", maxWidth: '100px', maxHeight: "100px"}} alt="avatar" />
+                                                    </a>
                                                 </td>
                                                 <td style={{alignContent: 'center', textAlign: 'center'}}>{product.name}</td>
                                                 <td style={{alignContent: 'center', textAlign: 'center'}}>{product.price}</td>
@@ -79,8 +81,8 @@ const M_ProductSection = () => {
                                                 </td>
                                                 <td style={{alignContent: 'center', textAlign: 'center'}}>{product.stock_quantity}</td>
                                                 <td style={{alignContent: 'center', textAlign: 'center'}}>
-                                                    <button className="badge badge-complete" style={{backgroundColor: product.status === 'available' ? '#1ecc02' : '#ff0000'}}>
-                                                        {product.status === 'available' ? 'Còn hàng' : 'Hết hàng'}
+                                                    <button className="badge badge-complete" style={{backgroundColor: product.status === 'available' ? '#1ecc02' : product.status === 'low of stock' ? '#ebb134' : '#ff0000'}}>
+                                                        {product.status === 'available' ? 'Còn hàng' : product.status === 'low of stock' ? 'Sắp hết' : 'Hết hàng'}
                                                     </button>
                                                 </td>
                                             </tr>

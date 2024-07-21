@@ -12,7 +12,9 @@ module.exports = (sequelize, DataTypes) => {
       category_id: DataTypes.INTEGER,
       status: DataTypes.STRING,
       created_at: DataTypes.DATE,
-      updated_at: DataTypes.DATE
+      updated_at: DataTypes.DATE,
+      image: DataTypes.STRING,
+      delete: DataTypes.INTEGER
   }, {
       tableName: 'products',
       timestamps: false
