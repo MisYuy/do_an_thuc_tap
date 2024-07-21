@@ -108,12 +108,8 @@ exports.getAllStaffs = async (req, res) => {
       }
     });
 
-    console.log('Query executed. Users found:', users.length);
-
-    if (users.length > 0) {
+    if(users) {
       res.json(users);
-    } else {
-      res.status(404).json({ error: 'No staff found' });
     }
   } catch (error) {
     console.error('Error fetching staffs:', error);

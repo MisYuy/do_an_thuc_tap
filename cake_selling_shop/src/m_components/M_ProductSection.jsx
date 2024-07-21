@@ -72,13 +72,20 @@ const M_ProductSection = () => {
                                                 <td style={{alignContent: 'center', textAlign: 'center'}}>
                                                     {product.promotions.map(promotion => (
                                                         <div key={promotion.promotion_id}>
-                                                            {promotion.name} ({promotion.discount_percentage}%)
+                                                            {promotion.promotion_id} - {promotion.name} ({promotion.discount_percentage}%)
                                                         </div>
                                                     ))}
                                                 </td>
                                                 <td style={{alignContent: 'center', textAlign: 'center'}}>
-                                                    {product.price - (product.promotions.length > 0 ? product.price * (product.promotions[0].discount_percentage / 100) : 0)}
-                                                </td>
+    {(() => {
+        let discountedPrice = product.price;
+        product.promotions.forEach(promotion => {
+            discountedPrice -= discountedPrice * (promotion.discount_percentage / 100);
+        });
+        return discountedPrice.toFixed(2); // Format to 2 decimal places
+    })()}
+</td>
+
                                                 <td style={{alignContent: 'center', textAlign: 'center'}}>{product.stock_quantity}</td>
                                                 <td style={{alignContent: 'center', textAlign: 'center'}}>
                                                     <button className="badge badge-complete" style={{backgroundColor: product.status === 'available' ? '#1ecc02' : product.status === 'low of stock' ? '#ebb134' : '#ff0000'}}>

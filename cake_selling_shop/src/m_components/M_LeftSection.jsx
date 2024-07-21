@@ -31,13 +31,13 @@ const M_LeftSection = ({ select }) => {
                                 <a href="/m/account/staff"><i className="menu-icon fa fa-users"></i>Nhân viên </a>
                             </li>
                             <li className={select === 'order' ? "active" : "deactive"}>
-                                <a href="index.html"><i className="menu-icon fa fa-check"></i>Đơn hàng </a>
+                                <a href="/m/order"><i className="menu-icon fa fa-check"></i>Đơn hàng </a>
                             </li>
                             <li className={select === 'product' ? "active" : "deactive"}>
                                 <a href="/m/product"><i className="menu-icon fa fa-shopping-cart"></i>Sản phẩm </a>
                             </li>
                             <li className={select === 'promotion' ? "active" : "deactive"}>
-                                <a href="index.html"><i className="menu-icon fa fa-gift"></i>Khuyến mãi </a>
+                                <a href="/m/promotion"><i className="menu-icon fa fa-gift"></i>Khuyến mãi </a>
                             </li>
                         </ul>
                     </div>

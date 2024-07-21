@@ -4,6 +4,7 @@ const app = express();
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
 const cartRoutes = require('./routes/cartRoutes');
+const order = require('./routes/orderRoutes');
 
 // Middleware to parse JSON bodies
 app.use(express.json());
@@ -13,6 +14,7 @@ app.use(cors()); // Use CORS middleware
 app.use('/api/user', userRoutes);
 app.use('/api/product', productRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/order', order);
 
 // Start the server
 const PORT = process.env.PORT || 3500;
