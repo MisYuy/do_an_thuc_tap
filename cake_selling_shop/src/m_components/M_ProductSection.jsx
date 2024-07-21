@@ -32,7 +32,7 @@ const M_ProductSection = () => {
                                 <strong className="card-title">Thao tác</strong>
                             </div>
                             <div className="card-body">
-                                <a href="add-product" type="button" className="btn btn-primary"><i className="fa fa-plus-circle"></i>&nbsp; Thêm</a>
+                                <a href="add-product" type="button" className="btn btn-primary" style={{marginRight: '20px'}}><i className="fa fa-plus-circle"></i>&nbsp; Thêm</a>
                             </div>
                             </div>
                     </div>
@@ -63,7 +63,7 @@ const M_ProductSection = () => {
                                             <tr key={product.product_id}>
                                                 <td style={{alignContent: 'center', textAlign: 'center'}}>{product.product_id}</td>
                                                 <td style={{alignContent: 'center', textAlign: 'center'}}>
-                                                    <a href="#"><img className="rounded-circle" src="/img/avatar.jpg" alt="avatar" /></a>
+                                                    <a href={`/operation-product/${product.product_id}`}><img className="rounded-circle" src="/img/avatar.jpg" alt="avatar" /></a>
                                                 </td>
                                                 <td style={{alignContent: 'center', textAlign: 'center'}}>{product.name}</td>
                                                 <td style={{alignContent: 'center', textAlign: 'center'}}>{product.price}</td>

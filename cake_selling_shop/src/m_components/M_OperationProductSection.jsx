@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { URL } from '../utils/constant.js';
 
-const M_AddProductSection = () => {
+const M_OperationProductSection = () => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -56,6 +56,18 @@ const M_AddProductSection = () => {
                             </div>
                             <div className="card-body card-block">
                                 <form onSubmit={handleSubmit} encType="multipart/form-data" className="form-horizontal">
+                                    <div className="row form-group" style={{paddingBottom: '25px'}}>
+                                    <div className="col col-md-3"></div>
+                                    <div className="col-12 col-md-9" style={{ textAlign: 'center'}}>
+                                        <img src="/img/avatar.jpg" className="img-fluid rounded" alt="" style={{ minWidth: '200px', minHeight: "200px", textAlign: 'center'}}/>
+                                        </div>
+                                    </div>
+                                    <div className="row form-group" style={{paddingBottom: '25px'}}>
+                                        <div className="col col-md-3"><label className=" form-control-label">ID</label></div>
+                                        <div className="col-12 col-md-9">
+                                            <p className="form-control-static">Username</p>
+                                        </div>
+                                    </div>
                                     <div className="row form-group" style={{paddingBottom: '25px'}}>
                                         <div className="col col-md-3"><label htmlFor="name" className="form-control-label">Tên sản phẩm</label></div>
                                         <div className="col-12 col-md-9">
@@ -121,4 +133,4 @@ const M_AddProductSection = () => {
     );
 };
 
-export default M_AddProductSection;
+export default M_OperationProductSection;

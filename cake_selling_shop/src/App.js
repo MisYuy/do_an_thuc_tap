@@ -12,6 +12,8 @@ import AuthenticatePage from './pages/AuthenticatePage';
 import M_AccountsPage from './m_pages/M_AccountsPage';
 import M_ProductPage from './m_pages/M_ProductPage';
 import M_AddProductPage from './m_pages/M_AddProductPage';
+import M_OperationProductSection from './m_components/M_OperationProductSection';
+import M_OperationProductPage from './m_pages/M_OperationProductPage';
 
 function App() {
   return (
@@ -30,6 +32,7 @@ function App() {
             <Route path="/m/account" element={<M_AccountsPage />} />
             <Route path="/m/product" element={<M_ProductPage />} />
             <Route path="/m/add-product" element={<M_AddProductPage />} />
+            <Route path="/m/operation-product" element={<M_OperationProductPage />} />
           </Routes>
     </Router>
   );
