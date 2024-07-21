@@ -14,6 +14,9 @@ import M_ProductPage from './m_pages/M_ProductPage';
 import M_AddProductPage from './m_pages/M_AddProductPage';
 import M_OperationProductSection from './m_components/M_OperationProductSection';
 import M_OperationProductPage from './m_pages/M_OperationProductPage';
+import M_AddAccountSection from './m_components/M_AddAccountSection';
+import M_AddAccountPage from './m_pages/M_AddAccountPage';
+import M_OperationAccountPage from './m_pages/M_OperationAccountPage';
 
 function App() {
   return (
@@ -33,6 +36,8 @@ function App() {
             <Route path="/m/product" element={<M_ProductPage />} />
             <Route path="/m/add-product" element={<M_AddProductPage />} />
             <Route path="/m/operation-product/:productId" element={<M_OperationProductPage />} />
+            <Route path="/m/add-account" element={<M_AddAccountPage />} />
+            <Route path="/m/operation-account/:userId" element={<M_OperationAccountPage />} />
           </Routes>
     </Router>
   );

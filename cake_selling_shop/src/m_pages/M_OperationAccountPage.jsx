@@ -2,23 +2,23 @@ import React from 'react';
 import './style1.css';
 import M_LeftSection from '../m_components/M_LeftSection.jsx';
 import M_HeaderSection from '../m_components/M_HeaderSection.jsx';
-import M_AccountsSection from '../m_components/M_AccountsSection.jsx';
-import { useParams } from 'react-router-dom';
+import M_AddProductSection from '../m_components/M_AddProductSection.jsx';
+import M_OperationProductSection from '../m_components/M_OperationProductSection.jsx';
+import M_OperationAccountSection from '../m_components/M_OperationAccountSection.jsx';
 
-const M_AccountsPage = () => {
-    const { role } = useParams();
+const M_OperationAccountPage = () => {
     return (
         <div>
-            <M_LeftSection select={role}/>
+            <M_LeftSection />
             {/* Right Panel */}
             <div id="right-panel" className="right-panel">
             {/* Header*/}
             <M_HeaderSection />
             {/* /#header */}
-            <M_AccountsSection role={role}/>
+            <M_OperationAccountSection />
             </div>
         </div>
     );
 };
 
-export default M_AccountsPage;
+export default M_OperationAccountPage;

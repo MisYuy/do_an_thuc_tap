@@ -44,6 +44,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: DataTypes.NOW
+    },
+    image: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    delete: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
     }
   }, {
     tableName: 'users',

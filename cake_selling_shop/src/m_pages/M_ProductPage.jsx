@@ -7,7 +7,7 @@ import M_ProductSection from '../m_components/M_ProductSection.jsx';
 const M_ProductPage = () => {
     return (
         <div>
-            <M_LeftSection />
+            <M_LeftSection select={'product'}/>
             {/* Right Panel */}
             <div id="right-panel" className="right-panel">
             {/* Header*/}

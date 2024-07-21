@@ -145,13 +145,6 @@ exports.updateProduct = async (req, res) => {
     try {
       const { product_id, name, description, price, stock_quantity } = req.body;
 
-      // Log the received parameters
-      console.log("Received product_id:", product_id);
-      console.log("Received name:", name);
-      console.log("Received description:", description);
-      console.log("Received price:", price);
-      console.log("Received stock_quantity:", stock_quantity);
-
       if (!product_id) {
         return res.status(400).json({ error: 'Product ID is required' });
       }

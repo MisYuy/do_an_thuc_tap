@@ -10,7 +10,8 @@ const navbarStyles = {
   verticalAlign: 'top',
 };
 
-const M_LeftSection = () => {
+const M_LeftSection = ({ select }) => {
+    console.log("@@" + select);
     return (
         <div>
             {/* Left Panel */}
@@ -19,23 +20,23 @@ const M_LeftSection = () => {
                     <div id="main-menu" className="main-menu collapse navbar-collapse">
                         <ul className="nav navbar-nav">
                             <li className="menu-title">Welcome</li>
-                            <li className="active">
+                            <li className={select === '#' ? "active" : "deactive"}>
                                 <a href="index.html"><i className="menu-icon fa fa-eye"></i>Thống kê </a>
                             </li>
                             <li className="menu-title">Chức năng</li>
-                            <li className="deactive">
+                            <li className={select === 'customer' ? "active" : "deactive"}>
                                 <a href="/m/account/customer"><i className="menu-icon fa fa-user"></i>Khách hàng </a>
                             </li>
-                            <li className="deactive">
+                            <li className={select === 'staff' ? "active" : "deactive"}>
                                 <a href="/m/account/staff"><i className="menu-icon fa fa-users"></i>Nhân viên </a>
                             </li>
-                            <li className="deactive">
+                            <li className={select === 'order' ? "active" : "deactive"}>
                                 <a href="index.html"><i className="menu-icon fa fa-check"></i>Đơn hàng </a>
                             </li>
-                            <li className="deactive">
+                            <li className={select === 'product' ? "active" : "deactive"}>
                                 <a href="/m/product"><i className="menu-icon fa fa-shopping-cart"></i>Sản phẩm </a>
                             </li>
-                            <li className="deactive">
+                            <li className={select === 'promotion' ? "active" : "deactive"}>
                                 <a href="index.html"><i className="menu-icon fa fa-gift"></i>Khuyến mãi </a>
                             </li>
                         </ul>

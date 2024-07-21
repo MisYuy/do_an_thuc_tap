@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { URL } from '../utils/constant.js';
 
-const AccountsSection = ({role}) => {
+const AccountsSection = ({ role }) => {
     const [users, setUsers] = useState(null);
     const [error, setError] = useState(null);
-    const [isVisible, setIsVisible] = useState(false);
+    const [visibleUserId, setVisibleUserId] = useState(null); // Track which user's dropdown is visible
 
     const user = JSON.parse(sessionStorage.getItem("user"));
 
@@ -16,7 +16,7 @@ const AccountsSection = ({role}) => {
                 if (role === "customer") {
                     const response = await axios.get(`${URL}/api/user/get-all-customers`);
                     setUsers(response.data);
-                } else if (role === "staff"){
+                } else if (role === "staff") {
                     const response = await axios.get(`${URL}/api/user/get-all-staffs`);
                     setUsers(response.data);
                 }
@@ -32,17 +32,41 @@ const AccountsSection = ({role}) => {
         return <div>Error: {error.message}</div>;
     }
 
-    const handleButtonClick = () => {
-        setIsVisible(!isVisible);
+    const handleToggleStatus = async (userId, currentStatus) => {
+        const newStatus = currentStatus === 'active' ? 'inactive' : 'active'; // Toggle status
+        try {
+            await axios.put(`${URL}/api/user/change-status?id=${userId}`, { status: newStatus });
+            // Update the local state to reflect the change
+            setUsers(users.map(user => user.user_id === userId ? { ...user, status: newStatus } : user));
+        } catch (error) {
+            console.error('Error toggling user status:', error);
+            setError(error);
+        }
+    };
+
+    const handleButtonClick = (userId) => {
+        setVisibleUserId(visibleUserId === userId ? null : userId); // Toggle visibility for the specific user
     };
 
     return (
         <div className="content">
-            {/* Animated */}
             <div className="animated fadeIn">
                 <div className="clearfix"></div>
-                {/* Orders */}
                 <div className="orders">
+                    <div className="row">
+                        <div className="col-md-12">
+                            <div className="card">
+                                <div className="card-header">
+                                    <strong className="card-title">Thao tác</strong>
+                                </div>
+                                <div className="card-body">
+                                    <a href="/m/add-account" type="button" className="btn btn-primary" style={{ marginRight: '20px' }}>
+                                        <i className="fa fa-plus-circle"></i>&nbsp; Thêm
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div className="row">
                         <div className="col-xl-12">
                             <div className="card">
@@ -50,7 +74,7 @@ const AccountsSection = ({role}) => {
                                     <h4 className="box-title">Danh sách tài khoản</h4>
                                 </div>
                                 <div className="card-body--">
-                                    <div className="table-stats order-table ov-h" style={{paddingBottom: '150px'}}>
+                                    <div className="table-stats order-table ov-h" style={{ paddingBottom: '150px' }}>
                                         <table className="table">
                                             <thead>
                                                 <tr>
@@ -70,22 +94,25 @@ const AccountsSection = ({role}) => {
                                                         <td className="serial">{index + 1}.</td>
                                                         <td className="avatar">
                                                             <div className="round-img">
-                                                                <a href="#"><img className="rounded-circle" src={user.avatarUrl || "/img/avatar.jpg"} alt="avatar" /></a>
+                                                                <a href={`/m/operation-account/${user.user_id}`}>
+                                                                    <img className="rounded-circle" src={user.avatarUrl || "/img/avatar.jpg"} alt="avatar" />
+                                                                </a>
                                                             </div>
                                                         </td>
                                                         <td>{user.full_name}</td>
                                                         <td><span className="name">{user.email}</span></td>
-                                                        <td><span>{user.phone}</span></td>
+                                                        <td><span>{user.phone_number}</span></td>
                                                         <td><span>{user.role}</span></td>
                                                         <td>
                                                             <div className="dropdown-container">
-                                                                <button onClick={handleButtonClick} className="badge badge-complete">
+                                                                <button onClick={() => handleButtonClick(user.user_id)} className="badge badge-complete" style={{backgroundColor: user.status === 'active' ? '#1ecc02' : '#ff0000'}}>
                                                                     {user.status}
                                                                 </button>
-                                                                {isVisible && (
+                                                                {visibleUserId === user.user_id && (
                                                                     <div className="dropdown-content">
-                                                                        <a href="#">Khóa</a>
-                                                                        <a href="#">Mở khóa</a>
+                                                                        <a href="#" onClick={() => handleToggleStatus(user.user_id, user.status)}>
+                                                                            {user.status === 'active' ? 'Khóa' : 'Mở khóa'}
+                                                                        </a>
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -101,10 +128,7 @@ const AccountsSection = ({role}) => {
                         </div>  {/* /.col-lg-8 */}
                     </div>
                 </div>
-                {/* /.orders */}
-                {/* /#add-category */}
             </div>
-            {/* .animated */}
         </div>
     );
 };
