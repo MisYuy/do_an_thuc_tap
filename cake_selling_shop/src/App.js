@@ -29,7 +29,7 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/error" element={<ErrorPage />} />
 
-            <Route path="/m/account" element={<M_AccountsPage />} />
+            <Route path="/m/account/:role" element={<M_AccountsPage />} />
             <Route path="/m/product" element={<M_ProductPage />} />
             <Route path="/m/add-product" element={<M_AddProductPage />} />
             <Route path="/m/operation-product/:productId" element={<M_OperationProductPage />} />

@@ -3,22 +3,30 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { URL } from '../utils/constant.js';
 
-const AccountsSection = () => {
-    const [customers, setCustomers] = useState(null);
+const AccountsSection = ({role}) => {
+    const [users, setUsers] = useState(null);
     const [error, setError] = useState(null);
     const [isVisible, setIsVisible] = useState(false);
 
     const user = JSON.parse(sessionStorage.getItem("user"));
 
     useEffect(() => {
-        axios.get(`${URL}/api/user/get-all-customers`)
-            .then(response => {
-                setCustomers(response.data);
-            })
-            .catch(error => {
+        const fetchData = async () => {
+            try {
+                if (role === "customer") {
+                    const response = await axios.get(`${URL}/api/user/get-all-customers`);
+                    setUsers(response.data);
+                } else if (role === "staff"){
+                    const response = await axios.get(`${URL}/api/user/get-all-staffs`);
+                    setUsers(response.data);
+                }
+            } catch (error) {
                 setError(error);
-            });
-    }, []);
+            }
+        };
+
+        fetchData();
+    }, [role]);
 
     if (error) {
         return <div>Error: {error.message}</div>;
@@ -57,22 +65,22 @@ const AccountsSection = () => {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {customers && customers.map((customer, index) => (
-                                                    <tr key={customer.user_id}>
+                                                {users && users.map((user, index) => (
+                                                    <tr key={user.user_id}>
                                                         <td className="serial">{index + 1}.</td>
                                                         <td className="avatar">
                                                             <div className="round-img">
-                                                                <a href="#"><img className="rounded-circle" src={customer.avatarUrl || "images/avatar/default.jpg"} alt="avatar" /></a>
+                                                                <a href="#"><img className="rounded-circle" src={user.avatarUrl || "/img/avatar.jpg"} alt="avatar" /></a>
                                                             </div>
                                                         </td>
-                                                        <td>{customer.full_name}</td>
-                                                        <td><span className="name">{customer.email}</span></td>
-                                                        <td><span>{customer.phone}</span></td>
-                                                        <td><span>{customer.role}</span></td>
+                                                        <td>{user.full_name}</td>
+                                                        <td><span className="name">{user.email}</span></td>
+                                                        <td><span>{user.phone}</span></td>
+                                                        <td><span>{user.role}</span></td>
                                                         <td>
                                                             <div className="dropdown-container">
                                                                 <button onClick={handleButtonClick} className="badge badge-complete">
-                                                                    {customer.status}
+                                                                    {user.status}
                                                                 </button>
                                                                 {isVisible && (
                                                                     <div className="dropdown-content">
@@ -82,7 +90,7 @@ const AccountsSection = () => {
                                                                 )}
                                                             </div>
                                                         </td>
-                                                        <td><span>{new Date(customer.created_at).toLocaleString()}</span></td>
+                                                        <td><span>{new Date(user.created_at).toLocaleString()}</span></td>
                                                     </tr>
                                                 ))}
                                             </tbody>

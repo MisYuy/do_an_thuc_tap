@@ -1,6 +1,7 @@
 const db = require('../models');
 const user = require('../models/user');
 const User = db.User;
+const { Op } = require('sequelize');
 
 exports.checkLogin = async (req, res) => {
   try {
@@ -69,6 +70,32 @@ exports.getAllCustomers = async (req, res) => {
     res.status(500).json({ error: 'Get all customers failed' });
   }
 };
+
+exports.getAllStaffs = async (req, res) => {
+  try {
+    console.log('Fetching all staffs except customers...');
+    
+    const users = await User.findAll({
+      where: {
+        role: {
+          [Op.not]: 'Customer'
+        }
+      }
+    });
+
+    console.log('Query executed. Users found:', users.length);
+
+    if (users.length > 0) {
+      res.json(users);
+    } else {
+      res.status(404).json({ error: 'No staff found' });
+    }
+  } catch (error) {
+    console.error('Error fetching staffs:', error);
+    res.status(500).json({ error: 'Get all staffs failed' });
+  }
+};
+
 
 exports.getAllUsers = async (req, res) => {
   const users = await User.findAll();
