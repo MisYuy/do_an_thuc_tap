@@ -1,11 +1,21 @@
 import React from 'react';
 
+const navbarStyles = {
+  background: '#fff',
+  borderRadius: '0',
+  border: 'none',
+  display: 'inline-block',
+  margin: '0',
+  padding: '0',
+  verticalAlign: 'top',
+};
+
 const M_LeftSection = () => {
     return (
         <div>
-                        {/* Left Panel */}
-                        <aside id="left-panel" className="left-panel">
-                <nav className="navbar navbar-expand-sm navbar-default">
+            {/* Left Panel */}
+            <aside id="left-panel" className="left-panel">
+                <nav className="navbar navbar-expand-sm navbar-default" style={navbarStyles}>
                     <div id="main-menu" className="main-menu collapse navbar-collapse">
                         <ul className="nav navbar-nav">
                             <li className="menu-title">Welcome</li>

@@ -580,14 +580,7 @@ aside.left-panel {
 .small-device .right-panel {
   margin-left: 83px; }
 
-.navbar {
-  background: #fff;
-  border-radius: 0;
-  border: none;
-  display: inline-block;
-  margin: 0;
-  padding: 0;
-  vertical-align: top; }
+
   .navbar .main-menu {
     float: left;
     padding: 0;
