@@ -198,13 +198,11 @@ const M_OrderSection = () => {
                                                     </div>
                                                 </td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>
-                                                    <ul>
                                                         {order.OrderItems.map(item => (
-                                                            <li key={item.order_item_id}>
+                                                            <div key={item.order_item_id}>
                                                                 {item.Product.name} - SL: {item.quantity} - Giá: {item.price}
-                                                            </li>
+                                                            </div>
                                                         ))}
-                                                    </ul>
                                                 </td>
                                             </tr>
                                         ))}
