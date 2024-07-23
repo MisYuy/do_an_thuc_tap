@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { URL } from '../utils/constant.js';
+import { useNavigate } from 'react-router-dom';
 
 const M_PromotionSection = () => {
     const [promotions, setPromotions] = useState([]);
@@ -8,6 +9,7 @@ const M_PromotionSection = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortCriteria, setSortCriteria] = useState('promotion_id');
     const [sortOrder, setSortOrder] = useState('asc');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchPromotions = async () => {
@@ -54,6 +56,11 @@ const M_PromotionSection = () => {
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // Handle product click to navigate to detail page
+    const handlePromotionClick = (promotionId) => {
+        navigate(`/m/operation-promotion/${promotionId}`);
     };
 
     return (
@@ -110,7 +117,7 @@ const M_PromotionSection = () => {
                                     </thead>
                                     <tbody>
                                         {sortedPromotions.map(promotion => (
-                                            <tr key={promotion.promotion_id}>
+                                            <tr key={promotion.promotion_id}  onClick={() => handlePromotionClick(promotion.promotion_id)} style={{ cursor: 'pointer' }}>
                                                 <td style={{ textAlign: 'center' }}>{promotion.promotion_id}</td>
                                                 <td style={{ textAlign: 'center' }}>{promotion.name}</td>
                                                 <td style={{ textAlign: 'center' }}>{promotion.discount_percentage}</td>

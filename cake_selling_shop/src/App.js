@@ -20,6 +20,7 @@ import M_OperationAccountPage from './m_pages/M_OperationAccountPage';
 import M_OrderPage from './m_pages/M_OrderPage';
 import M_PromotionPage from './m_pages/M_PromotionPage';
 import M_AddPromotionPage from './m_pages/M_AddPromotionPage';
+import M_OperationPromotionPage from './m_pages/M_OperationPromotionPage';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
             <Route path="/m/product" element={<M_ProductPage />} />
             <Route path="/m/promotion" element={<M_PromotionPage />} />
             <Route path="/m/add-promotion" element={<M_AddPromotionPage />} />
+            <Route path="/m/operation-promotion/:promotionId" element={<M_OperationPromotionPage />} />
           </Routes>
     </Router>
   );
