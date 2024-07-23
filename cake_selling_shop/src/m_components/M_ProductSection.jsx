@@ -5,6 +5,15 @@ import { URL } from '../utils/constant.js';
 const M_ProductSection = () => {
     const [products, setProducts] = useState([]);
     const [error, setError] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterCriteria, setFilterCriteria] = useState('product_id');
+    const [sortCriteria, setSortCriteria] = useState('product_id');
+    const [sortOrder, setSortOrder] = useState('asc');
+    const [selectedStatuses, setSelectedStatuses] = useState({
+        available: false,
+        low_stock: false,
+        out_of_stock: false,
+    });
 
     const user = JSON.parse(sessionStorage.getItem("user"));
 
@@ -28,6 +37,47 @@ const M_ProductSection = () => {
             finalPrice -= finalPrice * (promotion.discount_percentage / 100);
         });
         return finalPrice;
+    };
+
+    // Filter products based on search term and selected statuses
+    const filteredProducts = products.filter(product => {
+        const valueToCheck = 
+            filterCriteria === 'product_id' ? product.product_id.toString() :
+            filterCriteria === 'name' ? product.name.toLowerCase() :
+            '';
+
+        const matchesSearchTerm = valueToCheck.includes(searchTerm.toLowerCase());
+        const matchesStatus = selectedStatuses[product.status];
+
+        return matchesSearchTerm && (Object.values(selectedStatuses).every(status => !status) || matchesStatus);
+    });
+
+    // Sort products based on selected criteria and order
+    const sortedProducts = filteredProducts.sort((a, b) => {
+        const aValue = sortCriteria === 'product_id' ? a.product_id :
+                       sortCriteria === 'name' ? a.name :
+                       sortCriteria === 'final_price' ? calculateFinalPrice(a.price, a.promotions) :
+                       sortCriteria === 'original_price' ? a.price :
+                       a.stock_quantity;
+
+        const bValue = sortCriteria === 'product_id' ? b.product_id :
+                       sortCriteria === 'name' ? b.name :
+                       sortCriteria === 'final_price' ? calculateFinalPrice(b.price, b.promotions) :
+                       sortCriteria === 'original_price' ? b.price :
+                       b.stock_quantity;
+
+        return sortOrder === 'asc' ? (aValue > bValue ? 1 : -1) : (aValue < bValue ? 1 : -1);
+    });
+
+    const handleStatusChange = (status) => {
+        setSelectedStatuses(prev => ({
+            ...prev,
+            [status]: !prev[status],
+        }));
+    };
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     return (
@@ -55,6 +105,57 @@ const M_ProductSection = () => {
                                 <strong className="card-title">Danh sách sản phẩm</strong>
                             </div>
                             <div className="card-body">
+                                <div style={{ marginBottom: '20px' }}>
+                                    <select 
+                                        value={filterCriteria} 
+                                        onChange={(e) => setFilterCriteria(e.target.value)} 
+                                        style={{ padding: '5px'}}
+                                    >
+                                        <option value="product_id">ID Sản phẩm</option>
+                                        <option value="name">Tên Sản phẩm</option>
+                                    </select>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Tìm kiếm..." 
+                                        value={searchTerm} 
+                                        onChange={(e) => setSearchTerm(e.target.value)} 
+                                        style={{ marginLeft: '20px', padding: '5px', minWidth: '300px' }} 
+                                    />
+                                    <select 
+                                        value={sortCriteria} 
+                                        onChange={(e) => setSortCriteria(e.target.value)} 
+                                        style={{ marginLeft: '20px', padding: '5px'}}
+                                    >
+                                        <option value="product_id">Sắp xếp theo ID</option>
+                                        <option value="name">Sắp xếp theo Tên</option>
+                                        <option value="final_price">Sắp xếp theo Giá thực</option>
+                                        <option value="original_price">Sắp xếp theo Giá gốc</option>
+                                        <option value="stock_quantity">Sắp xếp theo Tồn kho</option>
+                                    </select>
+                                    <select 
+                                        value={sortOrder} 
+                                        onChange={(e) => setSortOrder(e.target.value)} 
+                                        style={{ marginLeft: '20px', padding: '5px'}}
+                                    >
+                                        <option value="asc">Tăng dần</option>
+                                        <option value="desc">Giảm dần</option>
+                                    </select>
+                                    <div style={{ display: 'flex', marginTop: '20px' }}>
+                                        {['available', 'low of stock', 'out of stock'].map(status => (
+                                            <div key={status} style={{ marginRight: '20px' }}>
+                                                <label>
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={selectedStatuses[status]} 
+                                                        onChange={() => handleStatusChange(status)} 
+                                                        style={{ marginRight: '5px' }}
+                                                    />
+                                                    <span>{getStatusText(status)}</span>
+                                                </label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
                                 <table id="bootstrap-data-table" className="table table-striped table-bordered">
                                     <thead>
                                         <tr>
@@ -69,7 +170,7 @@ const M_ProductSection = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {products.map(product => (
+                                        {sortedProducts.map(product => (
                                             <tr key={product.product_id}>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>{product.product_id}</td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>
@@ -92,7 +193,7 @@ const M_ProductSection = () => {
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>{product.stock_quantity}</td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>
                                                     <button className="badge badge-complete" style={{ backgroundColor: product.status === 'available' ? '#1ecc02' : product.status === 'low of stock' ? '#ebb134' : '#ff0000' }}>
-                                                        {product.status === 'available' ? 'Còn hàng' : product.status === 'low of stock' ? 'Sắp hết' : 'Hết hàng'}
+                                                        {getStatusText(product.status)}
                                                     </button>
                                                 </td>
                                             </tr>
@@ -103,9 +204,41 @@ const M_ProductSection = () => {
                         </div>
                     </div>
                 </div>
+                                {/* Back to Top Button */}
+                                <button 
+                    onClick={scrollToTop} 
+                    style={{
+                        position: 'fixed',
+                        bottom: '20px',
+                        right: '20px',
+                        backgroundColor: '#1ecc02',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        padding: '10px 15px',
+                        cursor: 'pointer',
+                        zIndex: 1000,
+                    }}
+                >
+                    Back to Top
+                </button>
             </div>
         </div>
     );
+};
+
+// Helper function to get status text
+const getStatusText = (status) => {
+    switch (status) {
+        case 'available':
+            return 'Còn hàng';
+        case 'low of stock':
+            return 'Sắp hết';
+        case 'out of stock':
+            return 'Hết hàng';
+        default:
+            return 'Không xác định';
+    }
 };
 
 export default M_ProductSection;
