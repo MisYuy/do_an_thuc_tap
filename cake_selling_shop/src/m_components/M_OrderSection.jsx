@@ -86,20 +86,26 @@ const M_OrderSection = () => {
         }));
     };
 
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+
     return (
         <div className="content">
             <div className="animated fadeIn">
                 <div className="row">
                     <div className="col-md-12">
-                        <div className="card" style={{fontWeight: 'bold'}}>
+                        <div className="card" style={{ paddingBottom: '150px' }}>
                             <div className="card-header">
-                                <strong className="card-title">Thao tác</strong>
+                                <strong className="card-title">Danh sách đơn hàng</strong>
                             </div>
-                            <div className="card-body" style={{fontSize:'13px'}}>
-                                <select 
+                            <div className="card-body">
+                            <div style={{ marginBottom: '20px' }}>
+                            <select 
                                     value={filterCriteria} 
                                     onChange={(e) => setFilterCriteria(e.target.value)} 
-                                    style={{ marginLeft: '20px', padding: '5px', fontWeight: 'bold' }}
+                                    style={{ padding: '5px'}}
                                 >
                                     <option value="order_id">ID Đơn hàng</option>
                                     <option value="user_id">ID Người đặt</option>
@@ -116,7 +122,7 @@ const M_OrderSection = () => {
                                 <select className="standardSelect"
                                     value={sortCriteria} 
                                     onChange={(e) => setSortCriteria(e.target.value)} 
-                                    style={{ marginLeft: '20px', padding: '5px', fontWeight: 'bold' }}
+                                    style={{ marginLeft: '20px', padding: '5px'}}
                                 >
                                     <option  value="order_id">Sắp xếp theo ID Đơn hàng</option>
                                     <option value="user_id">Sắp xếp theo ID Người đặt</option>
@@ -128,50 +134,27 @@ const M_OrderSection = () => {
                                 <select 
                                     value={sortOrder} 
                                     onChange={(e) => setSortOrder(e.target.value)} 
-                                    style={{ marginLeft: '20px', padding: '5px', fontWeight: 'bold'}}
+                                    style={{ marginLeft: '20px', padding: '5px'}}
                                 >
                                     <option value="asc">Tăng dần</option>
                                     <option value="desc">Giảm dần</option>
                                 </select>
-                                <div style={{ display: 'flex', marginTop: '30px', marginLeft: "20px" }}>
-    {['pending', 'shipping', 'completed', 'canceled'].map(status => (
-        <div key={status} style={{ marginRight: '50px', display: 'flex', alignItems: 'center' }}>
-            <input 
-                type="checkbox" 
-                id={status} 
-                checked={selectedStatuses[status]} 
-                onChange={() => handleStatusChange(status)} 
-                style={{ display: 'none' }} // Ẩn checkbox mặc định
-            />
-            <label htmlFor={status} style={{ cursor: 'pointer', fontSize: '20px', position: 'relative', paddingLeft: '30px' }}>
-                <span style={{
-                    display: 'inline-block',
-                    width: '20px', // Kích thước tùy chỉnh
-                    height: '20px', // Kích thước tùy chỉnh
-                    border: '2px solid #000', // Đường viền
-                    borderRadius: '3px', // Bo góc
-                    backgroundColor: selectedStatuses[status] ? '#1ecc02' : '#fff', // Màu nền khi được chọn
-                    position: 'absolute',
-                    left: '0',
-                    top: '0',
-                }} />
-                <span style={{fontSize:'13px'}}>{getStatusText(status)}</span>
-            </label>
-        </div>
-    ))}
-</div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-md-12">
-                        <div className="card" style={{ paddingBottom: '150px' }}>
-                            <div className="card-header">
-                                <strong className="card-title">Danh sách đơn hàng</strong>
-                            </div>
-                            <div className="card-body">
+                                <div style={{ display: 'flex', marginTop: '20px' }}>
+                                    {['pending', 'shipping', 'completed', 'canceled'].map(status => (
+                                        <div key={status} style={{ marginRight: '20px' }}>
+                                    <label>
+                                <input 
+                                    type="checkbox" 
+                                    checked={selectedStatuses[status]} 
+                                    onChange={() => handleStatusChange(status)} 
+                                    style={{ marginRight: '5px' }}
+                                />
+                                <span>{getStatusText(status)}</span>
+                                </label>
+                                    </div>
+                                ))}
+                                </div>
+                                </div>
                                 <table id="bootstrap-data-table" className="table table-striped table-bordered">
                                     <thead>
                                         <tr>
@@ -231,6 +214,24 @@ const M_OrderSection = () => {
                         </div>
                     </div>
                 </div>
+                                {/* Back to Top Button */}
+                                <button 
+                    onClick={scrollToTop} 
+                    style={{
+                        position: 'fixed',
+                        bottom: '20px',
+                        right: '20px',
+                        backgroundColor: '#1ecc02',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        padding: '10px 15px',
+                        cursor: 'pointer',
+                        zIndex: 1000,
+                    }}
+                >
+                    Back to Top
+                </button>
             </div>
         </div>
     );

@@ -235,8 +235,8 @@ exports.toggleUserStatus = async (req, res) => {
     }
 
     // Validate the status value
-    if (status !== 'active' && status !== 'inactive') {
-      return res.status(400).json({ error: 'Invalid status value. Use "active" or "inactive".' });
+    if (status !== 'active' && status !== 'deactive') {
+      return res.status(400).json({ error: 'Invalid status value. Use "active" or "deactive".' });
     }
 
     // Update the user's status
