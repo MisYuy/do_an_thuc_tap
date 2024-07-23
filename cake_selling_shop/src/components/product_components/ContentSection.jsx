@@ -259,12 +259,12 @@ const ContentSection = ({ products }) => {
                                             >
                                                 <div className="rounded position-relative fruite-item">
                                                     <div className="fruite-img">
-                                                        <img onClick={() => handleProductClick(product.product_id)}  src="img/fruite-item-5.jpg" className="img-fluid w-100 rounded-top" alt="" />
+                                                        <img onClick={() => handleProductClick(product.product_id)}   src={product.image ? `/images/product/${product.image}` : "/img/none_image.png"} className="img-fluid w-100 rounded-top" alt="" />
                                                     </div>
                                                     <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{ top: '10px', left: '10px' }}>Fruits</div>
                                                     <div className="p-4 border border-secondary border-top-0 rounded-bottom">
                                                         <h4>{product.name}</h4>
-                                                        <p>{product.description}</p>
+                                                        <p>{product.description.length > 100 ? `${product.description.substring(0, 100)}...` : product.description}</p>
                                                         <div className="d-flex justify-content-between flex-lg-wrap">
                                                             <h5 className="fw-bold me-2">{discountedPrice.toFixed(2)} $</h5>
                                                             {hasPromotion && (

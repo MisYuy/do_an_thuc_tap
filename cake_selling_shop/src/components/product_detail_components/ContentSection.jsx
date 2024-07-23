@@ -74,7 +74,7 @@ const ContentSection = () => {
                             <div className="col-lg-6">
                                 <div className="border rounded">
                                     <a href="#">
-                                        <img src="img/single-item.jpg" className="img-fluid rounded" alt="Image" />
+                                        <img src={product.image ? `/images/product/${product.image}` : "/img/none_image.png"} className="img-fluid rounded" alt="Image" />
                                     </a>
                                 </div>
                             </div>

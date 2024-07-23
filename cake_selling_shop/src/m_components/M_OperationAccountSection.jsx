@@ -3,7 +3,7 @@ import axios from 'axios';
 import { URL } from '../utils/constant.js';
 import { useParams } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 const M_OperationAccountSection = () => {
     const { userId } = useParams();
@@ -208,7 +208,7 @@ const M_OperationAccountSection = () => {
 
             {/* Modal */}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
-                <Modal.Header closeButton>
+                <Modal.Header>
                     <Modal.Title>Xác nhận xóa</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>Bạn chắc chắn muốn xóa người dùng này?</Modal.Body>
