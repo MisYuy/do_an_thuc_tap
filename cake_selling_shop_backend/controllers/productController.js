@@ -213,6 +213,7 @@ exports.updateProduct = async (req, res) => {
   });
 };
 
+
 exports.deleteProduct = async (req, res) => {
   try {
     const product = await Product.findByPk(req.query.id);

@@ -12,7 +12,7 @@ const M_OperationProductSection = () => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
-        category: '',
+        category: '', // This should hold the category_id
         price: '',
         stock: '',
         image: null,
@@ -22,6 +22,20 @@ const M_OperationProductSection = () => {
     const [error, setError] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [promotions, setPromotions] = useState([]);
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get(`${URL}/api/category/get-all`);
+                setCategories(response.data);
+            } catch (error) {
+                setError(error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -57,7 +71,7 @@ const M_OperationProductSection = () => {
         data.append('product_id', product.product_id);
         data.append('name', formData.name);
         data.append('description', formData.description);
-        data.append('category', formData.category);
+        data.append('category', formData.category); // Ensure this is the category_id
         data.append('price', formData.price);
         data.append('stock_quantity', formData.stock);
         data.append('image', formData.image);
@@ -71,6 +85,7 @@ const M_OperationProductSection = () => {
             });
             console.log('Product added successfully:', response.data);
             setError(null);
+            window.location.reload();
         } catch (error) {
             setError(error.response ? error.response.data : 'Error adding product');
         }
@@ -94,7 +109,7 @@ const M_OperationProductSection = () => {
                 setFormData({
                     name: response.data.name,
                     description: response.data.description,
-                    category: response.data.category,
+                    category: response.data.category_id, // Ensure this is the category_id
                     price: response.data.price,
                     stock: response.data.stock_quantity,
                     image: null,
@@ -204,9 +219,9 @@ const M_OperationProductSection = () => {
                                         <div className="col-12 col-md-9">
                                             <select name="category" id="category" className="form-control" value={formData.category} onChange={handleChange}>
                                                 <option value="">Please select</option>
-                                                <option value="1">Option #1</option>
-                                                <option value="2">Option #2</option>
-                                                <option value="3">Option #3</option>
+                                                {categories.map(category => (
+                                                    <option key={category.category_id} value={category.category_id}>{category.name}</option>
+                                                ))}
                                             </select>
                                             <small className="form-text text-muted">Please select the category</small>
                                         </div>

@@ -29,6 +29,7 @@ const M_OperationPromotionSection = () => {
             const response = await axios.put(`${URL}/api/promotion/update`, formData);
             console.log('Promotion updated successfully:', response.data);
             setError(null); // Clear any previous errors
+            window.location.reload();
         } catch (error) {
             setError(error.response ? error.response.data : 'Error updating promotion');
         }

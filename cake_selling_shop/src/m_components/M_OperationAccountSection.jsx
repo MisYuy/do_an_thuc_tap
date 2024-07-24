@@ -52,6 +52,7 @@ const M_OperationAccountSection = () => {
             });
             console.log('User updated successfully:', response.data);
             setError(null); // Clear any previous errors
+            window.location.reload();
         } catch (error) {
             setError(error.response ? error.response.data : 'Error updating user');
         }

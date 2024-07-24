@@ -26,6 +26,7 @@ const M_OperationCategorySection = () => {
             const response = await axios.put(`${URL}/api/category/update`, formData);
             console.log('Category updated successfully:', response.data);
             setError(null); // Clear any previous errors
+            window.location.reload();
         } catch (error) {
             setError(error.response ? error.response.data : 'Error updating category');
         }
