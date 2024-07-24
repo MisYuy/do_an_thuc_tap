@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { URL } from '../utils/constant.js';
 import Select from 'react-select'; // Import react-select
+import { useNavigate } from 'react-router-dom';
 
 const M_AddProductSection = () => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
-        category: '',
+        category: '', // This will hold the category ID
         price: '',
         stock: '',
         image: null,
@@ -15,6 +16,21 @@ const M_AddProductSection = () => {
     });
     const [promotions, setPromotions] = useState([]);
     const [error, setError] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get(`${URL}/api/category/get-all`);
+                setCategories(response.data);
+            } catch (error) {
+                setError(error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     useEffect(() => {
         const fetchPromotions = async () => {
@@ -50,7 +66,7 @@ const M_AddProductSection = () => {
         const data = new FormData();
         data.append('name', formData.name);
         data.append('description', formData.description);
-        data.append('category', formData.category);
+        data.append('category_id', formData.category); // Ensure category_id is sent
         data.append('price', formData.price);
         data.append('stock_quantity', formData.stock);
         data.append('image', formData.image);
@@ -62,6 +78,7 @@ const M_AddProductSection = () => {
                     'Content-Type': 'multipart/form-data'
                 }
             });
+            navigate(`/m/product`);
             console.log('Product added successfully:', response.data);
             setError(null); // Clear any previous errors
         } catch (error) {
@@ -100,9 +117,9 @@ const M_AddProductSection = () => {
                                         <div className="col-12 col-md-9">
                                             <select name="category" id="category" className="form-control" value={formData.category} onChange={handleChange}>
                                                 <option value="">Please select</option>
-                                                <option value="1">Option #1</option>
-                                                <option value="2">Option #2</option>
-                                                <option value="3">Option #3</option>
+                                                {categories.map(category => (
+                                                    <option key={category.category_id} value={category.category_id}>{category.name}</option>
+                                                ))}
                                             </select>
                                             <small className="form-text text-muted">Please select the category</small>
                                         </div>

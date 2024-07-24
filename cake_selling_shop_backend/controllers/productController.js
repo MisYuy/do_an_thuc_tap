@@ -2,7 +2,6 @@ const { Product, Promotion, ProductPromotion } = require('../models');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { now } = require('sequelize/lib/utils');
 
 // Absolute path to the directory where images will be stored
 const imageDirectory = 'D:\\do_an_thuc_tap\\cake_selling_shop\\public\\images\\product';
@@ -111,7 +110,7 @@ exports.createProduct = async (req, res) => {
     }
 
     try {
-      const { name, description, price, stock_quantity, promotions } = req.body;
+      const { name, description, price, category_id, stock_quantity, promotions } = req.body;
       const image = req.file ? req.file.filename : null;
 
       let status = 'out of stock';
@@ -125,6 +124,7 @@ exports.createProduct = async (req, res) => {
         description,
         price,
         stock_quantity,
+        category_id,
         status,
         image: image
       });
@@ -212,7 +212,6 @@ exports.updateProduct = async (req, res) => {
     }
   });
 };
-
 
 exports.deleteProduct = async (req, res) => {
   try {

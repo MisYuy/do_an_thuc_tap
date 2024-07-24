@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { URL } from '../utils/constant.js';
+import { useNavigate } from 'react-router-dom';
 
 const M_AddAccountSection = () => {
     const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ const M_AddAccountSection = () => {
         image: null
     });
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -49,6 +51,7 @@ const M_AddAccountSection = () => {
                     'Content-Type': 'multipart/form-data'
                 }
             });
+            navigate(`/m/account/customer`);
             console.log('User added successfully:', response.data);
             setError(null); // Clear any previous errors
         } catch (error) {

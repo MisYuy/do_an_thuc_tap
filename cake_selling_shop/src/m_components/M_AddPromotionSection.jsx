@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { URL } from '../utils/constant.js';
+import { useNavigate } from 'react-router-dom';
 
 const M_AddPromotionSection = () => {
     const [formData, setFormData] = useState({
@@ -16,11 +17,13 @@ const M_AddPromotionSection = () => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const response = await axios.post(`${URL}/api/promotion/add-new`, formData);
+            navigate(`/m/promotion`);
             console.log('Promotion added successfully:', response.data);
             setError(null); // Clear any previous errors
         } catch (error) {

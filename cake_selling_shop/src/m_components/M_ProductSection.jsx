@@ -14,8 +14,22 @@ const M_ProductSection = () => {
         low_stock: false,
         out_of_stock: false,
     });
+    const [categories, setCategories] = useState([]);
 
     const user = JSON.parse(sessionStorage.getItem("user"));
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get(`${URL}/api/category/get-all`);
+                setCategories(response.data);
+            } catch (error) {
+                setError(error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     useEffect(() => {
         axios.get(`${URL}/api/product/get-all`)
@@ -80,6 +94,11 @@ const M_ProductSection = () => {
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const getCategoryName = (categoryId) => {
+        const category = categories.find(cat => cat.category_id === categoryId);
+        return category ? category.name : 'Unknown';
     };
 
     return (
@@ -164,6 +183,7 @@ const M_ProductSection = () => {
                                             <th style={{ textAlign: 'center' }}>ID</th>
                                             <th style={{ textAlign: 'center' }}>Ảnh</th>
                                             <th style={{ textAlign: 'center' }}>Tên</th>
+                                            <th style={{ textAlign: 'center' }}>Danh mục</th>
                                             <th style={{ textAlign: 'center' }}>Giá gốc</th>
                                             <th style={{ textAlign: 'center' }}>Mã Khuyến mãi</th>
                                             <th style={{ textAlign: 'center' }}>Giá thực</th>
@@ -181,6 +201,7 @@ const M_ProductSection = () => {
                                                     </a>
                                                 </td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>{product.name}</td>
+                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>{getCategoryName(product.category_id)}</td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>{product.price}</td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>
                                                     {product.promotions.map(promotion => (
@@ -206,8 +227,8 @@ const M_ProductSection = () => {
                         </div>
                     </div>
                 </div>
-                                {/* Back to Top Button */}
-                                <button 
+                {/* Back to Top Button */}
+                <button 
                     onClick={scrollToTop} 
                     style={{
                         position: 'fixed',

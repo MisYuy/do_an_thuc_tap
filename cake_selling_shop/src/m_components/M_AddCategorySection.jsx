@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { URL } from '../utils/constant.js';
+import { useNavigate } from 'react-router-dom';
 
 const M_AddCategorySection = () => {
     const [formData, setFormData] = useState({
@@ -13,11 +14,12 @@ const M_AddCategorySection = () => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
-
+    const navigate = useNavigate();
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const response = await axios.post(`${URL}/api/category/add-new`, formData);
+            navigate(`/m/category`);
             console.log('Category added successfully:', response.data);
             setError(null); // Clear any previous errors
         } catch (error) {

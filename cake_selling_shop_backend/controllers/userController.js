@@ -134,7 +134,7 @@ exports.createUser = async (req, res) => {
         phone_number,
         address,
         role,
-        status,
+        status: 'active',
         image,
         delete: 0
       });

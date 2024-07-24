@@ -63,6 +63,19 @@ const M_CategorySection = () => {
         navigate(`/m/operation-category/${categoryId}`);
     };
 
+    // Utility function to format date
+    const formatDate = (dateString) => {
+        const options = {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        };
+        return new Intl.DateTimeFormat('en-GB', options).format(new Date(dateString));
+    };
+
     return (
         <div className="content">
             <div className="animated fadeIn">
@@ -120,8 +133,8 @@ const M_CategorySection = () => {
                                                 <td style={{ textAlign: 'center' }}>{category.category_id}</td>
                                                 <td style={{ textAlign: 'center' }}>{category.name}</td>
                                                 <td style={{ textAlign: 'center' }}>{category.description}</td>
-                                                <td style={{ textAlign: 'center' }}>{category.created_at}</td>
-                                                <td style={{ textAlign: 'center' }}>{category.updated_at}</td>
+                                                <td style={{ textAlign: 'center' }}>{formatDate(category.created_at)}</td>
+                                                <td style={{ textAlign: 'center' }}>{formatDate(category.updated_at)}</td>
                                             </tr>
                                         ))}
                                     </tbody>
