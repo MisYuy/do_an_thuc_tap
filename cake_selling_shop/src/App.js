@@ -21,6 +21,9 @@ import M_OrderPage from './m_pages/M_OrderPage';
 import M_PromotionPage from './m_pages/M_PromotionPage';
 import M_AddPromotionPage from './m_pages/M_AddPromotionPage';
 import M_OperationPromotionPage from './m_pages/M_OperationPromotionPage';
+import M_CategoryPage from './m_pages/M_CategoryPage';
+import M_AddCategoryPage from './m_pages/M_AddCategoryPage';
+import M_OperationCategoryPage from './m_pages/M_OperationCategoryPage';
 
 function App() {
   return (
@@ -47,6 +50,9 @@ function App() {
             <Route path="/m/promotion" element={<M_PromotionPage />} />
             <Route path="/m/add-promotion" element={<M_AddPromotionPage />} />
             <Route path="/m/operation-promotion/:promotionId" element={<M_OperationPromotionPage />} />
+            <Route path="/m/category" element={<M_CategoryPage />} />
+            <Route path="/m/add-category" element={<M_AddCategoryPage />} />
+            <Route path="/m/operation-category/:categoryId" element={<M_OperationCategoryPage />} />
           </Routes>
     </Router>
   );

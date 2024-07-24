@@ -1,25 +1,16 @@
-// productPromotion.js
 module.exports = (sequelize, DataTypes) => {
     const ProductPromotion = sequelize.define('ProductPromotion', {
-        id: {
+        product_promotion_id: {  // Match the column name in the database
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        productId: {
+        product_id: {  // Match the column name in the database
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        promotionId: {
+        promotion_id: {  // Match the column name in the database
             type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        startDate: {
-            type: DataTypes.DATE,
-            allowNull: false
-        },
-        endDate: {
-            type: DataTypes.DATE,
             allowNull: false
         },
         created_at: {

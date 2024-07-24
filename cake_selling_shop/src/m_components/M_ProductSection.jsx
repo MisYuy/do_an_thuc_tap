@@ -33,9 +33,11 @@ const M_ProductSection = () => {
 
     const calculateFinalPrice = (price, promotions) => {
         let finalPrice = price;
+        let totalDiscount = 0;
         promotions.forEach(promotion => {
-            finalPrice -= finalPrice * (promotion.discount_percentage / 100);
+            totalDiscount += Number(promotion.discount_percentage);
         });
+        finalPrice -= finalPrice * (totalDiscount / 100);
         return finalPrice;
     };
 

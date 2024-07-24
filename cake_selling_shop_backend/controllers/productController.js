@@ -1,4 +1,4 @@
-const { Product, Promotion } = require('../models');
+const { Product, Promotion, ProductPromotion } = require('../models');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -111,11 +111,11 @@ exports.createProduct = async (req, res) => {
     }
 
     try {
-      const { name, description, price, stock_quantity } = req.body;
+      const { name, description, price, stock_quantity, promotions } = req.body;
       const image = req.file ? req.file.filename : null;
 
       let status = 'out of stock';
-      if(stock_quantity > 0 && stock_quantity <= 10)
+      if (stock_quantity > 0 && stock_quantity <= 10)
         status = 'low of stock';
       else
         status = 'available';
@@ -128,6 +128,19 @@ exports.createProduct = async (req, res) => {
         status,
         image: image
       });
+
+      // Handle promotions
+      if (promotions) {
+        const promotionIds = JSON.parse(promotions);
+        for (const promotionId of promotionIds) {
+          await ProductPromotion.create({
+            product_id: product.product_id,
+            promotion_id: promotionId,
+            created_at: new Date(), // Adjust as necessary
+            updated_at: new Date(new Date().setFullYear(new Date().getFullYear() + 1)) // Adjust as necessary
+          });
+        }
+      }
 
       res.json(product);
     } catch (error) {
@@ -143,7 +156,7 @@ exports.updateProduct = async (req, res) => {
     }
 
     try {
-      const { product_id, name, description, price, stock_quantity } = req.body;
+      const { product_id, name, description, price, stock_quantity, category, promotions } = req.body;
 
       if (!product_id) {
         return res.status(400).json({ error: 'Product ID is required' });
@@ -158,7 +171,7 @@ exports.updateProduct = async (req, res) => {
       console.log("Image filename:", image);
 
       let status = 'out of stock';
-      if(stock_quantity > 0 && stock_quantity <= 10)
+      if (stock_quantity > 0 && stock_quantity <= 10)
         status = 'low of stock';
       else
         status = 'available';
@@ -168,10 +181,28 @@ exports.updateProduct = async (req, res) => {
         description: description,
         price: price,
         stock_quantity: stock_quantity,
+        category_id: category,
         image: image,
         status,
         updated_at: new Date()
       });
+
+      // Update promotions
+      if (promotions) {
+        // Remove existing promotions
+        await ProductPromotion.destroy({ where: { product_id: product_id } });
+
+        // Add new promotions
+        const promotionIds = JSON.parse(promotions);
+        for (const promotionId of promotionIds) {
+          await ProductPromotion.create({
+            product_id: product_id,
+            promotion_id: promotionId,
+            created_at: new Date(), // Adjust as necessary
+            updated_at: new Date(new Date().setFullYear(new Date().getFullYear() + 1)) // Adjust as necessary
+          });
+        }
+      }
 
       console.log("Product updated successfully:", product);
       res.json(product);

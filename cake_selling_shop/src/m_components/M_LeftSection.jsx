@@ -11,7 +11,6 @@ const navbarStyles = {
 };
 
 const M_LeftSection = ({ select }) => {
-    console.log("@@" + select);
     return (
         <div>
             {/* Left Panel */}
@@ -38,6 +37,9 @@ const M_LeftSection = ({ select }) => {
                             </li>
                             <li className={select === 'promotion' ? "active" : "deactive"}>
                                 <a href="/m/promotion"><i className="menu-icon fa fa-gift"></i>Khuyến mãi </a>
+                            </li>
+                            <li className={select === 'category' ? "active" : "deactive"}>
+                                <a href="/m/category"><i className="menu-icon fa fa-tasks"></i>Danh mục</a>
                             </li>
                         </ul>
                     </div>

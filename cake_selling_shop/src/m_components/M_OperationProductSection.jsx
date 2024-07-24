@@ -3,35 +3,42 @@ import axios from 'axios';
 import { URL } from '../utils/constant.js';
 import { useParams } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
+import Select from 'react-select'; // Import react-select
 
 const M_OperationProductSection = () => {
     const { productId } = useParams();
     const [product, setProduct] = useState(null);
-    const [previewImage, setPreviewImage] = useState(null); // State for preview image
+    const [previewImage, setPreviewImage] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
         category: '',
         price: '',
         stock: '',
-        image: null
+        image: null,
+        promotions: [] // Add promotions to formData
     });
-    const [discountPercentage, setDiscountPercentage] = useState(0); // State for discount percentage
+    const [discountPercentage, setDiscountPercentage] = useState(0);
     const [error, setError] = useState(null);
-    const [showModal, setShowModal] = useState(false); // State for modal visibility
+    const [showModal, setShowModal] = useState(false);
+    const [promotions, setPromotions] = useState([]);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
         if (name === 'image') {
             const file = files[0];
             setFormData({ ...formData, [name]: file });
-            setPreviewImage(window.URL.createObjectURL(file)); // Use the global URL object
+            setPreviewImage(window.URL.createObjectURL(file));
         } else {
             setFormData({ ...formData, [name]: value });
             if (name === 'price') {
                 recalculateDiscount(value);
             }
         }
+    };
+
+    const handlePromotionChange = (selectedOptions) => {
+        setFormData({ ...formData, promotions: selectedOptions });
     };
 
     const recalculateDiscount = (newPrice) => {
@@ -54,8 +61,7 @@ const M_OperationProductSection = () => {
         data.append('price', formData.price);
         data.append('stock_quantity', formData.stock);
         data.append('image', formData.image);
-
-        console.log("Data " + formData.name);
+        data.append('promotions', JSON.stringify(formData.promotions.map(promo => promo.value))); // Add promotions to form data
 
         try {
             const response = await axios.put(`${URL}/api/product/update`, data, {
@@ -64,7 +70,7 @@ const M_OperationProductSection = () => {
                 }
             });
             console.log('Product added successfully:', response.data);
-            setError(null); // Clear any previous errors
+            setError(null);
         } catch (error) {
             setError(error.response ? error.response.data : 'Error adding product');
         }
@@ -74,7 +80,7 @@ const M_OperationProductSection = () => {
         try {
             await axios.put(`${URL}/api/product/delete?id=${productId}`);
             console.log('Product deleted successfully');
-            setShowModal(false); // Close the modal
+            setShowModal(false);
         } catch (error) {
             console.error('Error deleting product:', error);
         }
@@ -91,9 +97,13 @@ const M_OperationProductSection = () => {
                     category: response.data.category,
                     price: response.data.price,
                     stock: response.data.stock_quantity,
-                    image: null
+                    image: null,
+                    promotions: response.data.promotions.map(promo => ({
+                        value: promo.promotion_id,
+                        label: `${promo.name} (${promo.discount_percentage}%)`
+                    })) // Set initial promotions
                 });
-                recalculateDiscount(response.data.price); // Recalculate discount when product is fetched
+                recalculateDiscount(response.data.price);
             } catch (error) {
                 console.error('Error fetching product:', error);
             }
@@ -102,18 +112,35 @@ const M_OperationProductSection = () => {
         fetchProduct();
     }, [productId]);
 
+    useEffect(() => {
+        const fetchPromotions = async () => {
+            try {
+                const response = await axios.get(`${URL}/api/promotion/get-all`);
+                setPromotions(response.data.map(promo => ({
+                    value: promo.promotion_id,
+                    label: `${promo.name} (${promo.discount_percentage}%)`
+                })));
+            } catch (error) {
+                setError(error);
+            }
+        };
+
+        fetchPromotions();
+    }, []);
+
     if (!product) {
         return <div>Loading...</div>;
     }
 
-    const hasPromotion = product.promotions && product.promotions.length > 0;
-    const originalPrice = parseFloat(formData.price !== "" ? formData.price : product.price);
-    const totalDiscountPercentage = hasPromotion
-        ? product.promotions.reduce((total, promo) => total + parseFloat(promo.discount_percentage), 0)
-        : 0;
-    const discount = (originalPrice * totalDiscountPercentage) / 100;
-    const discountedPrice = originalPrice - discount;
-    console.log("Image: " + product.image);
+    const calculateFinalPrice = (price, promotions) => {
+        let finalPrice = price;
+        let totalDiscount = 0;
+        promotions.forEach(promotion => {
+            totalDiscount += Number(promotion.discount_percentage);
+        });
+        finalPrice -= finalPrice * (totalDiscount / 100);
+        return finalPrice;
+    };
 
     return (
         <div className="content">
@@ -192,21 +219,23 @@ const M_OperationProductSection = () => {
                                         </div>
                                     </div>
                                     <div className="row form-group" style={{ paddingBottom: '25px' }}>
-                                        <div className="col col-md-3"><label className=" form-control-label">Mã khuyến mãi đang áp dụng</label></div>
+                                        <div className="col col-md-3"><label className=" form-control-label">Áp dụng mã khuyến mãi</label></div>
                                         <div className="col-12 col-md-9">
-                                            <p className="form-control-static">
-                                                {product.promotions.map(promotion => (
-                                                    <div key={promotion.promotion_id}>
-                                                        {promotion.promotion_id} {promotion.name} ({promotion.discount_percentage}%),
-                                                    </div>
-                                                ))}
-                                            </p>
+                                            <Select
+                                                isMulti
+                                                name="promotions"
+                                                options={promotions}
+                                                className="basic-multi-select"
+                                                classNamePrefix="select"
+                                                value={formData.promotions}
+                                                onChange={handlePromotionChange}
+                                            />
                                         </div>
                                     </div>
                                     <div className="row form-group" style={{ paddingBottom: '25px' }}>
                                         <div className="col col-md-3"><label className=" form-control-label">Giá thực</label></div>
                                         <div className="col-12 col-md-9">
-                                            <p className="form-control-static">{discountedPrice}</p>
+                                            <p className="form-control-static">{calculateFinalPrice(product.price, product.promotions)}</p>
                                         </div>
                                     </div>
                                     <div className="row form-group" style={{ paddingBottom: '25px' }}>

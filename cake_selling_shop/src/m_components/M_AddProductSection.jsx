@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { URL } from '../utils/constant.js';
+import Select from 'react-select'; // Import react-select
 
 const M_AddProductSection = () => {
     const [formData, setFormData] = useState({
@@ -9,9 +10,27 @@ const M_AddProductSection = () => {
         category: '',
         price: '',
         stock: '',
-        image: null
+        image: null,
+        promotions: [] // Add promotions to formData
     });
+    const [promotions, setPromotions] = useState([]);
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchPromotions = async () => {
+            try {
+                const response = await axios.get(`${URL}/api/promotion/get-all`);
+                setPromotions(response.data.map(promo => ({
+                    value: promo.promotion_id,
+                    label: `${promo.name} (${promo.discount_percentage}%)`
+                })));
+            } catch (error) {
+                setError(error);
+            }
+        };
+
+        fetchPromotions();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -20,6 +39,10 @@ const M_AddProductSection = () => {
         } else {
             setFormData({ ...formData, [name]: value });
         }
+    };
+
+    const handlePromotionChange = (selectedOptions) => {
+        setFormData({ ...formData, promotions: selectedOptions });
     };
 
     const handleSubmit = async (e) => {
@@ -31,6 +54,7 @@ const M_AddProductSection = () => {
         data.append('price', formData.price);
         data.append('stock_quantity', formData.stock);
         data.append('image', formData.image);
+        data.append('promotions', JSON.stringify(formData.promotions.map(promo => promo.value))); // Add promotions to form data
 
         try {
             const response = await axios.post(`${URL}/api/product/add-new`, data, {
@@ -88,6 +112,20 @@ const M_AddProductSection = () => {
                                         <div className="col-12 col-md-9">
                                             <input type="number" id="price" name="price" placeholder="Enter price" className="form-control" value={formData.price} onChange={handleChange} />
                                             <small className="help-block form-text">Please enter the price</small>
+                                        </div>
+                                    </div>
+                                    <div className="row form-group" style={{paddingBottom: '25px'}}>
+                                        <div className="col col-md-3"><label className=" form-control-label">Áp dụng mã khuyến mãi</label></div>
+                                        <div className="col-12 col-md-9">
+                                            <Select
+                                                isMulti
+                                                name="promotions"
+                                                options={promotions}
+                                                className="basic-multi-select"
+                                                classNamePrefix="select"
+                                                value={formData.promotions}
+                                                onChange={handlePromotionChange}
+                                            />
                                         </div>
                                     </div>
                                     <div className="row form-group" style={{paddingBottom: '25px'}}>

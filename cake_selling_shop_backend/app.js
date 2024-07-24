@@ -6,6 +6,7 @@ const productRoutes = require('./routes/productRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const order = require('./routes/orderRoutes');
 const promotion = require('./routes/promotionRoutes');
+const category = require('./routes/categoryRoutes');
 
 // Middleware to parse JSON bodies
 app.use(express.json());
@@ -17,6 +18,7 @@ app.use('/api/product', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/order', order);
 app.use('/api/promotion', promotion);
+app.use('/api/category', category);
 
 // Start the server
 const PORT = process.env.PORT || 3500;
