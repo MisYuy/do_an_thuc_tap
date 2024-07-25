@@ -13,6 +13,7 @@ const M_OperationCategorySection = () => {
         description: ''
     });
     const [error, setError] = useState(null);
+    const [validationErrors, setValidationErrors] = useState({});
     const [showModal, setShowModal] = useState(false); // State for modal visibility
 
     const handleChange = (e) => {
@@ -20,8 +21,24 @@ const M_OperationCategorySection = () => {
         setFormData({ ...formData, [name]: value });
     };
 
+    const validateForm = () => {
+        const errors = {};
+        if (!formData.name) {
+            errors.name = 'Tên danh mục là bắt buộc';
+        }
+        if (!formData.description) {
+            errors.description = 'Mô tả là bắt buộc';
+        }
+        return errors;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const errors = validateForm();
+        if (Object.keys(errors).length > 0) {
+            setValidationErrors(errors);
+            return;
+        }
         try {
             const response = await axios.put(`${URL}/api/category/update`, formData);
             console.log('Category updated successfully:', response.data);
@@ -95,12 +112,14 @@ const M_OperationCategorySection = () => {
                                         <div className="col-12 col-md-9">
                                             <input type="text" id="name" name="name" placeholder="Enter category name" className="form-control" value={formData.name} onChange={handleChange} />
                                             <small className="form-text text-muted">Please enter the category name</small>
+                                            {validationErrors.name && <div className="text-danger">{validationErrors.name}</div>}
                                         </div>
                                     </div>
                                     <div className="row form-group" style={{ paddingBottom: '25px' }}>
                                         <div className="col col-md-3"><label htmlFor="description" className="form-control-label">Mô tả</label></div>
                                         <div className="col-12 col-md-9">
                                             <textarea name="description" id="description" rows="9" placeholder="Content..." className="form-control" value={formData.description} onChange={handleChange}></textarea>
+                                            {validationErrors.description && <div className="text-danger">{validationErrors.description}</div>}
                                         </div>
                                     </div>
                                     {error && (

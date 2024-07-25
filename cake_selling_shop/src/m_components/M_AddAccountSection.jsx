@@ -13,7 +13,7 @@ const M_AddAccountSection = () => {
         role: '',
         image: null
     });
-    const [error, setError] = useState(null);
+    const [errors, setErrors] = useState({});
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -25,8 +25,25 @@ const M_AddAccountSection = () => {
         }
     };
 
+    const validate = () => {
+        const newErrors = {};
+        if (!formData.email) newErrors.email = 'Email is required';
+        if (!formData.password) newErrors.password = 'Password is required';
+        if (!formData.fullName) newErrors.fullName = 'Full name is required';
+        if (!formData.phone) newErrors.phone = 'Phone number is required';
+        if (!formData.address) newErrors.address = 'Address is required';
+        if (!formData.role) newErrors.role = 'Role is required';
+        return newErrors;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const newErrors = validate();
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+
         const data = new FormData();
         data.append('email', formData.email);
         data.append('password', formData.password);
@@ -36,26 +53,17 @@ const M_AddAccountSection = () => {
         data.append('role', formData.role);
         data.append('image', formData.image);
 
-        console.log('Email:', formData.email);
-      console.log('Password:', formData.password);
-      console.log('Full Name:', formData.password);
-      console.log('Phone Number:', formData.fullName);
-      console.log('Address:', formData.phone);
-      console.log('Role:', formData.address);
-      console.log('Status:', formData.role);
-      console.log('Image:', formData.image);
-
         try {
             const response = await axios.post(`${URL}/api/user/add-new`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            navigate(`/m/account/customer`);
+            navigate('/m/account/customer');
             console.log('User added successfully:', response.data);
-            setError(null); // Clear any previous errors
+            setErrors({});
         } catch (error) {
-            setError(error.response ? error.response.data : 'Error adding user');
+            setErrors({ form: error.response ? error.response.data : 'Error adding user' });
         }
     };
 
@@ -74,6 +82,7 @@ const M_AddAccountSection = () => {
                                         <div className="col col-md-3"><label htmlFor="email" className="form-control-label">Email</label></div>
                                         <div className="col-12 col-md-9">
                                             <input type="email" id="email" name="email" placeholder="Enter email" className="form-control" value={formData.email} onChange={handleChange} />
+                                            {errors.email && <small className="form-text text-danger">{errors.email}</small>}
                                             <small className="form-text text-muted">Please enter the email</small>
                                         </div>
                                     </div>
@@ -81,6 +90,7 @@ const M_AddAccountSection = () => {
                                         <div className="col col-md-3"><label htmlFor="password" className="form-control-label">Mật khẩu</label></div>
                                         <div className="col-12 col-md-9">
                                             <input type="password" id="password" name="password" placeholder="Enter password" className="form-control" value={formData.password} onChange={handleChange} />
+                                            {errors.password && <small className="form-text text-danger">{errors.password}</small>}
                                             <small className="form-text text-muted">Please enter the password</small>
                                         </div>
                                     </div>
@@ -88,6 +98,7 @@ const M_AddAccountSection = () => {
                                         <div className="col col-md-3"><label htmlFor="fullName" className="form-control-label">Họ và tên</label></div>
                                         <div className="col-12 col-md-9">
                                             <input type="text" id="fullName" name="fullName" placeholder="Enter full name" className="form-control" value={formData.fullName} onChange={handleChange} />
+                                            {errors.fullName && <small className="form-text text-danger">{errors.fullName}</small>}
                                             <small className="form-text text-muted">Please enter the full name</small>
                                         </div>
                                     </div>
@@ -95,6 +106,7 @@ const M_AddAccountSection = () => {
                                         <div className="col col-md-3"><label htmlFor="phone" className="form-control-label">Số điện thoại</label></div>
                                         <div className="col-12 col-md-9">
                                             <input type="text" id="phone" name="phone" placeholder="Enter phone number" className="form-control" value={formData.phone} onChange={handleChange} />
+                                            {errors.phone && <small className="form-text text-danger">{errors.phone}</small>}
                                             <small className="form-text text-muted">Please enter the phone number</small>
                                         </div>
                                     </div>  
@@ -102,6 +114,7 @@ const M_AddAccountSection = () => {
                                         <div className="col col-md-3"><label htmlFor="address" className="form-control-label">Địa chỉ</label></div>
                                         <div className="col-12 col-md-9">
                                             <input type="text" id="address" name="address" placeholder="Enter address" className="form-control" value={formData.address} onChange={handleChange} />
+                                            {errors.address && <small className="form-text text-danger">{errors.address}</small>}
                                             <small className="form-text text-muted">Please enter the address</small>
                                         </div>
                                     </div>  
@@ -113,6 +126,7 @@ const M_AddAccountSection = () => {
                                                 <option value="customer">Customer</option>
                                                 <option value="admin">Admin</option>
                                             </select>
+                                            {errors.role && <small className="form-text text-danger">{errors.role}</small>}
                                             <small className="form-text text-muted">Please select the role</small>
                                         </div>
                                     </div>
@@ -122,9 +136,9 @@ const M_AddAccountSection = () => {
                                             <input type="file" id="image" name="image" className="form-control-file" onChange={handleChange} />
                                         </div>
                                     </div>
-                                    {error && (
+                                    {errors.form && (
                                         <div className="alert alert-danger">
-                                            {typeof error === 'string' ? error : JSON.stringify(error)}
+                                            {typeof errors.form === 'string' ? errors.form : JSON.stringify(errors.form)}
                                         </div>
                                     )}
                                     <div className="card-footer" style={{textAlign: 'center'}}>

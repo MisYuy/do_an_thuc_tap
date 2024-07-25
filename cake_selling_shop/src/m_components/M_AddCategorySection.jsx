@@ -9,17 +9,39 @@ const M_AddCategorySection = () => {
         description: ''
     });
     const [error, setError] = useState(null);
+    const [validationErrors, setValidationErrors] = useState({});
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
+
     const navigate = useNavigate();
+
+    const validate = () => {
+        const errors = {};
+        if (!formData.name) {
+            errors.name = 'Tên danh mục là bắt buộc';
+        }
+        if (formData.name.length > 50) {
+            errors.name = 'Tên danh mục không được vượt quá 50 ký tự';
+        }
+        if (!formData.description) {
+            errors.description = 'Mô tả là bắt buộc';
+        }
+        return errors;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const errors = validate();
+        if (Object.keys(errors).length > 0) {
+            setValidationErrors(errors);
+            return;
+        }
         try {
             const response = await axios.post(`${URL}/api/category/add-new`, formData);
-            navigate(`/m/category`);
+            navigate('/m/category');
             console.log('Category added successfully:', response.data);
             setError(null); // Clear any previous errors
         } catch (error) {
@@ -42,6 +64,7 @@ const M_AddCategorySection = () => {
                                         <div className="col col-md-3"><label htmlFor="name" className="form-control-label">Tên danh mục</label></div>
                                         <div className="col-12 col-md-9">
                                             <input type="text" id="name" name="name" placeholder="Enter category name" className="form-control" value={formData.name} onChange={handleChange} />
+                                            {validationErrors.name && <small className="form-text text-danger">{validationErrors.name}</small>}
                                             <small className="form-text text-muted">Please enter the category name</small>
                                         </div>
                                     </div>
@@ -51,6 +74,7 @@ const M_AddCategorySection = () => {
                                         </div>
                                         <div className="col-12 col-md-9">
                                             <textarea name="description" id="description" rows="9" placeholder="Content..." className="form-control" value={formData.description} onChange={handleChange}></textarea>
+                                            {validationErrors.description && <small className="form-text text-danger">{validationErrors.description}</small>}
                                         </div>
                                     </div>
                                     {error && (

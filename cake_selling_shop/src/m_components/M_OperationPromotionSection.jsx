@@ -8,7 +8,7 @@ const M_OperationPromotionSection = () => {
     const { promotionId } = useParams();
     const [promotion, setPromotion] = useState(null);
     const [formData, setFormData] = useState({
-        promotion_id: promotionId, // Include promotion_id in formData
+        promotion_id: promotionId,
         name: '',
         description: '',
         discount_percentage: '',
@@ -16,19 +16,36 @@ const M_OperationPromotionSection = () => {
         end_date: ''
     });
     const [error, setError] = useState(null);
-    const [showModal, setShowModal] = useState(false); // State for modal visibility
+    const [validationErrors, setValidationErrors] = useState({});
+    const [showModal, setShowModal] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
+    const validateForm = () => {
+        const errors = {};
+        if (!formData.name) errors.name = 'Tên khuyến mãi là bắt buộc';
+        if (!formData.description) errors.description = 'Mô tả là bắt buộc';
+        if (!formData.discount_percentage || formData.discount_percentage <= 0) errors.discount_percentage = 'Giảm giá phải lớn hơn 0';
+        if (!formData.discount_percentage || formData.discount_percentage > 100) errors.discount_percentage = 'Giảm giá phải nhỏ hơn hoặc bằng 100';
+        if (!formData.start_date) errors.start_date = 'Ngày bắt đầu là bắt buộc';
+        if (!formData.end_date) errors.end_date = 'Ngày kết thúc là bắt buộc';
+        return errors;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const errors = validateForm();
+        if (Object.keys(errors).length > 0) {
+            setValidationErrors(errors);
+            return;
+        }
         try {
             const response = await axios.put(`${URL}/api/promotion/update`, formData);
             console.log('Promotion updated successfully:', response.data);
-            setError(null); // Clear any previous errors
+            setError(null);
             window.location.reload();
         } catch (error) {
             setError(error.response ? error.response.data : 'Error updating promotion');
@@ -39,8 +56,7 @@ const M_OperationPromotionSection = () => {
         try {
             await axios.delete(`${URL}/api/promotion/delete?id=${promotionId}`);
             console.log('Promotion deleted successfully');
-            setShowModal(false); // Close the modal
-            // Optionally redirect or update the state to reflect deletion
+            setShowModal(false);
         } catch (error) {
             console.error('Error deleting promotion:', error);
         }
@@ -52,7 +68,7 @@ const M_OperationPromotionSection = () => {
                 const response = await axios.get(`${URL}/api/promotion/get-by-id?id=${promotionId}`);
                 setPromotion(response.data);
                 setFormData({
-                    promotion_id: response.data.promotion_id, // Set promotion_id from fetched data
+                    promotion_id: response.data.promotion_id,
                     name: response.data.name,
                     description: response.data.description,
                     discount_percentage: response.data.discount_percentage,
@@ -67,7 +83,6 @@ const M_OperationPromotionSection = () => {
         fetchPromotion();
     }, [promotionId]);
 
-    console.log("@@@" + promotion);
     if (!promotion) {
         return <div>Loading...</div>;
     }
@@ -102,12 +117,14 @@ const M_OperationPromotionSection = () => {
                                         <div className="col-12 col-md-9">
                                             <input type="text" id="name" name="name" placeholder="Enter promotion name" className="form-control" value={formData.name} onChange={handleChange} />
                                             <small className="form-text text-muted">Please enter the promotion name</small>
+                                            {validationErrors.name && <div className="text-danger">{validationErrors.name}</div>}
                                         </div>
                                     </div>
                                     <div className="row form-group" style={{ paddingBottom: '25px' }}>
                                         <div className="col col-md-3"><label htmlFor="description" className="form-control-label">Mô tả</label></div>
                                         <div className="col-12 col-md-9">
                                             <textarea name="description" id="description" rows="9" placeholder="Content..." className="form-control" value={formData.description} onChange={handleChange}></textarea>
+                                            {validationErrors.description && <div className="text-danger">{validationErrors.description}</div>}
                                         </div>
                                     </div>
                                     <div className="row form-group" style={{ paddingBottom: '25px' }}>
@@ -115,18 +132,21 @@ const M_OperationPromotionSection = () => {
                                         <div className="col-12 col-md-9">
                                             <input type="number" id="discount_percentage" name="discount_percentage" placeholder="Enter discount percentage" className="form-control" value={formData.discount_percentage} onChange={handleChange} />
                                             <small className="help-block form-text">Please enter the discount percentage</small>
+                                            {validationErrors.discount_percentage && <div className="text-danger">{validationErrors.discount_percentage}</div>}
                                         </div>
                                     </div>
                                     <div className="row form-group" style={{ paddingBottom: '25px' }}>
                                         <div className="col col-md-3"><label htmlFor="start_date" className="form-control-label">Ngày bắt đầu</label></div>
                                         <div className="col-12 col-md-9">
                                             <input type="date" id="start_date" name="start_date" className="form-control" value={formData.start_date} onChange={handleChange} />
+                                            {validationErrors.start_date && <div className="text-danger">{validationErrors.start_date}</div>}
                                         </div>
                                     </div>
                                     <div className="row form-group" style={{ paddingBottom: '25px' }}>
                                         <div className="col col-md-3"><label htmlFor="end_date" className="form-control-label">Ngày kết thúc</label></div>
                                         <div className="col-12 col-md-9">
                                             <input type="date" id="end_date" name="end_date" className="form-control" value={formData.end_date} onChange={handleChange} />
+                                            {validationErrors.end_date && <div className="text-danger">{validationErrors.end_date}</div>}
                                         </div>
                                     </div>
                                     {error && (
@@ -144,7 +164,6 @@ const M_OperationPromotionSection = () => {
                 </div>
             </div>
 
-            {/* Modal */}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header>
                     <Modal.Title>Xác nhận xóa</Modal.Title>

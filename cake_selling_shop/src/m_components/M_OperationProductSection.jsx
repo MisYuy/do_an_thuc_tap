@@ -23,6 +23,7 @@ const M_OperationProductSection = () => {
     const [showModal, setShowModal] = useState(false);
     const [promotions, setPromotions] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [validationErrors, setValidationErrors] = useState({});
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -39,16 +40,32 @@ const M_OperationProductSection = () => {
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
+        let errors = { ...validationErrors };
+
         if (name === 'image') {
             const file = files[0];
             setFormData({ ...formData, [name]: file });
             setPreviewImage(window.URL.createObjectURL(file));
         } else {
             setFormData({ ...formData, [name]: value });
+
+            // Validation logic
+            if (name === 'name' && value.trim() === '') {
+                errors[name] = 'Product name is required';
+            } else if (name === 'price' && (value <= 0 || isNaN(value))) {
+                errors[name] = 'Price must be a positive number';
+            } else if (name === 'stock' && (value < 0 || isNaN(value))) {
+                errors[name] = 'Stock must be a non-negative number';
+            } else {
+                delete errors[name];
+            }
+
             if (name === 'price') {
                 recalculateDiscount(value);
             }
         }
+
+        setValidationErrors(errors);
     };
 
     const handlePromotionChange = (selectedOptions) => {
@@ -67,6 +84,13 @@ const M_OperationProductSection = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Check for validation errors before submitting
+        if (Object.keys(validationErrors).length > 0) {
+            setError('Please fix the validation errors before submitting');
+            return;
+        }
+
         const data = new FormData();
         data.append('product_id', product.product_id);
         data.append('name', formData.name);
@@ -203,6 +227,7 @@ const M_OperationProductSection = () => {
                                         <div className="col col-md-3"><label htmlFor="name" className="form-control-label">Tên sản phẩm</label></div>
                                         <div className="col-12 col-md-9">
                                             <input type="text" id="name" name="name" placeholder="Enter name" className="form-control" value={formData.name} onChange={handleChange} />
+                                            {validationErrors.name && <small className="form-text text-danger">{validationErrors.name}</small>}
                                             <small className="form-text text-muted">Please enter the product name</small>
                                         </div>
                                     </div>
@@ -230,6 +255,7 @@ const M_OperationProductSection = () => {
                                         <div className="col col-md-3"><label htmlFor="price" className="form-control-label">Giá</label></div>
                                         <div className="col-12 col-md-9">
                                             <input type="number" id="price" name="price" placeholder="Enter price" className="form-control" value={formData.price} onChange={handleChange} />
+                                            {validationErrors.price && <small className="form-text text-danger">{validationErrors.price}</small>}
                                             <small className="help-block form-text">Please enter the price</small>
                                         </div>
                                     </div>
@@ -257,6 +283,7 @@ const M_OperationProductSection = () => {
                                         <div className="col col-md-3"><label htmlFor="stock" className="form-control-label">Tồn kho</label></div>
                                         <div className="col-12 col-md-9">
                                             <input type="number" id="stock" name="stock" placeholder="Enter stock" className="form-control" value={formData.stock} onChange={handleChange} />
+                                            {validationErrors.stock && <small className="form-text text-danger">{validationErrors.stock}</small>}
                                             <small className="help-block form-text">Please enter the stock</small>
                                         </div>
                                     </div>

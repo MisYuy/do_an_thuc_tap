@@ -4,7 +4,6 @@ import { URL } from '../utils/constant.js';
 import { useParams } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 
-
 const M_OperationAccountSection = () => {
     const { userId } = useParams();
     const [user, setUser] = useState(null);
@@ -18,7 +17,7 @@ const M_OperationAccountSection = () => {
         status: '',
         image: null
     });
-    const [error, setError] = useState(null);
+    const [errors, setErrors] = useState({});
     const [showModal, setShowModal] = useState(false); // State for modal visibility
 
     const handleChange = (e) => {
@@ -32,8 +31,25 @@ const M_OperationAccountSection = () => {
         }
     };
 
+    const validate = () => {
+        const newErrors = {};
+        if (!formData.email) newErrors.email = 'Email is required';
+        if (!formData.full_name) newErrors.full_name = 'Full name is required';
+        if (!formData.phone_number) newErrors.phone_number = 'Phone number is required';
+        if (!formData.address) newErrors.address = 'Address is required';
+        if (!formData.role) newErrors.role = 'Role is required';
+        if (!formData.status) newErrors.status = 'Status is required';
+        return newErrors;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const newErrors = validate();
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+
         const data = new FormData();
         data.append('user_id', user.user_id);
         data.append('email', formData.email);
@@ -51,10 +67,10 @@ const M_OperationAccountSection = () => {
                 }
             });
             console.log('User updated successfully:', response.data);
-            setError(null); // Clear any previous errors
+            setErrors({});
             window.location.reload();
         } catch (error) {
-            setError(error.response ? error.response.data : 'Error updating user');
+            setErrors({ form: error.response ? error.response.data : 'Error updating user' });
         }
     };
 
@@ -119,7 +135,7 @@ const M_OperationAccountSection = () => {
                             </div>
                             <div className="card-body card-block">
                                 <form onSubmit={handleSubmit} encType="multipart/form-data" className="form-horizontal">
-                                <div className="row form-group" style={{ paddingBottom: '25px' }}>
+                                    <div className="row form-group" style={{ paddingBottom: '25px' }}>
                                         <div className="col col-md-3"></div>
                                         <div className="col-12 col-md-9" style={{ textAlign: 'center' }}>
                                             <img
@@ -140,6 +156,7 @@ const M_OperationAccountSection = () => {
                                         <div className="col col-md-3"><label htmlFor="email" className="form-control-label">Email</label></div>
                                         <div className="col-12 col-md-9">
                                             <input type="email" id="email" name="email" placeholder="Enter email" className="form-control" value={formData.email} onChange={handleChange} />
+                                            {errors.email && <small className="form-text text-danger">{errors.email}</small>}
                                             <small className="form-text text-muted">Please enter the email</small>
                                         </div>
                                     </div>
@@ -147,6 +164,7 @@ const M_OperationAccountSection = () => {
                                         <div className="col col-md-3"><label htmlFor="full_name" className="form-control-label">Họ và tên</label></div>
                                         <div className="col-12 col-md-9">
                                             <input type="text" id="full_name" name="full_name" placeholder="Enter full name" className="form-control" value={formData.full_name} onChange={handleChange} />
+                                            {errors.full_name && <small className="form-text text-danger">{errors.full_name}</small>}
                                             <small className="form-text text-muted">Please enter the full name</small>
                                         </div>
                                     </div>
@@ -154,6 +172,7 @@ const M_OperationAccountSection = () => {
                                         <div className="col col-md-3"><label htmlFor="phone_number" className="form-control-label">Số điện thoại</label></div>
                                         <div className="col-12 col-md-9">
                                             <input type="text" id="phone_number" name="phone_number" placeholder="Enter phone number" className="form-control" value={formData.phone_number} onChange={handleChange} />
+                                            {errors.phone_number && <small className="form-text text-danger">{errors.phone_number}</small>}
                                             <small className="form-text text-muted">Please enter the phone number</small>
                                         </div>
                                     </div>
@@ -161,6 +180,7 @@ const M_OperationAccountSection = () => {
                                         <div className="col col-md-3"><label htmlFor="address" className="form-control-label">Địa chỉ</label></div>
                                         <div className="col-12 col-md-9">
                                             <input type="text" id="address" name="address" placeholder="Enter address" className="form-control" value={formData.address} onChange={handleChange} />
+                                            {errors.address && <small className="form-text text-danger">{errors.address}</small>}
                                             <small className="form-text text-muted">Please enter the address</small>
                                         </div>
                                     </div>
@@ -173,6 +193,7 @@ const M_OperationAccountSection = () => {
                                                 <option value="Admin">Admin</option>
                                                 <option value="Staff">Staff</option>
                                             </select>
+                                            {errors.role && <small className="form-text text-danger">{errors.role}</small>}
                                             <small className="form-text text-muted">Please select the role</small>
                                         </div>
                                     </div>
@@ -183,6 +204,7 @@ const M_OperationAccountSection = () => {
                                                 <option value="active">Active</option>
                                                 <option value="inactive">Inactive</option>
                                             </select>
+                                            {errors.status && <small className="form-text text-danger">{errors.status}</small>}
                                             <small className="form-text text-muted">Please select the status</small>
                                         </div>
                                     </div>
@@ -192,9 +214,9 @@ const M_OperationAccountSection = () => {
                                             <input type="file" id="image" name="image" className="form-control-file" onChange={handleChange} />
                                         </div>
                                     </div>
-                                    {error && (
+                                    {errors.form && (
                                         <div className="alert alert-danger">
-                                            {typeof error === 'string' ? error : JSON.stringify(error)}
+                                            {typeof errors.form === 'string' ? errors.form : JSON.stringify(errors.form)}
                                         </div>
                                     )}
                                     <div className="card-footer" style={{ textAlign: 'center' }}>
