@@ -3,6 +3,7 @@ import axios from 'axios';
 import { URL } from '../utils/constant.js';
 import { useParams } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const M_OperationPromotionSection = () => {
     const { promotionId } = useParams();
@@ -18,6 +19,7 @@ const M_OperationPromotionSection = () => {
     const [error, setError] = useState(null);
     const [validationErrors, setValidationErrors] = useState({});
     const [showModal, setShowModal] = useState(false);
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -56,6 +58,7 @@ const M_OperationPromotionSection = () => {
         try {
             await axios.delete(`${URL}/api/promotion/delete?id=${promotionId}`);
             console.log('Promotion deleted successfully');
+            navigate('/m/promotion');
             setShowModal(false);
         } catch (error) {
             console.error('Error deleting promotion:', error);

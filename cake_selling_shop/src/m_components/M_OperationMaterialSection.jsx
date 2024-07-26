@@ -5,17 +5,18 @@ import { useParams } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
-const M_OperationCategorySection = () => {
-    const { categoryId } = useParams();
-    const [category, setCategory] = useState(null);
+const M_OperationMaterialSection = () => {
+    const { materialId } = useParams();
+    const [material, setMaterial] = useState(null);
     const [formData, setFormData] = useState({
-        category_id: categoryId, // Include category_id in formData
+        material_id: materialId,
         name: '',
-        description: ''
+        description: '',
+        quantity: ''
     });
     const [error, setError] = useState(null);
     const [validationErrors, setValidationErrors] = useState({});
-    const [showModal, setShowModal] = useState(false); // State for modal visibility
+    const [showModal, setShowModal] = useState(false);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -25,12 +26,9 @@ const M_OperationCategorySection = () => {
 
     const validateForm = () => {
         const errors = {};
-        if (!formData.name) {
-            errors.name = 'Tên danh mục là bắt buộc';
-        }
-        if (!formData.description) {
-            errors.description = 'Mô tả là bắt buộc';
-        }
+        if (!formData.name) errors.name = 'Tên vật liệu là bắt buộc';
+        if (!formData.description) errors.description = 'Mô tả là bắt buộc';
+        if (!formData.quantity || formData.quantity <= 0) errors.quantity = 'Số lượng phải lớn hơn 0';
         return errors;
     };
 
@@ -42,46 +40,46 @@ const M_OperationCategorySection = () => {
             return;
         }
         try {
-            const response = await axios.put(`${URL}/api/category/update`, formData);
-            console.log('Category updated successfully:', response.data);
-            setError(null); // Clear any previous errors
+            const response = await axios.put(`${URL}/api/material/update`, formData);
+            console.log('Material updated successfully:', response.data);
+            setError(null);
             window.location.reload();
         } catch (error) {
-            setError(error.response ? error.response.data : 'Error updating category');
+            setError(error.response ? error.response.data : 'Error updating material');
         }
     };
 
     const handleDelete = async () => {
         try {
-            await axios.delete(`${URL}/api/category/delete?id=${categoryId}`);
-            console.log('Category deleted successfully');
-            navigate('/m/category');
-            setShowModal(false); // Close the modal
-            // Optionally redirect or update the state to reflect deletion
+            await axios.delete(`${URL}/api/material/delete?id=${materialId}`);
+            console.log('Material deleted successfully');
+            navigate('/m/material');
+            setShowModal(false);
         } catch (error) {
-            console.error('Error deleting category:', error);
+            console.error('Error deleting material:', error);
         }
     };
 
     useEffect(() => {
-        const fetchCategory = async () => {
+        const fetchMaterial = async () => {
             try {
-                const response = await axios.get(`${URL}/api/category/get-by-id?id=${categoryId}`);
-                setCategory(response.data);
+                const response = await axios.get(`${URL}/api/material/get-by-id?id=${materialId}`);
+                setMaterial(response.data);
                 setFormData({
-                    category_id: response.data.category_id, // Set category_id from fetched data
+                    material_id: response.data.material_id,
                     name: response.data.name,
-                    description: response.data.description
+                    description: response.data.description,
+                    quantity: response.data.quantity
                 });
             } catch (error) {
-                console.error('Error fetching category:', error);
+                console.error('Error fetching material:', error);
             }
         };
 
-        fetchCategory();
-    }, [categoryId]);
+        fetchMaterial();
+    }, [materialId]);
 
-    if (!category) {
+    if (!material) {
         return <div>Loading...</div>;
     }
 
@@ -106,15 +104,15 @@ const M_OperationCategorySection = () => {
                     <div className="col-md-12">
                         <div className="card">
                             <div className="card-header">
-                                <strong>Form chỉnh sửa danh mục</strong>
+                                <strong>Form chỉnh sửa vật liệu</strong>
                             </div>
                             <div className="card-body card-block">
                                 <form onSubmit={handleSubmit} className="form-horizontal">
                                     <div className="row form-group" style={{ paddingBottom: '25px' }}>
-                                        <div className="col col-md-3"><label htmlFor="name" className="form-control-label">Tên danh mục</label></div>
+                                        <div className="col col-md-3"><label htmlFor="name" className="form-control-label">Tên vật liệu</label></div>
                                         <div className="col-12 col-md-9">
-                                            <input type="text" id="name" name="name" placeholder="Enter category name" className="form-control" value={formData.name} onChange={handleChange} />
-                                            <small className="form-text text-muted">Please enter the category name</small>
+                                            <input type="text" id="name" name="name" placeholder="Enter material name" className="form-control" value={formData.name} onChange={handleChange} />
+                                            <small className="form-text text-muted">Please enter the material name</small>
                                             {validationErrors.name && <div className="text-danger">{validationErrors.name}</div>}
                                         </div>
                                     </div>
@@ -123,6 +121,14 @@ const M_OperationCategorySection = () => {
                                         <div className="col-12 col-md-9">
                                             <textarea name="description" id="description" rows="9" placeholder="Content..." className="form-control" value={formData.description} onChange={handleChange}></textarea>
                                             {validationErrors.description && <div className="text-danger">{validationErrors.description}</div>}
+                                        </div>
+                                    </div>
+                                    <div className="row form-group" style={{ paddingBottom: '25px' }}>
+                                        <div className="col col-md-3"><label htmlFor="quantity" className="form-control-label">Số lượng</label></div>
+                                        <div className="col-12 col-md-9">
+                                            <input type="number" id="quantity" name="quantity" placeholder="Enter quantity" className="form-control" value={formData.quantity} onChange={handleChange} />
+                                            <small className="help-block form-text">Please enter the quantity</small>
+                                            {validationErrors.quantity && <div className="text-danger">{validationErrors.quantity}</div>}
                                         </div>
                                     </div>
                                     {error && (
@@ -140,12 +146,11 @@ const M_OperationCategorySection = () => {
                 </div>
             </div>
 
-            {/* Modal */}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header>
                     <Modal.Title>Xác nhận xóa</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Bạn chắc chắn muốn xóa danh mục này?</Modal.Body>
+                <Modal.Body>Bạn chắc chắn muốn xóa vật liệu này?</Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowModal(false)}>
                         No
@@ -159,4 +164,4 @@ const M_OperationCategorySection = () => {
     );
 };
 
-export default M_OperationCategorySection;
+export default M_OperationMaterialSection;

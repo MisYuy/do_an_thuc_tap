@@ -4,6 +4,7 @@ import { URL } from '../utils/constant.js';
 import { useParams } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 import Select from 'react-select'; // Import react-select
+import { useNavigate } from 'react-router-dom';
 
 const M_OperationProductSection = () => {
     const { productId } = useParams();
@@ -24,6 +25,7 @@ const M_OperationProductSection = () => {
     const [promotions, setPromotions] = useState([]);
     const [categories, setCategories] = useState([]);
     const [validationErrors, setValidationErrors] = useState({});
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -119,6 +121,7 @@ const M_OperationProductSection = () => {
         try {
             await axios.put(`${URL}/api/product/delete?id=${productId}`);
             console.log('Product deleted successfully');
+            navigate('/m/product');
             setShowModal(false);
         } catch (error) {
             console.error('Error deleting product:', error);

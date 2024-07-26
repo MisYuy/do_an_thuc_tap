@@ -41,6 +41,12 @@ const M_LeftSection = ({ select }) => {
                             <li className={select === 'category' ? "active" : "deactive"}>
                                 <a href="/m/category"><i className="menu-icon fa fa-tasks"></i>Danh mục</a>
                             </li>
+                            <li className={select === 'material' ? "active" : "deactive"}>
+                                <a href="/m/material"><i className="menu-icon fa fa-leaf"></i>Nguyên liệu</a>
+                            </li>
+                            <li className={select === 'order-material' ? "active" : "deactive"}>
+                                <a href="/m/order-material"><i className="menu-icon fa fa-truck"></i>Nhập nguyên liệu</a>
+                            </li>
                         </ul>
                     </div>
                 </nav>

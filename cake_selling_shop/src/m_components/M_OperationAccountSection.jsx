@@ -3,6 +3,7 @@ import axios from 'axios';
 import { URL } from '../utils/constant.js';
 import { useParams } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const M_OperationAccountSection = () => {
     const { userId } = useParams();
@@ -19,6 +20,7 @@ const M_OperationAccountSection = () => {
     });
     const [errors, setErrors] = useState({});
     const [showModal, setShowModal] = useState(false); // State for modal visibility
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -78,6 +80,7 @@ const M_OperationAccountSection = () => {
         try {
             await axios.put(`${URL}/api/user/delete?id=${userId}`);
             console.log('User deleted successfully');
+            navigate('/m/account/customer');
             setShowModal(false); // Close the modal
         } catch (error) {
             console.error('Error deleting user:', error);

@@ -21,6 +21,8 @@ db.ProductPromotion = require('./productPromotion')(sequelize, DataTypes);
 db.CartItem = require('./cartItem')(sequelize, DataTypes);
 db.Order = require('./order')(sequelize, DataTypes);
 db.OrderItem = require('./orderItems')(sequelize, DataTypes);
+db.Material = require('./material')(sequelize, DataTypes);
+db.MaterialOrder = require('./materialOrder')(sequelize, DataTypes);
 
 // Setup associations
 Object.keys(db).forEach(modelName => {
