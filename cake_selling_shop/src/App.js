@@ -31,6 +31,11 @@ import M_OrderMaterialPage from './m_pages/M_OrderMaterialPage';
 import M_AddOrderMaterialPage from './m_pages/M_AddOrderMaterialPage';
 import M_OperationOrderMaterial from './m_components/M_OperationOrderMaterialSection';
 import M_OperationOrderMaterialPage from './m_pages/M_OperationOrderMaterialPage';
+import M_StatisticRevenuePage from './m_pages/M_StatisticRevenuePage';
+import M_StatisticTopCustomerPage from './m_pages/M_StatisticTopCustomerPage';
+import M_StatisticByProductPage from './m_pages/M_StatisticByProductPage';
+import M_MaterialUsagePage from './m_pages/M_MaterialUsagePage';
+import M_StatisticMaterialPage from './m_pages/M_StatisticMaterialPage';
 
 function App() {
   return (
@@ -45,6 +50,11 @@ function App() {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/error" element={<ErrorPage />} />
+
+            <Route path="/m/statistic-revenue" element={<M_StatisticRevenuePage />} />
+            <Route path="/m/statistic-product" element={<M_StatisticByProductPage />} />
+            <Route path="/m/statistic-customer" element={<M_StatisticTopCustomerPage />} />
+            <Route path="/m/statistic-material" element={<M_StatisticMaterialPage />} />
 
             <Route path="/m/account/:role" element={<M_AccountsPage />} />
             <Route path="/m/product" element={<M_ProductPage />} />
@@ -62,6 +72,7 @@ function App() {
             <Route path="/m/operation-category/:categoryId" element={<M_OperationCategoryPage />} />
             <Route path="/m/material" element={<M_MaterialPage />} />
             <Route path="/m/add-material" element={<M_AddMaterialPage />} />
+            <Route path="/m/material-usage" element={<M_MaterialUsagePage />} />
             <Route path="/m/operation-material/:materialId" element={<M_OperationMaterialPage />} />
             <Route path="/m/order-material" element={<M_OrderMaterialPage />} />
             <Route path="/m/add-order-material" element={<M_AddOrderMaterialPage />} />

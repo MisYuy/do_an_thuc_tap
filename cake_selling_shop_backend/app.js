@@ -9,6 +9,7 @@ const promotion = require('./routes/promotionRoutes');
 const category = require('./routes/categoryRoutes');
 const material = require('./routes/materialRoutes');
 const orderMaterial = require('./routes/materialOrderRoutes');
+const statistics = require('./routes/statisticsRoutes');
 
 // Middleware to parse JSON bodies
 app.use(express.json());
@@ -23,6 +24,7 @@ app.use('/api/promotion', promotion);
 app.use('/api/category', category);
 app.use('/api/material', material);
 app.use('/api/order-material', orderMaterial);
+app.use('/api/statistic', statistics);
 
 // Start the server
 const PORT = process.env.PORT || 3500;

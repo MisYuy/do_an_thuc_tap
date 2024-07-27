@@ -252,3 +252,41 @@ exports.toggleUserStatus = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+const { Order, sequelize  } = require('../models');
+
+exports.getTopCustomers = async (req, res) => {
+  try {
+    const { dateFrom, dateTo, limit } = req.query;
+
+    if (!dateFrom || !dateTo) {
+      return res.status(400).json({ error: 'Both dateFrom and dateTo are required' });
+    }
+
+    const topCustomers = await Order.findAll({
+      attributes: [
+        'user_id',
+        [sequelize.fn('SUM', sequelize.col('total_amount')), 'total_spent']
+      ],
+      where: {
+        created_at: {
+          [Op.between]: [new Date(dateFrom), new Date(dateTo)]
+        }
+      },
+      group: ['user_id'],
+      order: [[sequelize.literal('total_spent'), 'DESC']],
+      limit: parseInt(limit, 10) || 10, // Default limit to 10 if not specified
+      include: [
+        {
+          model: User,
+          attributes: ['user_id', 'email', 'full_name', 'phone_number', 'address']
+        }
+      ]
+    });
+
+    res.json(topCustomers);
+  } catch (error) {
+    console.error('Error fetching top customers:', error);
+    res.status(500).json({ error: error.message });
+  }
+};

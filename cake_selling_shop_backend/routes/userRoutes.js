@@ -11,5 +11,6 @@ router.get('/get-by-id', userController.getUserById);
 router.put('/update', userController.updateUser);
 router.put('/delete', userController.deleteUser);
 router.put('/change-status', userController.toggleUserStatus);
+router.get('/top-customer', userController.getTopCustomers);
 
 module.exports = router;

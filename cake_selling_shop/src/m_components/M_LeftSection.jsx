@@ -18,9 +18,18 @@ const M_LeftSection = ({ select }) => {
                 <nav className="navbar navbar-expand-sm navbar-default" style={navbarStyles}>
                     <div id="main-menu" className="main-menu collapse navbar-collapse">
                         <ul className="nav navbar-nav">
-                            <li className="menu-title">Welcome</li>
-                            <li className={select === '#' ? "active" : "deactive"}>
-                                <a href="index.html"><i className="menu-icon fa fa-eye"></i>Thống kê </a>
+                            <li className="menu-title">Thống kê</li>
+                            <li className={select === 'statistic-revenue' ? "active" : "deactive"}>
+                                <a href="/m/statistic-revenue"><i className="menu-icon fa fa-eye"></i>Theo doanh thu</a>
+                            </li>
+                            <li className={select === 'statistic-product' ? "active" : "deactive"}>
+                                <a href="/m/statistic-product"><i className="menu-icon fa fa-eye"></i>Theo sản phẩm</a>
+                            </li>
+                            <li className={select === 'statistic-customer' ? "active" : "deactive"}>
+                                <a href="/m/statistic-customer"><i className="menu-icon fa fa-eye"></i>Theo khách hàng</a>
+                            </li>
+                            <li className={select === 'statistic-material' ? "active" : "deactive"}>
+                                <a href="/m/statistic-material"><i className="menu-icon fa fa-eye"></i>Theo nguyên liệu</a>
                             </li>
                             <li className="menu-title">Chức năng</li>
                             <li className={select === 'customer' ? "active" : "deactive"}>

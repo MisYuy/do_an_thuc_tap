@@ -74,6 +74,9 @@ const M_MaterialSection = () => {
                                 <a href="add-material" type="button" className="btn btn-primary" style={{ marginLeft: '20px' }}>
                                     <i className="fa fa-plus-circle"></i>&nbsp; Thêm Vật liệu
                                 </a>
+                                <a href="material-usage" type="button" className="btn btn-primary" style={{ marginLeft: '20px' }}>
+                                    <i className="fa fa-minus-circle"></i>&nbsp; Xuất Vật liệu
+                                </a>
                             </div>
                             <div className="card-body">
                                 <div style={{ marginBottom: '20px' }}>
