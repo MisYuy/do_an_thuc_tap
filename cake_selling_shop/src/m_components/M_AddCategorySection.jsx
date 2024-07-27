@@ -39,8 +39,15 @@ const M_AddCategorySection = () => {
             setValidationErrors(errors);
             return;
         }
+
+        const token = sessionStorage.getItem("token");
+
         try {
-            const response = await axios.post(`${URL}/api/category/add-new`, formData);
+            const response = await axios.post(`${URL}/api/category/add-new`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             navigate('/m/category');
             console.log('Category added successfully:', response.data);
             setError(null); // Clear any previous errors

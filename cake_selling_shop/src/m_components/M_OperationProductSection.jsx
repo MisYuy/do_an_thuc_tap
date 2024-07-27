@@ -1,3 +1,4 @@
+// M_OperationProductSection.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { URL } from '../utils/constant.js';
@@ -27,10 +28,16 @@ const M_OperationProductSection = () => {
     const [validationErrors, setValidationErrors] = useState({});
     const navigate = useNavigate();
 
+    const token = sessionStorage.getItem("token");
+
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get(`${URL}/api/category/get-all`);
+                const response = await axios.get(`${URL}/api/category/get-all`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setCategories(response.data);
             } catch (error) {
                 setError(error);
@@ -38,7 +45,7 @@ const M_OperationProductSection = () => {
         };
 
         fetchCategories();
-    }, []);
+    }, [token]);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -106,7 +113,8 @@ const M_OperationProductSection = () => {
         try {
             const response = await axios.put(`${URL}/api/product/update`, data, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
                 }
             });
             console.log('Product added successfully:', response.data);
@@ -119,7 +127,11 @@ const M_OperationProductSection = () => {
 
     const handleDelete = async () => {
         try {
-            await axios.put(`${URL}/api/product/delete?id=${productId}`);
+            await axios.put(`${URL}/api/product/delete?id=${productId}`, {}, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             console.log('Product deleted successfully');
             navigate('/m/product');
             setShowModal(false);
@@ -131,7 +143,11 @@ const M_OperationProductSection = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await axios.get(`${URL}/api/product/get-by-id?id=${productId}`);
+                const response = await axios.get(`${URL}/api/product/get-by-id?id=${productId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setProduct(response.data);
                 setFormData({
                     name: response.data.name,
@@ -152,12 +168,16 @@ const M_OperationProductSection = () => {
         };
 
         fetchProduct();
-    }, [productId]);
+    }, [productId, token]);
 
     useEffect(() => {
         const fetchPromotions = async () => {
             try {
-                const response = await axios.get(`${URL}/api/promotion/get-all`);
+                const response = await axios.get(`${URL}/api/promotion/get-all`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setPromotions(response.data.map(promo => ({
                     value: promo.promotion_id,
                     label: `${promo.name} (${promo.discount_percentage}%)`
@@ -168,7 +188,7 @@ const M_OperationProductSection = () => {
         };
 
         fetchPromotions();
-    }, []);
+    }, [token]);
 
     if (!product) {
         return <div>Loading...</div>;

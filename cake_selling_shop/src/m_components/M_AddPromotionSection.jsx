@@ -20,6 +20,7 @@ const M_AddPromotionSection = () => {
     };
 
     const navigate = useNavigate();
+    const token = sessionStorage.getItem("token");
 
     const validateInputs = () => {
         const errors = {};
@@ -46,7 +47,11 @@ const M_AddPromotionSection = () => {
             return;
         }
         try {
-            const response = await axios.post(`${URL}/api/promotion/add-new`, formData);
+            const response = await axios.post(`${URL}/api/promotion/add-new`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             navigate(`/m/promotion`);
             console.log('Promotion added successfully:', response.data);
             setError(null); // Clear any previous errors

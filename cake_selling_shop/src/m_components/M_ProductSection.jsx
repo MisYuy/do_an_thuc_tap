@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { URL } from '../utils/constant.js';
+import { useNavigate } from 'react-router-dom';
 
 const M_ProductSection = () => {
     const [products, setProducts] = useState([]);
@@ -16,12 +17,25 @@ const M_ProductSection = () => {
     });
     const [categories, setCategories] = useState([]);
 
-    const user = JSON.parse(sessionStorage.getItem("user"));
+    const navigate = useNavigate();
+    
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    const token = sessionStorage.getItem('token');
+
+    useEffect(() => {
+        if (!user) {
+            navigate('/login');
+        }
+    }, [user, navigate]);
 
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get(`${URL}/api/category/get-all`);
+                const response = await axios.get(`${URL}/api/category/get-all`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setCategories(response.data);
             } catch (error) {
                 setError(error);
@@ -29,17 +43,21 @@ const M_ProductSection = () => {
         };
 
         fetchCategories();
-    }, []);
+    }, [token]);
 
     useEffect(() => {
-        axios.get(`${URL}/api/product/get-all`)
+        axios.get(`${URL}/api/product/get-all`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => {
                 setProducts(response.data);
             })
             .catch(error => {
                 setError(error);
             });
-    }, []);
+    }, [token]);
 
     if (error) {
         return <div>Error: {error.message}</div>;
@@ -104,20 +122,22 @@ const M_ProductSection = () => {
     return (
         <div className="content">
             <div className="animated fadeIn">
-                <div className="row">
-                    <div className="col-md-12">
-                        <div className="card">
-                            <div className="card-header">
-                                <strong className="card-title">Thao tác</strong>
-                            </div>
-                            <div className="card-body">
-                                <a href="add-product" type="button" className="btn btn-primary" style={{ marginRight: '20px' }}>
-                                    <i className="fa fa-plus-circle"></i>&nbsp; Thêm
-                                </a>
+                {user && user.role !== 'sale staff' && (
+                    <div className="row">
+                        <div className="col-md-12">
+                            <div className="card">
+                                <div className="card-header">
+                                    <strong className="card-title">Thao tác</strong>
+                                </div>
+                                <div className="card-body">
+                                    <a href="add-product" type="button" className="btn btn-primary" style={{ marginRight: '20px' }}>
+                                        <i className="fa fa-plus-circle"></i>&nbsp; Thêm
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                )}
 
                 <div className="row">
                     <div className="col-md-12">
@@ -196,9 +216,13 @@ const M_ProductSection = () => {
                                             <tr key={product.product_id}>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>{product.product_id}</td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>
-                                                    <a href={`/m/operation-product/${product.product_id}`}>
+                                                    {user && user.role !== 'sale staff' ? (
+                                                        <a href={`/m/operation-product/${product.product_id}`}>
+                                                            <img className="rounded-circle" src={product.image ? `/images/product/${product.image}` : "/img/none_image.png"} style={{ minWidth: '100px', minHeight: "100px", maxWidth: '100px', maxHeight: "100px" }} alt="avatar" />
+                                                        </a>
+                                                    ) : (
                                                         <img className="rounded-circle" src={product.image ? `/images/product/${product.image}` : "/img/none_image.png"} style={{ minWidth: '100px', minHeight: "100px", maxWidth: '100px', maxHeight: "100px" }} alt="avatar" />
-                                                    </a>
+                                                    )}
                                                 </td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>{product.name}</td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>{getCategoryName(product.category_id)}</td>

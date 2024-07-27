@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const orderController = require('../controllers/orderController');
 
+
+const authenticateToken = require('../middlewares/auth'); 
+router.use(authenticateToken);
+
 router.get('/get-all', orderController.getAllOrdersWithItems);
 router.put('/change-status', orderController.changeOrderStatus);
 

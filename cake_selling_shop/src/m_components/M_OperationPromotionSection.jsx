@@ -21,6 +21,8 @@ const M_OperationPromotionSection = () => {
     const [showModal, setShowModal] = useState(false);
     const navigate = useNavigate();
 
+    const token = sessionStorage.getItem("token");
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -45,7 +47,11 @@ const M_OperationPromotionSection = () => {
             return;
         }
         try {
-            const response = await axios.put(`${URL}/api/promotion/update`, formData);
+            const response = await axios.put(`${URL}/api/promotion/update`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             console.log('Promotion updated successfully:', response.data);
             setError(null);
             window.location.reload();
@@ -56,7 +62,11 @@ const M_OperationPromotionSection = () => {
 
     const handleDelete = async () => {
         try {
-            await axios.delete(`${URL}/api/promotion/delete?id=${promotionId}`);
+            await axios.delete(`${URL}/api/promotion/delete?id=${promotionId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             console.log('Promotion deleted successfully');
             navigate('/m/promotion');
             setShowModal(false);
@@ -68,7 +78,11 @@ const M_OperationPromotionSection = () => {
     useEffect(() => {
         const fetchPromotion = async () => {
             try {
-                const response = await axios.get(`${URL}/api/promotion/get-by-id?id=${promotionId}`);
+                const response = await axios.get(`${URL}/api/promotion/get-by-id?id=${promotionId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setPromotion(response.data);
                 setFormData({
                     promotion_id: response.data.promotion_id,
@@ -84,7 +98,7 @@ const M_OperationPromotionSection = () => {
         };
 
         fetchPromotion();
-    }, [promotionId]);
+    }, [promotionId, token]);
 
     if (!promotion) {
         return <div>Loading...</div>;

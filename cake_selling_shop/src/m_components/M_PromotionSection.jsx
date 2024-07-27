@@ -11,10 +11,16 @@ const M_PromotionSection = () => {
     const [sortOrder, setSortOrder] = useState('asc');
     const navigate = useNavigate();
 
+    const token = sessionStorage.getItem("token");
+
     useEffect(() => {
         const fetchPromotions = async () => {
             try {
-                const response = await axios.get(`${URL}/api/promotion/get-all`);
+                const response = await axios.get(`${URL}/api/promotion/get-all`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setPromotions(response.data);
             } catch (error) {
                 setError(error);
@@ -22,7 +28,7 @@ const M_PromotionSection = () => {
         };
 
         fetchPromotions();
-    }, []);
+    }, [token]);
 
     if (error) {
         return <div>Error: {error.message}</div>;

@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const statisticsController = require('../controllers/statisticsController');
 
+const authenticateToken = require('../middlewares/auth'); 
+router.use(authenticateToken);
+
 router.get('/by-month', statisticsController.calculateRevenueByMonthRange);
 router.get('/by-product', statisticsController.calculateStatisticsByProduct);
 router.get('/by-hour', statisticsController.calculateRevenueByHour);

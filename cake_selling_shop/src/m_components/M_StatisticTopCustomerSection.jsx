@@ -10,6 +10,8 @@ const M_StatisticTopCustomerSection = () => {
     const [dateTo, setDateTo] = useState('');
     const [limit, setLimit] = useState(10);
 
+    const token = sessionStorage.getItem("token");
+
     const fetchTopCustomers = async () => {
         if (!dateFrom || !dateTo) {
             setError(new Error('Both date fields are required.'));
@@ -30,7 +32,12 @@ const M_StatisticTopCustomerSection = () => {
                 limit
             };
 
-            const response = await axios.get(`${URL}/api/user/top-customer`, { params });
+            const response = await axios.get(`${URL}/api/user/top-customer`, {
+                params,
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             setTopCustomers(response.data);
             setLoading(false);
         } catch (err) {
@@ -82,9 +89,6 @@ const M_StatisticTopCustomerSection = () => {
                                         Số lượng khách hàng:
                                         <input type="number" value={limit} onChange={handleLimitChange} min="1" />
                                     </label>
-                                    <button onClick={fetchTopCustomers} disabled={isButtonDisabled()}>
-                                        Lấy số liệu thống kê
-                                    </button>
                                 </div>
                             </div>
                             <div className="card-body">

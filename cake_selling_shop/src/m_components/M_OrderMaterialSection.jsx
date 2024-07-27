@@ -11,10 +11,16 @@ const M_OrderMaterialSection = () => {
     const [sortOrder, setSortOrder] = useState('asc');
     const navigate = useNavigate();
 
+    const token = sessionStorage.getItem("token");
+
     useEffect(() => {
         const fetchMaterialOrders = async () => {
             try {
-                const response = await axios.get(`${URL}/api/order-material/get-all`);
+                const response = await axios.get(`${URL}/api/order-material/get-all`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setMaterialOrders(response.data);
             } catch (error) {
                 setError(error);
@@ -22,7 +28,7 @@ const M_OrderMaterialSection = () => {
         };
 
         fetchMaterialOrders();
-    }, []);
+    }, [token]);
 
     if (error) {
         return <div>Error: {error.message}</div>;

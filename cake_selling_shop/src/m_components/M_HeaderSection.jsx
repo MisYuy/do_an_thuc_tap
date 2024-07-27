@@ -1,13 +1,17 @@
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 const M_HeaderSection = () => {
     const [showModal, setShowModal] = useState(false);
+    const navigate = useNavigate();
 
     const handleLogout = () => {
-        // Logic to handle logout
-        console.log("User logged out");
+        // Clear all data in sessionStorage
+        sessionStorage.clear();
+        // Redirect to the login page
+        navigate('/login');
+        // Close the modal
         setShowModal(false);
     };
 
@@ -18,7 +22,6 @@ const M_HeaderSection = () => {
                     <div className="navbar-header">
                         <a className="navbar-brand" href="./"><img src="/images/logo_web.png" alt="Logo" style={{ maxWidth: '100px'}}/></a>
                         <a className="navbar-brand hidden" href="./"><img src="/images/logo_web.png" alt="Logo" /></a>
-                        
                     </div>
                 </div>
                 <div className="top-right">

@@ -19,10 +19,16 @@ const M_AddProductSection = () => {
     const [categories, setCategories] = useState([]);
     const navigate = useNavigate();
 
+    const token = sessionStorage.getItem("token");
+
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get(`${URL}/api/category/get-all`);
+                const response = await axios.get(`${URL}/api/category/get-all`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setCategories(response.data);
             } catch (error) {
                 setError(error);
@@ -30,12 +36,16 @@ const M_AddProductSection = () => {
         };
 
         fetchCategories();
-    }, []);
+    }, [token]);
 
     useEffect(() => {
         const fetchPromotions = async () => {
             try {
-                const response = await axios.get(`${URL}/api/promotion/get-all`);
+                const response = await axios.get(`${URL}/api/promotion/get-all`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setPromotions(response.data.map(promo => ({
                     value: promo.promotion_id,
                     label: `${promo.name} (${promo.discount_percentage}%)`
@@ -46,7 +56,7 @@ const M_AddProductSection = () => {
         };
 
         fetchPromotions();
-    }, []);
+    }, [token]);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -94,10 +104,11 @@ const M_AddProductSection = () => {
         try {
             const response = await axios.post(`${URL}/api/product/add-new`, data, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
                 }
             });
-            navigate(`/m/product`);
+            navigate('/m/product');
             console.log('Product added successfully:', response.data);
             setError(null); // Clear any previous errors
         } catch (error) {

@@ -18,6 +18,7 @@ const M_AddMaterialSection = () => {
     };
 
     const navigate = useNavigate();
+    const token = sessionStorage.getItem("token");
 
     const validateInputs = () => {
         const errors = {};
@@ -39,7 +40,11 @@ const M_AddMaterialSection = () => {
             return;
         }
         try {
-            const response = await axios.post(`${URL}/api/material/add-new`, formData);
+            const response = await axios.post(`${URL}/api/material/add-new`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             navigate('/m/material');
             console.log('Material added successfully:', response.data);
             setError(null); // Clear any previous errors

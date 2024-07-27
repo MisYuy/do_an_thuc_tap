@@ -22,6 +22,8 @@ const M_OperationAccountSection = () => {
     const [showModal, setShowModal] = useState(false); // State for modal visibility
     const navigate = useNavigate();
 
+    const token = sessionStorage.getItem("token");
+
     const handleChange = (e) => {
         const { name, value, files } = e.target;
         if (name === 'image') {
@@ -65,7 +67,8 @@ const M_OperationAccountSection = () => {
         try {
             const response = await axios.put(`${URL}/api/user/update`, data, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
                 }
             });
             console.log('User updated successfully:', response.data);
@@ -78,7 +81,11 @@ const M_OperationAccountSection = () => {
 
     const handleDelete = async () => {
         try {
-            await axios.put(`${URL}/api/user/delete?id=${userId}`);
+            await axios.put(`${URL}/api/user/delete?id=${userId}`, {}, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             console.log('User deleted successfully');
             navigate('/m/account/customer');
             setShowModal(false); // Close the modal
@@ -90,7 +97,11 @@ const M_OperationAccountSection = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await axios.get(`${URL}/api/user/get-by-id?id=${userId}`);
+                const response = await axios.get(`${URL}/api/user/get-by-id?id=${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setUser(response.data);
                 setFormData({
                     email: response.data.email,
@@ -107,7 +118,7 @@ const M_OperationAccountSection = () => {
         };
 
         fetchUser();
-    }, [userId]);
+    }, [userId, token]);
 
     if (!user) {
         return <div>Loading...</div>;

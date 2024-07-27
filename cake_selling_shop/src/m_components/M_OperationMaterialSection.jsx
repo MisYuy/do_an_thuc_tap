@@ -19,6 +19,8 @@ const M_OperationMaterialSection = () => {
     const [showModal, setShowModal] = useState(false);
     const navigate = useNavigate();
 
+    const token = sessionStorage.getItem("token");
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -40,7 +42,11 @@ const M_OperationMaterialSection = () => {
             return;
         }
         try {
-            const response = await axios.put(`${URL}/api/material/update`, formData);
+            const response = await axios.put(`${URL}/api/material/update`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             console.log('Material updated successfully:', response.data);
             setError(null);
             window.location.reload();
@@ -51,7 +57,11 @@ const M_OperationMaterialSection = () => {
 
     const handleDelete = async () => {
         try {
-            await axios.delete(`${URL}/api/material/delete?id=${materialId}`);
+            await axios.delete(`${URL}/api/material/delete?id=${materialId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             console.log('Material deleted successfully');
             navigate('/m/material');
             setShowModal(false);
@@ -63,7 +73,11 @@ const M_OperationMaterialSection = () => {
     useEffect(() => {
         const fetchMaterial = async () => {
             try {
-                const response = await axios.get(`${URL}/api/material/get-by-id?id=${materialId}`);
+                const response = await axios.get(`${URL}/api/material/get-by-id?id=${materialId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setMaterial(response.data);
                 setFormData({
                     material_id: response.data.material_id,
@@ -77,7 +91,7 @@ const M_OperationMaterialSection = () => {
         };
 
         fetchMaterial();
-    }, [materialId]);
+    }, [materialId, token]);
 
     if (!material) {
         return <div>Loading...</div>;

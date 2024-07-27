@@ -5,6 +5,10 @@ const { Op } = require('sequelize');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const config = require('../config/config.json');
+const env = process.env.NODE_ENV || 'development';
+const SECRET_KEY = config[env].SECRET_KEY;
+const jwt = require('jsonwebtoken');
 
 // Absolute path to the directory where images will be stored
 const imageDirectory = 'D:\\do_an_thuc_tap\\cake_selling_shop\\public\\images\\product';
@@ -38,7 +42,10 @@ exports.checkLogin = async (req, res) => {
     });
 
     if(user) {
-      res.json(user);
+      const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+
+      // Return the user and token
+      res.json({ user, token });
     }
     else {
       return res.status(404).json({ error: 'Login failed' });

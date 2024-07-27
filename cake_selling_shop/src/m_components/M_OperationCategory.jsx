@@ -18,6 +18,8 @@ const M_OperationCategorySection = () => {
     const [showModal, setShowModal] = useState(false); // State for modal visibility
     const navigate = useNavigate();
 
+    const token = sessionStorage.getItem("token");
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -42,7 +44,11 @@ const M_OperationCategorySection = () => {
             return;
         }
         try {
-            const response = await axios.put(`${URL}/api/category/update`, formData);
+            const response = await axios.put(`${URL}/api/category/update`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             console.log('Category updated successfully:', response.data);
             setError(null); // Clear any previous errors
             window.location.reload();
@@ -53,7 +59,11 @@ const M_OperationCategorySection = () => {
 
     const handleDelete = async () => {
         try {
-            await axios.delete(`${URL}/api/category/delete?id=${categoryId}`);
+            await axios.delete(`${URL}/api/category/delete?id=${categoryId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             console.log('Category deleted successfully');
             navigate('/m/category');
             setShowModal(false); // Close the modal
@@ -66,7 +76,11 @@ const M_OperationCategorySection = () => {
     useEffect(() => {
         const fetchCategory = async () => {
             try {
-                const response = await axios.get(`${URL}/api/category/get-by-id?id=${categoryId}`);
+                const response = await axios.get(`${URL}/api/category/get-by-id?id=${categoryId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setCategory(response.data);
                 setFormData({
                     category_id: response.data.category_id, // Set category_id from fetched data
@@ -79,7 +93,7 @@ const M_OperationCategorySection = () => {
         };
 
         fetchCategory();
-    }, [categoryId]);
+    }, [categoryId, token]);
 
     if (!category) {
         return <div>Loading...</div>;

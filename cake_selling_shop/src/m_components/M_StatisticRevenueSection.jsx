@@ -34,6 +34,8 @@ const M_StatisticRevenueSection = () => {
     const [quarterFrom, setQuarterFrom] = useState({ year: '', quarter: '' });
     const [quarterTo, setQuarterTo] = useState({ year: '', quarter: '' });
 
+    const token = sessionStorage.getItem("token");
+
     const fetchStatistics = async () => {
         if (statType === 'by-quarter') {
             if (!quarterFrom.year || !quarterFrom.quarter || !quarterTo.year || !quarterTo.quarter) {
@@ -63,7 +65,12 @@ const M_StatisticRevenueSection = () => {
                 dateTo
             };
     
-            const response = await axios.get(`${URL}/api/statistic/${statType}`, { params });
+            const response = await axios.get(`${URL}/api/statistic/${statType}`, {
+                params,
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             setStatistics(response.data);
             setLoading(false);
         } catch (err) {
@@ -71,7 +78,6 @@ const M_StatisticRevenueSection = () => {
             setLoading(false);
         }
     };
-    
 
     useEffect(() => {
         if (statType === 'by-quarter') {
@@ -240,9 +246,6 @@ const M_StatisticRevenueSection = () => {
                                             <option value="by-year">Theo năm</option>
                                         </select>
                                     </label>
-                                    <button onClick={fetchStatistics} disabled={isButtonDisabled()}>
-                                        Lấy số liệu thống kê
-                                    </button>
                                 </div>
                             </div>
                             <div className="card-body">

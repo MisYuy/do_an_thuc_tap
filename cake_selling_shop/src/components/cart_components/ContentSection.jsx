@@ -9,13 +9,19 @@ const ContentSection = () => {
     const [error, setError] = useState(null);
 
     const user = JSON.parse(sessionStorage.getItem("user"));
+    const token = sessionStorage.getItem("token");
 
     useEffect(() => {
         const queryParams = {
             userId: user.user_id
         };
 
-        axios.get(`${URL}/api/cart/get-all`, { params: queryParams })
+        axios.get(`${URL}/api/cart/get-all`, { 
+            params: queryParams,
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => {
                 setCartItems(response.data);
                 setLoading(false);
@@ -24,7 +30,7 @@ const ContentSection = () => {
                 setError(error);
                 setLoading(false);
             });
-    }, []);
+    }, [user.user_id, token]);
 
     if (loading) {
         return <Spinner />;

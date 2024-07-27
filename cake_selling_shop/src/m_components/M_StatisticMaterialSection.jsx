@@ -32,10 +32,16 @@ const M_StatisticMaterialSection = () => {
     const [materials, setMaterials] = useState([]);
     const [statType, setStatType] = useState('by-month'); // Default to 'by-month'
 
+    const token = sessionStorage.getItem("token");
+
     useEffect(() => {
         const fetchMaterials = async () => {
             try {
-                const response = await axios.get(`${URL}/api/material/get-all`);
+                const response = await axios.get(`${URL}/api/material/get-all`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setMaterials(response.data);
             } catch (error) {
                 setError(error);
@@ -43,7 +49,7 @@ const M_StatisticMaterialSection = () => {
         };
 
         fetchMaterials();
-    }, []);
+    }, [token]);
 
     const fetchStatistics = async () => {
         if (!dateFrom || !dateTo || !materialId) {
@@ -66,7 +72,12 @@ const M_StatisticMaterialSection = () => {
                 statType
             };
 
-            const response = await axios.get(`${URL}/api/material/get-statistic`, { params });
+            const response = await axios.get(`${URL}/api/material/get-statistic`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                params
+            });
             setStatistics(response.data);
             setLoading(false);
         } catch (err) {

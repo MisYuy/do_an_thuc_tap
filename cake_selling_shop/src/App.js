@@ -42,9 +42,9 @@ function App() {
   return (
     <Router>
           <Routes>
-            <Route path="/" element={<AuthenticatePage />} />
-            
+            <Route path="/" element={<HomePage />} />
             <Route path="/home" element={<HomePage />} />
+            <Route path="/login" element={<AuthenticatePage />} />
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/product-detail/:productId" element={<ProductDetailPage />} />
             <Route path="/cart" element={<CartPage />} />

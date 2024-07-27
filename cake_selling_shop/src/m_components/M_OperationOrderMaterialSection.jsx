@@ -20,6 +20,8 @@ const M_OperationOrderMaterial = () => {
     const [materials, setMaterials] = useState([]);
     const navigate = useNavigate();
 
+    const token = sessionStorage.getItem("token");
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -41,7 +43,11 @@ const M_OperationOrderMaterial = () => {
             return;
         }
         try {
-            const response = await axios.put(`${URL}/api/order-material/update`, formData);
+            const response = await axios.put(`${URL}/api/order-material/update`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             console.log('Material order updated successfully:', response.data);
             setError(null);
             window.location.reload();
@@ -52,7 +58,11 @@ const M_OperationOrderMaterial = () => {
 
     const handleDelete = async () => {
         try {
-            await axios.delete(`${URL}/api/order-material/delete?id=${orderId}`);
+            await axios.delete(`${URL}/api/order-material/delete?id=${orderId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             console.log('Material order deleted successfully');
             navigate('/m/order-material');
             setShowModal(false);
@@ -64,7 +74,11 @@ const M_OperationOrderMaterial = () => {
     useEffect(() => {
         const fetchOrder = async () => {
             try {
-                const response = await axios.get(`${URL}/api/order-material/get-by-id?id=${orderId}`);
+                const response = await axios.get(`${URL}/api/order-material/get-by-id?id=${orderId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setOrder(response.data);
                 setFormData({
                     material_order_id: response.data.material_order_id,
@@ -79,7 +93,11 @@ const M_OperationOrderMaterial = () => {
 
         const fetchMaterials = async () => {
             try {
-                const response = await axios.get(`${URL}/api/material/get-all`);
+                const response = await axios.get(`${URL}/api/material/get-all`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setMaterials(response.data);
             } catch (error) {
                 setError(error);
@@ -88,7 +106,7 @@ const M_OperationOrderMaterial = () => {
 
         fetchOrder();
         fetchMaterials();
-    }, [orderId]);
+    }, [orderId, token]);
 
     if (!order) {
         return <div>Loading...</div>;

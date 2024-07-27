@@ -1,3 +1,4 @@
+// AccountsSection.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { URL } from '../utils/constant.js';
@@ -12,13 +13,23 @@ const AccountsSection = ({ role }) => {
     const [visibleUserId, setVisibleUserId] = useState(null); // Track which user's dropdown is visible
 
     const user = JSON.parse(sessionStorage.getItem("user"));
+    const token = sessionStorage.getItem("token");
+    console.log("@@" + token);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = role === "customer" 
-                    ? await axios.get(`${URL}/api/user/get-all-customers`) 
-                    : await axios.get(`${URL}/api/user/get-all-staffs`);
+                    ? await axios.get(`${URL}/api/user/get-all-customers`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    }) 
+                    : await axios.get(`${URL}/api/user/get-all-staffs`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
                 setUsers(response.data);
             } catch (error) {
                 setError(error);
@@ -26,7 +37,7 @@ const AccountsSection = ({ role }) => {
         };
 
         fetchData();
-    }, [role]);
+    }, [role, token]);
 
     if (error) {
         return <div>Error: {error.message}</div>;
@@ -35,7 +46,11 @@ const AccountsSection = ({ role }) => {
     const handleToggleStatus = async (userId, currentStatus) => {
         const newStatus = currentStatus === 'active' ? 'deactive' : 'active'; // Toggle status
         try {
-            await axios.put(`${URL}/api/user/change-status?id=${userId}`, { status: newStatus });
+            await axios.put(`${URL}/api/user/change-status?id=${userId}`, { status: newStatus }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             setUsers(users.map(user => user.user_id === userId ? { ...user, status: newStatus } : user));
         } catch (error) {
             console.error('Error toggling user status:', error);

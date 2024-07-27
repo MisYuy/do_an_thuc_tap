@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
+const authenticateToken = require('../middlewares/auth'); 
 
 router.post('/login', userController.checkLogin);
 router.post('/signup', userController.signUp);
+
+router.use(authenticateToken);
+
 router.get('/get-all-customers', userController.getAllCustomers);
 router.get('/get-all-staffs', userController.getAllStaffs);
 router.post('/add-new', userController.createUser);

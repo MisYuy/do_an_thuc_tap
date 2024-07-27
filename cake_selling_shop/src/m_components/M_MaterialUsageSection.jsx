@@ -11,10 +11,16 @@ const M_MaterialUsageSection = () => {
     const [validationErrors, setValidationErrors] = useState({});
     const navigate = useNavigate();
 
+    const token = sessionStorage.getItem("token");
+
     useEffect(() => {
         const fetchMaterials = async () => {
             try {
-                const response = await axios.get(`${URL}/api/material/get-all`);
+                const response = await axios.get(`${URL}/api/material/get-all`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setMaterials(response.data);
             } catch (error) {
                 setError(error);
@@ -22,7 +28,7 @@ const M_MaterialUsageSection = () => {
         };
 
         fetchMaterials();
-    }, []);
+    }, [token]);
 
     const validateInputs = () => {
         const errors = {};
@@ -46,6 +52,10 @@ const M_MaterialUsageSection = () => {
             const response = await axios.post(`${URL}/api/material/usage`, {
                 material_id: selectedMaterialId,
                 quantity_used: quantityUsed
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
             navigate('/m/material');
             console.log('Material usage recorded successfully:', response.data);

@@ -53,10 +53,13 @@ const M_AddAccountSection = () => {
         data.append('role', formData.role);
         data.append('image', formData.image);
 
+        const token = sessionStorage.getItem("token");
+
         try {
             const response = await axios.post(`${URL}/api/user/add-new`, data, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
                 }
             });
             navigate('/m/account/customer');

@@ -61,8 +61,9 @@ const AuthenticatePage = () => {
             });
 
             if(response){      
-                const user = response.data;      
+                const { user, token }  = response.data;      
                 sessionStorage.setItem('user', JSON.stringify(user));
+                sessionStorage.setItem('token', token);
                 
                 if(user.role === 'customer')
                     navigate(`../home`);

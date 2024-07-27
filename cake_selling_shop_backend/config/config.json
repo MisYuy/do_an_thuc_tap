@@ -4,20 +4,23 @@
     "password": "123456",
     "database": "cake_selling_shop",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "SECRET_KEY": "123456"
   },
   "test": {
     "username": "root",
     "password": "123456",
     "database": "cake_selling_shop",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "SECRET_KEY": "123456"
   },
   "production": {
     "username": "root",
     "password": "123456",
     "database": "cake_selling_shop",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "SECRET_KEY": "123456"
   }
 }

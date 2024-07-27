@@ -34,10 +34,16 @@ const M_AddOrderMaterialSection = () => {
 
     const [materials, setMaterials] = useState([]);
 
+    const token = sessionStorage.getItem("token");
+
     useEffect(() => {
         const fetchMaterials = async () => {
             try {
-                const response = await axios.get(`${URL}/api/material/get-all`);
+                const response = await axios.get(`${URL}/api/material/get-all`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setMaterials(response.data);
             } catch (error) {
                 setError(error);
@@ -45,7 +51,7 @@ const M_AddOrderMaterialSection = () => {
         };
 
         fetchMaterials();
-    }, []);
+    }, [token]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -55,7 +61,11 @@ const M_AddOrderMaterialSection = () => {
             return;
         }
         try {
-            const response = await axios.post(`${URL}/api/order-material/add-new`, formData);
+            const response = await axios.post(`${URL}/api/order-material/add-new`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             navigate('/m/order-material');
             console.log('Material order added successfully:', response.data);
             setError(null); // Clear any previous errors

@@ -17,15 +17,21 @@ const M_OrderSection = () => {
         canceled: false,
     });
 
+    const token = sessionStorage.getItem("token");
+
     useEffect(() => {
-        axios.get(`${URL}/api/order/get-all`)
-            .then(response => {
-                setOrders(response.data);
-            })
-            .catch(error => {
-                setError(error);
-            });
-    }, []);
+        axios.get(`${URL}/api/order/get-all`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => {
+            setOrders(response.data);
+        })
+        .catch(error => {
+            setError(error);
+        });
+    }, [token]);
 
     if (error) {
         return <div>Error: {error.message}</div>;
@@ -37,7 +43,11 @@ const M_OrderSection = () => {
 
     const handleChangeStatus = async (orderId, newStatus) => {
         try {
-            await axios.put(`${URL}/api/order/change-status?id=${orderId}`, { status: newStatus });
+            await axios.put(`${URL}/api/order/change-status?id=${orderId}`, { status: newStatus }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             setOrders(orders.map(order => order.order_id === orderId ? { ...order, status: newStatus } : order));
         } catch (error) {
             console.error('Error changing order status:', error);
@@ -90,7 +100,6 @@ const M_OrderSection = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-
     return (
         <div className="content">
             <div className="animated fadeIn">
@@ -101,59 +110,59 @@ const M_OrderSection = () => {
                                 <strong className="card-title">Danh sách đơn hàng</strong>
                             </div>
                             <div className="card-body">
-                            <div style={{ marginBottom: '20px' }}>
-                            <select 
-                                    value={filterCriteria} 
-                                    onChange={(e) => setFilterCriteria(e.target.value)} 
-                                    style={{ padding: '5px'}}
-                                >
-                                    <option value="order_id">ID Đơn hàng</option>
-                                    <option value="user_id">ID Người đặt</option>
-                                    <option value="full_name">Tên Người đặt</option>
-                                    <option value="email">Email</option>
-                                </select>
-                                <input 
-                                    type="text" 
-                                    placeholder="Tìm kiếm..." 
-                                    value={searchTerm} 
-                                    onChange={(e) => setSearchTerm(e.target.value)} 
-                                    style={{ marginLeft: '20px', padding: '5px', minWidth: '300px' }} 
-                                />
-                                <select className="standardSelect"
-                                    value={sortCriteria} 
-                                    onChange={(e) => setSortCriteria(e.target.value)} 
-                                    style={{ marginLeft: '20px', padding: '5px'}}
-                                >
-                                    <option  value="order_id">Sắp xếp theo ID Đơn hàng</option>
-                                    <option value="user_id">Sắp xếp theo ID Người đặt</option>
-                                    <option value="full_name">Sắp xếp theo Tên Người đặt</option>
-                                    <option value="email">Sắp xếp theo Email</option>
-                                    <option value="created_at">Sắp xếp theo Ngày đặt</option>
-                                    <option value="total_amount">Sắp xếp theo Tổng tiền</option>
-                                </select>
-                                <select 
-                                    value={sortOrder} 
-                                    onChange={(e) => setSortOrder(e.target.value)} 
-                                    style={{ marginLeft: '20px', padding: '5px'}}
-                                >
-                                    <option value="asc">Tăng dần</option>
-                                    <option value="desc">Giảm dần</option>
-                                </select>
-                                <div style={{ display: 'flex', marginTop: '20px' }}>
-                                    {['pending', 'shipping', 'completed', 'canceled'].map(status => (
-                                        <div key={status} style={{ marginRight: '20px' }}>
-                                    <label>
-                                <input 
-                                    type="checkbox" 
-                                    checked={selectedStatuses[status]} 
-                                    onChange={() => handleStatusChange(status)} 
-                                    style={{ marginRight: '5px' }}
-                                />
-                                <span>{getStatusText(status)}</span>
-                                </label>
+                                <div style={{ marginBottom: '20px' }}>
+                                    <select 
+                                        value={filterCriteria} 
+                                        onChange={(e) => setFilterCriteria(e.target.value)} 
+                                        style={{ padding: '5px'}}
+                                    >
+                                        <option value="order_id">ID Đơn hàng</option>
+                                        <option value="user_id">ID Người đặt</option>
+                                        <option value="full_name">Tên Người đặt</option>
+                                        <option value="email">Email</option>
+                                    </select>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Tìm kiếm..." 
+                                        value={searchTerm} 
+                                        onChange={(e) => setSearchTerm(e.target.value)} 
+                                        style={{ marginLeft: '20px', padding: '5px', minWidth: '300px' }} 
+                                    />
+                                    <select className="standardSelect"
+                                        value={sortCriteria} 
+                                        onChange={(e) => setSortCriteria(e.target.value)} 
+                                        style={{ marginLeft: '20px', padding: '5px'}}
+                                    >
+                                        <option value="order_id">Sắp xếp theo ID Đơn hàng</option>
+                                        <option value="user_id">Sắp xếp theo ID Người đặt</option>
+                                        <option value="full_name">Sắp xếp theo Tên Người đặt</option>
+                                        <option value="email">Sắp xếp theo Email</option>
+                                        <option value="created_at">Sắp xếp theo Ngày đặt</option>
+                                        <option value="total_amount">Sắp xếp theo Tổng tiền</option>
+                                    </select>
+                                    <select 
+                                        value={sortOrder} 
+                                        onChange={(e) => setSortOrder(e.target.value)} 
+                                        style={{ marginLeft: '20px', padding: '5px'}}
+                                    >
+                                        <option value="asc">Tăng dần</option>
+                                        <option value="desc">Giảm dần</option>
+                                    </select>
+                                    <div style={{ display: 'flex', marginTop: '20px' }}>
+                                        {['pending', 'shipping', 'completed', 'canceled'].map(status => (
+                                            <div key={status} style={{ marginRight: '20px' }}>
+                                                <label>
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={selectedStatuses[status]} 
+                                                        onChange={() => handleStatusChange(status)} 
+                                                        style={{ marginRight: '5px' }}
+                                                    />
+                                                    <span>{getStatusText(status)}</span>
+                                                </label>
+                                            </div>
+                                        ))}
                                     </div>
-                                ))}
-                                </div>
                                 </div>
                                 <table id="bootstrap-data-table" className="table table-striped table-bordered">
                                     <thead>
@@ -198,11 +207,11 @@ const M_OrderSection = () => {
                                                     </div>
                                                 </td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>
-                                                        {order.OrderItems.map(item => (
-                                                            <div key={item.order_item_id}>
-                                                                {item.Product.name} - SL: {item.quantity} - Giá: {item.price}
-                                                            </div>
-                                                        ))}
+                                                    {order.OrderItems.map(item => (
+                                                        <div key={item.order_item_id}>
+                                                            {item.Product.name} - SL: {item.quantity} - Giá: {item.price}
+                                                        </div>
+                                                    ))}
                                                 </td>
                                             </tr>
                                         ))}
@@ -212,8 +221,8 @@ const M_OrderSection = () => {
                         </div>
                     </div>
                 </div>
-                                {/* Back to Top Button */}
-                                <button 
+                {/* Back to Top Button */}
+                <button 
                     onClick={scrollToTop} 
                     style={{
                         position: 'fixed',

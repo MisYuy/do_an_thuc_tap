@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const materialOrderController = require('../controllers/materialOrderController');
 
+const authenticateToken = require('../middlewares/auth'); 
+router.use(authenticateToken);
+
 // Route to get all material orders
 router.get('/get-all', materialOrderController.getAllMaterialOrders);
 

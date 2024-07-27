@@ -10,11 +10,16 @@ const M_CategorySection = () => {
     const [sortCriteria, setSortCriteria] = useState('category_id');
     const [sortOrder, setSortOrder] = useState('asc');
     const navigate = useNavigate();
+    const token = sessionStorage.getItem("token");
 
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get(`${URL}/api/category/get-all`);
+                const response = await axios.get(`${URL}/api/category/get-all`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setCategories(response.data);
             } catch (error) {
                 setError(error);
@@ -22,7 +27,7 @@ const M_CategorySection = () => {
         };
 
         fetchCategories();
-    }, []);
+    }, [token]);
 
     if (error) {
         return <div>Error: {error.message}</div>;

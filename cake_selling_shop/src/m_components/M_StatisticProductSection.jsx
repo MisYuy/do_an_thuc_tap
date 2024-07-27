@@ -31,10 +31,16 @@ const M_StatisticProductSection = () => {
     const [productId, setProductId] = useState('');
     const [products, setProducts] = useState([]);
 
+    const token = sessionStorage.getItem("token");
+
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get(`${URL}/api/product/get-all`);
+                const response = await axios.get(`${URL}/api/product/get-all`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 setProducts(response.data);
             } catch (error) {
                 setError(error);
@@ -42,7 +48,7 @@ const M_StatisticProductSection = () => {
         };
 
         fetchProducts();
-    }, []);
+    }, [token]);
 
     const fetchStatistics = async () => {
         if (!dateFrom || !dateTo || !productId) {
@@ -64,7 +70,12 @@ const M_StatisticProductSection = () => {
                 productId
             };
 
-            const response = await axios.get(`${URL}/api/statistic/by-product`, { params });
+            const response = await axios.get(`${URL}/api/statistic/by-product`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                params
+            });
             setStatistics(response.data);
             setLoading(false);
         } catch (err) {
@@ -153,9 +164,6 @@ const M_StatisticProductSection = () => {
                                             ))}
                                         </select>
                                     </label>
-                                    <button onClick={fetchStatistics} disabled={isButtonDisabled()}>
-                                        Láy số liệu thống kê
-                                    </button>
                                 </div>
                             </div>
                             <div className="card-body">
