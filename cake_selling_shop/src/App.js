@@ -36,6 +36,7 @@ import M_StatisticTopCustomerPage from './m_pages/M_StatisticTopCustomerPage';
 import M_StatisticByProductPage from './m_pages/M_StatisticByProductPage';
 import M_MaterialUsagePage from './m_pages/M_MaterialUsagePage';
 import M_StatisticMaterialPage from './m_pages/M_StatisticMaterialPage';
+import M_MyProfilePage from './m_pages/M_MyProfilePage';
 
 function App() {
   return (
@@ -77,6 +78,7 @@ function App() {
             <Route path="/m/order-material" element={<M_OrderMaterialPage />} />
             <Route path="/m/add-order-material" element={<M_AddOrderMaterialPage />} />
             <Route path="/m/operation-order-material/:orderId" element={<M_OperationOrderMaterialPage />} />
+            <Route path="/m/my-profile" element={<M_MyProfilePage />} />
           </Routes>
     </Router>
   );

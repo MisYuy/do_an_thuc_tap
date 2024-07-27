@@ -64,11 +64,14 @@ const AuthenticatePage = () => {
                 const user = response.data;      
                 sessionStorage.setItem('user', JSON.stringify(user));
                 
-                if(user.role === 'user')
+                if(user.role === 'customer')
                     navigate(`../home`);
-                else
+                else if(user.role === 'admin')
+                    navigate(`../m/statistic-revenue`)
+                else if(user.role === 'sale staff')
                     navigate(`../m/home`)
-
+                else if(user.role === 'werehouse staff')
+                    navigate(`../m/home`)
                 setError(null);
             }
 
