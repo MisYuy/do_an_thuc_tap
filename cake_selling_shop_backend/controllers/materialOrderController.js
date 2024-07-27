@@ -75,7 +75,7 @@ exports.updateMaterialOrder = async (req, res) => {
       const material = await Material.findByPk(material_id);
       if (material) {
         await material.update({
-          quantity: material.quantity - quantity,
+          quantity: material.quantity + quantity,
           updated_at: new Date()
         });
       }
@@ -83,7 +83,7 @@ exports.updateMaterialOrder = async (req, res) => {
       const material = await Material.findByPk(material_id);
       if (material) {
         await material.update({
-          quantity: material.quantity + quantity,
+          quantity: material.quantity - quantity,
           updated_at: new Date()
         });
       }
@@ -107,7 +107,7 @@ exports.deleteMaterialOrder = async (req, res) => {
       const material = await Material.findByPk(materialOrder.material_id);
       if (material) {
         await material.update({
-          quantity: material.quantity + materialOrder.quantity,
+          quantity: material.quantity - materialOrder.quantity,
           updated_at: new Date()
         });
       }

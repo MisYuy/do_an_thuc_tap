@@ -25,8 +25,8 @@ const M_AddMaterialSection = () => {
         if (!formData.description) errors.description = 'Mô tả là bắt buộc';
         if (!formData.quantity) {
             errors.quantity = 'Số lượng là bắt buộc';
-        } else if (formData.quantity <= 0) {
-            errors.quantity = 'Số lượng phải lớn hơn 0';
+        } else if (formData.quantity < 0) {
+            errors.quantity = 'Số lượng phải lớn hơn hoặc bằng 0';
         }
         return errors;
     };

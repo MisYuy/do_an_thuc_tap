@@ -28,7 +28,7 @@ const M_OperationMaterialSection = () => {
         const errors = {};
         if (!formData.name) errors.name = 'Tên vật liệu là bắt buộc';
         if (!formData.description) errors.description = 'Mô tả là bắt buộc';
-        if (!formData.quantity || formData.quantity <= 0) errors.quantity = 'Số lượng phải lớn hơn 0';
+        if (!formData.quantity || formData.quantity < 0) errors.quantity = 'Số lượng phải lớn hơn hoặc bằng 0';
         return errors;
     };
 
