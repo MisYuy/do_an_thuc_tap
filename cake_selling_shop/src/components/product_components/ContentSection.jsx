@@ -30,6 +30,9 @@ const ContentSection = ({ products }) => {
 
     const handleAddToCart = async (productId) => {
         try {
+            const token = sessionStorage.getItem("token");
+
+            if(token){
                 
             const user = JSON.parse(sessionStorage.getItem('user'));
             console.log(sessionStorage.getItem('user'));
@@ -48,6 +51,9 @@ const ContentSection = ({ products }) => {
                     setShowSuccessPopup(false);
                 }, 3000);
             }
+        }
+        else 
+        navigate('/login');
         } catch (error) {
             // Handle error (optional)
             console.error('Error adding product to cart:', error);
@@ -193,8 +199,8 @@ const ContentSection = ({ products }) => {
                                                     <i className="fa fa-star"></i>
                                                 </div>
                                                 <div className="d-flex mb-2">
-                                                    <h5 className="fw-bold me-2">2.99 $</h5>
-                                                    <h5 className="text-danger text-decoration-line-through">4.11 $</h5>
+                                                    <h5 className="fw-bold me-2">2.99 ₫</h5>
+                                                    <h5 className="text-danger text-decoration-line-through">4.11 ₫</h5>
                                                 </div>
                                             </div>
                                         </div>
@@ -213,7 +219,7 @@ const ContentSection = ({ products }) => {
                                                 </div>
                                                 <div className="d-flex mb-2">
                                                     <h5 className="fw-bold me-2">2.99 $</h5>
-                                                    <h5 className="text-danger text-decoration-line-through">4.11 $</h5>
+                                                    <h5 className="text-danger text-decoration-line-through">4.11 ₫</h5>
                                                 </div>
                                             </div>
                                         </div>
@@ -231,8 +237,8 @@ const ContentSection = ({ products }) => {
                                                     <i className="fa fa-star"></i>
                                                 </div>
                                                 <div className="d-flex mb-2">
-                                                    <h5 className="fw-bold me-2">2.99 $</h5>
-                                                    <h5 className="text-danger text-decoration-line-through">4.11 $</h5>
+                                                    <h5 className="fw-bold me-2">2.99 ₫</h5>
+                                                    <h5 className="text-danger text-decoration-line-through">4.11 ₫</h5>
                                                 </div>
                                             </div>
                                         </div>
@@ -266,9 +272,9 @@ const ContentSection = ({ products }) => {
                                                         <h4>{product.name}</h4>
                                                         <p>{product.description.length > 100 ? `${product.description.substring(0, 100)}...` : product.description}</p>
                                                         <div className="d-flex justify-content-between flex-lg-wrap">
-                                                            <h5 className="fw-bold me-2">{discountedPrice.toFixed(2)} $</h5>
+                                                            <h5 className="fw-bold me-2">{discountedPrice.toFixed(2)} ₫</h5>
                                                             {hasPromotion && (
-                                                                <h5 className="text-danger text-decoration-line-through">{originalPrice.toFixed(2)} $</h5>
+                                                                <h5 className="text-danger text-decoration-line-through">{originalPrice.toFixed(2)} ₫</h5>
                                                             )}
                                                             <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary" onClick={(e) => {
                                                                 e.preventDefault(); // Prevent the default behavior of the link

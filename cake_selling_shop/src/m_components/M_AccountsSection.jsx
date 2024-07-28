@@ -12,9 +12,7 @@ const AccountsSection = ({ role }) => {
     const [sortOrder, setSortOrder] = useState('asc');
     const [visibleUserId, setVisibleUserId] = useState(null); // Track which user's dropdown is visible
 
-    const user = JSON.parse(sessionStorage.getItem("user"));
     const token = sessionStorage.getItem("token");
-    console.log("@@" + token);
 
     useEffect(() => {
         const fetchData = async () => {
