@@ -147,7 +147,7 @@ const ContentSection = ({ products }) => {
         <div className="container-fluid fruite py-5">
             {showSuccessPopup && <PopupSuccess onClose={handleClosePopup} message={"Bạn đã thêm vào giỏ hàng thành công"} />}
             <div className="container py-5">
-                <h1 className="mb-4">Fresh fruits shop</h1>
+                <h1 className="mb-4">Tiệm bánh ZuyCake</h1>
                 <div className="row g-4">
                     <div className="col-lg-12">
                         <div className="row g-4">
@@ -214,7 +214,7 @@ const ContentSection = ({ products }) => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-lg-12">
+                                    {/* <div className="col-lg-12">
                                         <h4 className="mb-3">Featured products</h4>
                                         <div className="d-flex align-items-center justify-content-start">
                                             <div className="rounded me-4" style={{ width: '100px', height: '100px' }}>
@@ -292,7 +292,7 @@ const ContentSection = ({ products }) => {
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                             <div className="col-lg-9">
