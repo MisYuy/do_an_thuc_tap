@@ -20,11 +20,7 @@ const M_OrderSection = () => {
     const token = sessionStorage.getItem("token");
 
     useEffect(() => {
-        axios.get(`${URL}/api/order/get-all`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
+        axios.get(`${URL}/api/order/get-all`)
         .then(response => {
             setOrders(response.data);
         })

@@ -11,8 +11,8 @@ const FourthSection = () => {
                                 <img src="img/featur-1.jpg" className="img-fluid rounded-top w-100" alt="" />
                                 <div className="px-4 rounded-bottom">
                                     <div className="service-content bg-primary text-center p-4 rounded">
-                                        <h5 className="text-white">Fresh Apples</h5>
-                                        <h3 className="mb-0">20% OFF</h3>
+                                        <h5 className="text-white">Nguyên liệu tươi ngon</h5>
+                                        <h3 className="mb-0">100% tự nhiên</h3>
                                     </div>
                                 </div>
                             </div>
@@ -24,8 +24,8 @@ const FourthSection = () => {
                                 <img src="img/featur-2.jpg" className="img-fluid rounded-top w-100" alt="" />
                                 <div className="px-4 rounded-bottom">
                                     <div className="service-content bg-light text-center p-4 rounded">
-                                        <h5 className="text-primary">Tasty Fruits</h5>
-                                        <h3 className="mb-0">Free delivery</h3>
+                                        <h5 className="text-primary">Kĩ thuật độc quyền</h5>
+                                        <h3 className="mb-0">Hương vị tuyệt hảo</h3>
                                     </div>
                                 </div>
                             </div>
@@ -37,8 +37,8 @@ const FourthSection = () => {
                                 <img src="img/featur-3.jpg" className="img-fluid rounded-top w-100" alt="" />
                                 <div className="px-4 rounded-bottom">
                                     <div className="service-content bg-secondary text-center p-4 rounded">
-                                        <h5 className="text-white">Exotic Vegitable</h5>
-                                        <h3 className="mb-0">Discount 30$</h3>
+                                        <h5 className="text-white">Đột phá trong vị giác</h5>
+                                        <h3 className="mb-0">Dấu ấn</h3>
                                     </div>
                                 </div>
                             </div>

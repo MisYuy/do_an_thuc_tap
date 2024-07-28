@@ -15,11 +15,7 @@ const M_CategorySection = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get(`${URL}/api/category/get-all`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                const response = await axios.get(`${URL}/api/category/get-all`);
                 setCategories(response.data);
             } catch (error) {
                 setError(error);

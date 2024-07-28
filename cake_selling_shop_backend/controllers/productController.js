@@ -1,7 +1,8 @@
-const { Product, Promotion, ProductPromotion } = require('../models');
+const { Product, Promotion, ProductPromotion, OrderItem, sequelize } = require('../models');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { Op } = require('sequelize');
 
 // Absolute path to the directory where images will be stored
 const imageDirectory = 'D:\\do_an_thuc_tap\\cake_selling_shop\\public\\images\\product';

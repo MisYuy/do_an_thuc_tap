@@ -2,16 +2,26 @@ import React, { useEffect, useState } from 'react';
 import Spinner from '../../components/Spinner.jsx';
 import axios from 'axios';
 import { URL } from '../../utils/constant.js';
+import { useNavigate } from 'react-router-dom';
 
 const ContentSection = () => {
     const [cartItems, setCartItems] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     const user = JSON.parse(sessionStorage.getItem("user"));
     const token = sessionStorage.getItem("token");
 
     useEffect(() => {
+        if (!user) {
+            navigate('/login');
+        }
+    }, [user, navigate]);
+
+    useEffect(() => {
+        if (!user) return;
+
         const queryParams = {
             userId: user.user_id
         };
@@ -30,7 +40,7 @@ const ContentSection = () => {
                 setError(error);
                 setLoading(false);
             });
-    }, [user.user_id, token]);
+    }, [user, token]);
 
     if (loading) {
         return <Spinner />;

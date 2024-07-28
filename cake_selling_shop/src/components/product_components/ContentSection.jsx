@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { URL } from '../../utils/constant.js';
 import axios from 'axios';
@@ -7,16 +7,66 @@ import PopupSuccess from '../../components/PopupSuccess.jsx';
 const ContentSection = ({ products }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [minPrice, setMinPrice] = useState(0);
+    const [maxPrice, setMaxPrice] = useState(10000000);
+    const [additionalFilter, setAdditionalFilter] = useState('all');
+    const [sortOption, setSortOption] = useState('default');
+    const [searchQuery, setSearchQuery] = useState('');
     const productsPerPage = 9;
     const navigate = useNavigate();
+
+    // Fetch categories from backend when component mounts
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get(`${URL}/api/category/get-all`);
+                const categoriesWithCount = response.data.map(category => {
+                    const productCount = products.filter(product => product.category_id === category.category_id).length;
+                    return { ...category, product_count: productCount };
+                });
+                setCategories([{ category_id: 'all', name: 'All', product_count: products.length }, ...categoriesWithCount]);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
+
+        fetchCategories();
+    }, [products]);
+
+    // Function to get category name by category_id
+    const getCategoryName = (categoryId) => {
+        const category = categories.find(cat => cat.category_id === categoryId);
+        return category ? category.name : 'Unknown';
+    };
+
+    // Filter products based on selected category, price range, additional filter, and search query
+    const filteredProducts = products.filter(product => {
+        const isInCategory = selectedCategory === 'all' || product.category_id === selectedCategory;
+        const isInPriceRange = product.price >= minPrice && product.price <= maxPrice;
+        const isOnSale = additionalFilter === 'all' || (additionalFilter === 'onSale' && product.promotions && product.promotions.length > 0);
+        const matchesSearchQuery = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+        return isInCategory && isInPriceRange && isOnSale && matchesSearchQuery;
+    });
+
+    // Sort products based on the selected sort option
+    const sortedProducts = filteredProducts.sort((a, b) => {
+        if (sortOption === 'priceAsc') {
+            return a.price - b.price;
+        } else if (sortOption === 'priceDesc') {
+            return b.price - a.price;
+        }
+        return 0; // Default sorting (no sorting)
+    });
 
     // Calculate the products to display on the current page
     const indexOfLastProduct = currentPage * productsPerPage;
     const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-    const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+    const currentProducts = sortedProducts.slice(indexOfFirstProduct, indexOfLastProduct);
 
     // Calculate the total number of pages
-    const totalPages = Math.ceil(products.length / productsPerPage);
+    const totalPages = Math.ceil(sortedProducts.length / productsPerPage);
 
     // Handle page change
     const handlePageChange = (pageNumber) => {
@@ -32,42 +82,70 @@ const ContentSection = ({ products }) => {
         try {
             const token = sessionStorage.getItem("token");
 
-            if(token){
-                
-            const user = JSON.parse(sessionStorage.getItem('user'));
-            console.log(sessionStorage.getItem('user'));
+            if (token) {
+                const user = JSON.parse(sessionStorage.getItem('user'));
 
-            const response = await axios.put(`${URL}/api/cart/add-product`, {
-                userId: user.user_id,
-                productId: productId,
-                quantity: 1,
-            });
+                const response = await axios.put(`${URL}/api/cart/add-product`, {
+                    userId: user.user_id,
+                    productId: productId,
+                    quantity: 1,
+                });
 
-            if(response){
-                setShowSuccessPopup(true); // Hiển thị Popup Success
-            
-                // Tự động ẩn Popup sau 2 giây
-                setTimeout(() => {
-                    setShowSuccessPopup(false);
-                }, 3000);
+                if (response) {
+                    setShowSuccessPopup(true); // Show Popup Success
+
+                    // Automatically hide Popup after 3 seconds
+                    setTimeout(() => {
+                        setShowSuccessPopup(false);
+                    }, 3000);
+                }
+            } else {
+                navigate('/login');
             }
-        }
-        else 
-        navigate('/login');
         } catch (error) {
-            // Handle error (optional)
             console.error('Error adding product to cart:', error);
         }
     };
-    
-     // Xử lý đóng Popup Success
-     const handleClosePopup = () => {
+
+    // Handle category selection
+    const handleCategorySelect = (categoryId) => {
+        setSelectedCategory(categoryId);
+        setCurrentPage(1); // Reset to the first page when category changes
+    };
+
+    // Handle closing Popup Success
+    const handleClosePopup = () => {
         setShowSuccessPopup(false);
+    };
+
+    // Handle price range change
+    const handlePriceChange = (e) => {
+        const { name, value } = e.target;
+        if (name === 'minPrice') {
+            setMinPrice(Number(value));
+        } else if (name === 'maxPrice') {
+            setMaxPrice(Number(value));
+        }
+    };
+
+    // Handle additional filter change
+    const handleAdditionalFilterChange = (e) => {
+        setAdditionalFilter(e.target.value);
+    };
+
+    // Handle sort option change
+    const handleSortOptionChange = (e) => {
+        setSortOption(e.target.value);
+    };
+
+    // Handle search query change
+    const handleSearchQueryChange = (e) => {
+        setSearchQuery(e.target.value);
     };
 
     return (
         <div className="container-fluid fruite py-5">
-            {showSuccessPopup && <PopupSuccess onClose={handleClosePopup} message={"Bạn đã thêm vào giỏ hàng thành công"}/>}
+            {showSuccessPopup && <PopupSuccess onClose={handleClosePopup} message={"Bạn đã thêm vào giỏ hàng thành công"} />}
             <div className="container py-5">
                 <h1 className="mb-4">Fresh fruits shop</h1>
                 <div className="row g-4">
@@ -75,7 +153,7 @@ const ContentSection = ({ products }) => {
                         <div className="row g-4">
                             <div className="col-xl-3">
                                 <div className="input-group w-100 mx-auto d-flex">
-                                    <input type="search" className="form-control p-3" placeholder="keywords" aria-describedby="search-icon-1" />
+                                    <input type="search" className="form-control p-3" placeholder="Tìm kiếm theo tên " aria-describedby="search-icon-1" value={searchQuery} onChange={handleSearchQueryChange} />
                                     <span id="search-icon-1" className="input-group-text p-3"><i className="fa fa-search"></i></span>
                                 </div>
                             </div>
@@ -83,11 +161,10 @@ const ContentSection = ({ products }) => {
                             <div className="col-xl-3">
                                 <div className="bg-light ps-3 py-3 rounded d-flex justify-content-between mb-4">
                                     <label htmlFor="fruits">Default Sorting:</label>
-                                    <select id="fruits" name="fruitlist" className="border-0 form-select-sm bg-light me-3" form="fruitform">
-                                        <option value="volvo">Nothing</option>
-                                        <option value="saab">Popularity</option>
-                                        <option value="opel">Organic</option>
-                                        <option value="audi">Fantastic</option>
+                                    <select id="fruits" name="fruitlist" className="border-0 form-select-sm bg-light me-3" form="fruitform" onChange={handleSortOptionChange}>
+                                        <option value="default">Default</option>
+                                        <option value="priceAsc">Giá: Thấp tới cao</option>
+                                        <option value="priceDesc">Giá: Cao tới thấp</option>
                                     </select>
                                 </div>
                             </div>
@@ -99,68 +176,41 @@ const ContentSection = ({ products }) => {
                                         <div className="mb-3">
                                             <h4>Categories</h4>
                                             <ul className="list-unstyled fruite-categorie">
-                                                <li>
-                                                    <div className="d-flex justify-content-between fruite-name">
-                                                        <a href="#"><i className="fas fa-apple-alt me-2"></i>Apples</a>
-                                                        <span>(3)</span>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div className="d-flex justify-content-between fruite-name">
-                                                        <a href="#"><i className="fas fa-apple-alt me-2"></i>Oranges</a>
-                                                        <span>(5)</span>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div className="d-flex justify-content-between fruite-name">
-                                                        <a href="#"><i className="fas fa-apple-alt me-2"></i>Strawberry</a>
-                                                        <span>(2)</span>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div className="d-flex justify-content-between fruite-name">
-                                                        <a href="#"><i className="fas fa-apple-alt me-2"></i>Banana</a>
-                                                        <span>(8)</span>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div className="d-flex justify-content-between fruite-name">
-                                                        <a href="#"><i className="fas fa-apple-alt me-2"></i>Pumpkin</a>
-                                                        <span>(5)</span>
-                                                    </div>
-                                                </li>
+                                                {categories.map(category => (
+                                                    <li key={category.category_id}>
+                                                        <div className="d-flex justify-content-between fruite-name">
+                                                            <a href="#" onClick={(e) => {
+                                                                e.preventDefault();
+                                                                handleCategorySelect(category.category_id);
+                                                            }}>
+                                                                <i className="fas fa-apple-alt me-2"></i>{category.name}
+                                                            </a>
+                                                            <span>({category.product_count})</span>
+                                                        </div>
+                                                    </li>
+                                                ))}
                                             </ul>
                                         </div>
                                     </div>
                                     <div className="col-lg-12">
                                         <div className="mb-3">
                                             <h4 className="mb-2">Price</h4>
-                                            <input type="range" className="form-range w-100" id="rangeInput" name="rangeInput" min="0" max="500" defaultValue="0" onInput={(e) => document.getElementById('amount').value = e.target.value} />
-                                            <output id="amount" name="amount" min-value="0" max-value="500" htmlFor="rangeInput">0</output>
+                                            <input type="range" className="form-range w-100" id="minPrice" name="minPrice" min="0" max="10000000" value={minPrice} onChange={handlePriceChange} />
+                                            <output id="minAmount" name="minAmount" htmlFor="minPrice">{minPrice}</output>
+                                            <input type="range" className="form-range w-100" id="maxPrice" name="maxPrice" min="0" max="10000000" value={maxPrice} onChange={handlePriceChange} />
+                                            <output id="maxAmount" name="maxAmount" htmlFor="maxPrice">{maxPrice}</output>
                                         </div>
                                     </div>
                                     <div className="col-lg-12">
                                         <div className="mb-3">
                                             <h4>Additional</h4>
                                             <div className="mb-2">
-                                                <input type="radio" className="me-2" id="Categories-1" name="Categories-1" value="Beverages" />
-                                                <label htmlFor="Categories-1"> Organic</label>
+                                                <input type="radio" className="me-2" id="additional-all" name="additionalFilter" value="all" checked={additionalFilter === 'all'} onChange={handleAdditionalFilterChange} />
+                                                <label htmlFor="additional-all"> All</label>
                                             </div>
                                             <div className="mb-2">
-                                                <input type="radio" className="me-2" id="Categories-2" name="Categories-1" value="Beverages" />
-                                                <label htmlFor="Categories-2"> Fresh</label>
-                                            </div>
-                                            <div className="mb-2">
-                                                <input type="radio" className="me-2" id="Categories-3" name="Categories-1" value="Beverages" />
-                                                <label htmlFor="Categories-3"> Sales</label>
-                                            </div>
-                                            <div className="mb-2">
-                                                <input type="radio" className="me-2" id="Categories-4" name="Categories-1" value="Beverages" />
-                                                <label htmlFor="Categories-4"> Discount</label>
-                                            </div>
-                                            <div className="mb-2">
-                                                <input type="radio" className="me-2" id="Categories-5" name="Categories-1" value="Beverages" />
-                                                <label htmlFor="Categories-5"> Expired</label>
+                                                <input type="radio" className="me-2" id="additional-onSale" name="additionalFilter" value="onSale" checked={additionalFilter === 'onSale'} onChange={handleAdditionalFilterChange} />
+                                                <label htmlFor="additional-onSale"> Đang giảm giá</label>
                                             </div>
                                         </div>
                                     </div>
@@ -265,9 +315,9 @@ const ContentSection = ({ products }) => {
                                             >
                                                 <div className="rounded position-relative fruite-item">
                                                     <div className="fruite-img">
-                                                        <img onClick={() => handleProductClick(product.product_id)}   src={product.image ? `/images/product/${product.image}` : "/img/none_image.png"} className="img-fluid w-100 rounded-top" alt="" />
+                                                        <img onClick={() => handleProductClick(product.product_id)} src={product.image ? `/images/product/${product.image}` : "/img/none_image.png"} className="img-fluid w-100 rounded-top" alt="" />
                                                     </div>
-                                                    <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{ top: '10px', left: '10px' }}>Fruits</div>
+                                                    <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{ top: '10px', left: '10px' }}>{getCategoryName(product.category_id)}</div>
                                                     <div className="p-4 border border-secondary border-top-0 rounded-bottom">
                                                         <h4>{product.name}</h4>
                                                         <p>{product.description.length > 100 ? `${product.description.substring(0, 100)}...` : product.description}</p>
@@ -281,7 +331,7 @@ const ContentSection = ({ products }) => {
                                                                 handleAddToCart(product.product_id); // Call your function to handle adding to cart
                                                             }}
                                                             >
-                                                            <i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
+                                                                <i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
                                                             </a>
                                                         </div>
                                                     </div>
