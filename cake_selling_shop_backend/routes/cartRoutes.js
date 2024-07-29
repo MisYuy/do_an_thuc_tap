@@ -7,5 +7,6 @@ router.use(authenticateToken);
 
 router.get('/get-all', cartController.getAllCartItems);
 router.put('/add-product', cartController.addProductToCart);
+router.put('/update-cart-item', cartController.updateCartItem); // Ensure this matches the frontend request
 
 module.exports = router;

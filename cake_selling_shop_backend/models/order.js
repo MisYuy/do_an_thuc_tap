@@ -24,7 +24,11 @@ module.exports = (sequelize, DataTypes) => {
         updated_at: {
             type: DataTypes.DATE,
             allowNull: true
-        }
+        },
+        notes: {
+            type: DataTypes.STRING,
+            allowNull: true
+          },
     }, {
         tableName: 'orders',
         timestamps: false

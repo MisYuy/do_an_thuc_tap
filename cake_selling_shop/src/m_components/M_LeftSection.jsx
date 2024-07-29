@@ -26,6 +26,7 @@ const M_LeftSection = ({ select }) => {
     }
 
     const user_role = user.role;
+    console.log("@@" + user_role);
 
     return (
         <div>
