@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const db = require('../models');
 const user = require('../models/user');
 const User = db.User;
@@ -11,7 +12,7 @@ const SECRET_KEY = config[env].SECRET_KEY;
 const jwt = require('jsonwebtoken');
 
 // Absolute path to the directory where images will be stored
-const imageDirectory = 'D:\\do_an_thuc_tap\\cake_selling_shop\\public\\images\\product';
+const imageDirectory = 'D:\\do_an_thuc_tap\\cake_selling_shop\\public\\images\\avatar';
 
 // Ensure the directory exists
 if (!fs.existsSync(imageDirectory)) {
@@ -30,6 +31,55 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+exports.checkEmailExists = async (req, res) => {
+  try {
+    const { email } = req.query; // Assuming the email is passed as a query parameter
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    const user = await User.findOne({
+      where: {
+        email: email,
+        delete: 0
+      }
+    });
+
+    if (user) {
+      return res.json({ exists: true, message: 'Email already exists' });
+    } else {
+      return res.json({ exists: false, message: 'Email is available' });
+    }
+  } catch (error) {
+    console.error('Error checking email existence:', error);
+    res.status(500).json({ error: 'Error checking email existence' });
+  }
+};
+
+exports.checkPassword = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    let user = await User.findOne({
+      where: {
+          email: email,
+          delete: 0
+      }
+    });
+
+    if(user && await bcrypt.compare(password, user.password)) {
+      res.json({ result: true, user: user });
+    }
+    else {
+      res.json({ result: false });
+    }
+
+  } catch (error) {
+    res.status(500).json({ error: 'Login failed' });
+  }
+};
+
 exports.checkLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -37,11 +87,14 @@ exports.checkLogin = async (req, res) => {
     let user = await User.findOne({
       where: {
           email: email,
-          password: password
+          delete: 0
       }
     });
-
-    if(user) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log('Hashed Password:', hashedPassword);
+    
+    console.log(await bcrypt.compare(password, user.password));
+    if(user && await bcrypt.compare(password, user.password)) {
       const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
 
       // Return the user and token
@@ -52,7 +105,6 @@ exports.checkLogin = async (req, res) => {
     }
 
   } catch (error) {
-    console.log("@@" + error);
     res.status(500).json({ error: 'Login failed' });
   }
 };
@@ -60,10 +112,14 @@ exports.checkLogin = async (req, res) => {
 exports.signUp = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log('Hashed Password:', hashedPassword);
     const newUser = {
       email,
-      password,
-      role: 'Customer',
+      password: hashedPassword,
+      role: 'customer',
+      status: 'active',
       created_at: new Date(),
       updated_at: new Date()
     }
@@ -105,7 +161,7 @@ exports.getAllCustomers = async (req, res) => {
 exports.getAllStaffs = async (req, res) => {
   try {
     console.log('Fetching all staffs except customers...');
-    
+       
     const users = await User.findAll({
       where: {
         role: {
@@ -132,11 +188,12 @@ exports.createUser = async (req, res) => {
 
     try {
       const { email, password, full_name, phone_number, address, role, status } = req.body;
+      const hashedPassword = await bcrypt.hash(password, 10);
       const image = req.file ? req.file.filename : null;
 
       const user = await User.create({
         email,
-        password,
+        password: hashedPassword,
         full_name,
         phone_number,
         address,
@@ -182,7 +239,7 @@ exports.updateUser = async (req, res) => {
       if (!user_id) {
         return res.status(400).json({ error: 'User ID is required' });
       }
-  
+     
       const user = await User.findByPk(user_id);
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
@@ -193,13 +250,13 @@ exports.updateUser = async (req, res) => {
 
       await user.update({
         email: email,
-      full_name: full_name,
-      phone_number: phone_number,
-      address: address,
-      role: role,
-      status: status,
-      updated_at: new Date(),
-      image
+        full_name: full_name,
+        phone_number: phone_number,
+        address: address,
+        role: role,
+        status: status,
+        updated_at: new Date(),
+        image
       });
 
       console.log("User updated successfully:", user);
@@ -294,6 +351,36 @@ exports.getTopCustomers = async (req, res) => {
     res.json(topCustomers);
   } catch (error) {
     console.error('Error fetching top customers:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Add change password function
+exports.changePassword = async (req, res) => {
+  try {
+    const { user_id, old_password, new_password } = req.body;
+
+    if (!user_id || !old_password || !new_password) {
+      return res.status(400).json({ error: 'User ID, old password, and new password are required' });
+    }
+
+    const user = await User.findByPk(user_id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const isMatch = await bcrypt.compare(old_password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Old password is incorrect' });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(new_password, 10);
+    user.password = hashedNewPassword;
+    await user.save();
+
+    res.json({ message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('Error changing password:', error);
     res.status(500).json({ error: error.message });
   }
 };

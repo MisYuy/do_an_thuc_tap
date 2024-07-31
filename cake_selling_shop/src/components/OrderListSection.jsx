@@ -43,7 +43,7 @@ const OrderListSection = () => {
             setError(error);
             setLoading(false);
         });
-    }, [user, token]);
+    }, []);
 
     const handleCancelOrder = async (orderId) => {
         try {

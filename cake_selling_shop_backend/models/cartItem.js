@@ -26,11 +26,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: true,
         defaultValue: null
-      },
-      notes: {
-        type: DataTypes.STRING,
-        allowNull: true
-      },
+      }
     }, {
       tableName: 'cart_items',
       indexes: [

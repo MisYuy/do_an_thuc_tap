@@ -38,6 +38,7 @@ import M_MaterialUsagePage from './m_pages/M_MaterialUsagePage';
 import M_StatisticMaterialPage from './m_pages/M_StatisticMaterialPage';
 import M_MyProfilePage from './m_pages/M_MyProfilePage';
 import OrderListPage from './pages/OrderListPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/error" element={<ErrorPage />} />
             <Route path="/order-list" element={<OrderListPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
 
             <Route path="/m/statistic-revenue" element={<M_StatisticRevenuePage />} />
             <Route path="/m/statistic-product" element={<M_StatisticByProductPage />} />

@@ -89,6 +89,10 @@ const ContentSection = ({ products }) => {
                     userId: user.user_id,
                     productId: productId,
                     quantity: 1,
+                },{
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
 
                 if (response) {

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { URL } from '../utils/constant.js';
 import { useNavigate } from 'react-router-dom';
+import VerificationCode from '../components/authenticate_components/VerificationCode.jsx';
+import ForgotPassword from '../components/authenticate_components/ForgotPassword.jsx';
 
 const AuthenticatePage = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -88,11 +90,34 @@ const AuthenticatePage = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            if(password != confirmPassword){
+            if (password !== confirmPassword) {
                 setError("Mật khẩu không khớp");
+                setLoading(false);
                 return;
             }
+    
+            // Kiểm tra email tồn tại
+            const emailCheckResponse = await axios.get(`${URL}/api/user/check-exists`, { params: { email } });
+            if (emailCheckResponse.data.exists) {
+                setError("Email đã tồn tại");
+                setLoading(false);
+                return;
+            }
+    
+            // Gửi mã xác thực
+            await axios.post(`${URL}/api/email/send-verification-code`, { email });
+            openVerificationCode();
+        } catch (error) {
+            console.log(error);
+            setError(error.response ? error.response.data : "Đăng ký thất bại");
+            setLoading(false);
+        }
+    };
+    
 
+    const handleVerifySuccess = async () => {
+        setLoading(true);
+        try {
             const response = await axios.post(`${URL}/api/user/signup`, {
                 email,
                 password
@@ -109,7 +134,7 @@ const AuthenticatePage = () => {
             setError(error.response ? error.response.data : "Đăng ký thất bại");
             setLoading(false);
         }
-    };
+    }
     
 
     return (
@@ -259,52 +284,10 @@ const AuthenticatePage = () => {
                     </div>
                 )}
                 {showForgotPassword && (
-                    <div className="form forgot-password" style={{ position: 'absolute', maxWidth: '430px', width: '100%', padding: '30px', borderRadius: '6px', background: '#FFF' }}>
-                        <div className="form-content">
-                            <header style={{ fontSize: '28px', fontWeight: '600', color: '#232836', textAlign: 'center' }}>Reset Password</header>
-                            <form action="#" style={{ marginTop: '30px' }}>
-                                <div className="field input-field" style={{ position: 'relative', height: '50px', width: '100%', marginTop: '20px', borderRadius: '6px' }}>
-                                    <input 
-                                        type="email" 
-                                        placeholder="Enter your email" 
-                                        className="input" 
-                                        required
-                                        style={{ height: '100%', width: '100%', border: 'none', fontSize: '16px', fontWeight: '400', borderRadius: '6px', outline: 'none', padding: '0 15px', border: '1px solid #CACACA' }} 
-                                    />
-                                </div>
-                                <div className="field button-field" style={{ position: 'relative', height: '50px', width: '100%', marginTop: '20px', borderRadius: '6px' }}>
-                                    <button type="submit" style={{ height: '100%', width: '100%', color: '#fff', backgroundColor: '#0171d3', transition: 'all 0.3s ease', cursor: 'pointer', border: 'none', fontSize: '16px', fontWeight: '400', borderRadius: '6px' }}>Send reset link</button>
-                                </div>
-                            </form>
-                            <div className="form-link" style={{ textAlign: 'center', marginTop: '10px' }}>
-                                <a href="#" className="back-to-login" style={{ fontSize: '14px', fontWeight: '400', color: '#0171d3', textDecoration: 'none' }} onClick={closeForgotPassword}>Back to login</a>
-                            </div>
-                        </div>
-                    </div>
+                    <ForgotPassword close={closeForgotPassword} />
                 )}
                 {showVerificationCode && (
-                    <div className="form verification-code" style={{ position: 'absolute', maxWidth: '430px', width: '100%', padding: '30px', borderRadius: '6px', background: '#FFF' }}>
-                        <div className="form-content">
-                            <header style={{ fontSize: '28px', fontWeight: '600', color: '#232836', textAlign: 'center' }}>Verify Code</header>
-                            <form action="#" style={{ marginTop: '30px' }}>
-                                <div className="field input-field" style={{ position: 'relative', height: '50px', width: '100%', marginTop: '20px', borderRadius: '6px' }}>
-                                    <input 
-                                        type="text" 
-                                        placeholder="Enter verification code" 
-                                        className="input" 
-                                        required
-                                        style={{ height: '100%', width: '100%', border: 'none', fontSize: '16px', fontWeight: '400', borderRadius: '6px', outline: 'none', padding: '0 15px', border: '1px solid #CACACA' }} 
-                                    />
-                                </div>
-                                <div className="field button-field" style={{ position: 'relative', height: '50px', width: '100%', marginTop: '20px', borderRadius: '6px' }}>
-                                    <button type="submit" style={{ height: '100%', width: '100%', color: '#fff', backgroundColor: '#0171d3', transition: 'all 0.3s ease', cursor: 'pointer', border: 'none', fontSize: '16px', fontWeight: '400', borderRadius: '6px' }}>Verify</button>
-                                </div>
-                            </form>
-                            <div className="form-link" style={{ textAlign: 'center', marginTop: '10px' }}>
-                                <a href="#" className="back-to-login" style={{ fontSize: '14px', fontWeight: '400', color: '#0171d3', textDecoration: 'none' }} onClick={closeVerificationCode}>Back to login</a>
-                            </div>
-                        </div>
-                    </div>
+                    <VerificationCode closeVerificationCode={ closeVerificationCode} handleVerifySuccess = {handleVerifySuccess}/>
                 )}
             </div>
         </div>

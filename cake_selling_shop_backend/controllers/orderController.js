@@ -91,16 +91,16 @@ exports.changeOrderStatus = async (req, res) => {
 
 exports.createOrder = async (req, res) => {
   try {
-      const { user_id, total_amount, status, orderItems, notes } = req.body;
+      const { user_id, total_amount, status, notes, orderItems } = req.body;
 
       // Create the order
       const newOrder = await Order.create({
           user_id,
           total_amount,
           status,
-          notes, // Add notes here
           created_at: new Date(),
-          updated_at: new Date()
+          updated_at: new Date(),
+          notes
       });
 
       // Create the order items
@@ -128,7 +128,7 @@ exports.createOrder = async (req, res) => {
 exports.updateOrder = async (req, res) => {
   try {
       const orderId = req.query.id; // Assuming the ID is passed as a URL parameter
-      const { user_id, total_amount, status, orderItems, notes } = req.body;
+      const { user_id, total_amount, status, orderItems } = req.body;
 
       const order = await Order.findByPk(orderId);
       if (!order) {
@@ -140,7 +140,6 @@ exports.updateOrder = async (req, res) => {
           user_id,
           total_amount,
           status,
-          notes, // Add notes here
           updated_at: new Date()
       });
 

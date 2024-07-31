@@ -5,6 +5,7 @@ import { URL } from '../../utils/constant.js';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Modal, Button, Form } from 'react-bootstrap';
 
 const ContentSection = () => {
     const [cartItems, setCartItems] = useState(null);
@@ -12,6 +13,8 @@ const ContentSection = () => {
     const [error, setError] = useState(null);
     const [paymentMethod, setPaymentMethod] = useState('cod'); // Default to Cash on Delivery
     const [shippingAddress, setShippingAddress] = useState(''); // State for shipping address
+    const [showModal, setShowModal] = useState(false);
+    const [note, setNote] = useState('');
     const navigate = useNavigate();
 
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -50,23 +53,16 @@ const ContentSection = () => {
         setPaymentMethod(event.target.value);
     };
 
-    const handleNotesChange = (index, event) => {
-        const newCartItems = [...cartItems];
-        newCartItems[index].notes = event.target.value;
-        setCartItems(newCartItems);
-    };
-
     const handleQuantityChange = (index, newQuantity) => {
         const newCartItems = [...cartItems];
         newCartItems[index].quantity = newQuantity;
         setCartItems(newCartItems);
     };
 
-    const handleUpdateCartItem = (cartItemId, quantity, notes) => {
+    const handleUpdateCartItem = (cartItemId, quantity) => {
         axios.put(`${URL}/api/cart/update-cart-item`, {
             cartItemId,
-            quantity,
-            notes
+            quantity
         }, {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -85,12 +81,14 @@ const ContentSection = () => {
             toast.error('Vui lòng nhập địa chỉ giao hàng.');
             return;
         }
+        setShowModal(true);
+    };
 
+    const handleSubmitOrder = () => {
         const orderItems = cartItems.map(item => ({
             product_id: item.Product.product_id,
             quantity: item.quantity,
-            price: item.Product.price,
-            notes: item.notes
+            price: item.Product.price
         }));
 
         const orderData = {
@@ -98,7 +96,8 @@ const ContentSection = () => {
             total_amount: calculateTotalPrice() + calculateShippingFee(),
             status: 'pending',
             orderItems,
-            shippingAddress
+            shippingAddress,
+            notes: note
         };
 
         axios.post(`${URL}/api/order/create`, orderData, {
@@ -109,6 +108,7 @@ const ContentSection = () => {
         .then(response => {
             console.log('Order created:', response.data);
             toast.success('Đặt hàng thành công! Cảm ơn bạn đã đặt hàng.');
+            setShowModal(false);
             setTimeout(() => {
                 navigate('/home');
             }, 3000);
@@ -150,7 +150,6 @@ const ContentSection = () => {
                             <th scope="col">Đơn giá</th>
                             <th scope="col">Số lượng</th>
                             <th scope="col">Tổng tiền</th>
-                            <th scope="col">Ghi chú</th>
                             <th scope="col">Lưu</th>
                           </tr>
                         </thead>
@@ -187,10 +186,7 @@ const ContentSection = () => {
                                         <p className="mb-0 mt-4">{item.Product.price * item.quantity}₫</p>
                                     </td>
                                     <td>
-                                        <input type="text" className="form-control form-control-sm mt-4" placeholder="Notes" value={item.notes || ''} onChange={(e) => handleNotesChange(index, e)} />
-                                    </td>
-                                    <td>
-                                        <button className="btn btn-md rounded-circle bg-light border mt-4" onClick={() => handleUpdateCartItem(item.cart_item_id, item.quantity, item.notes)}>
+                                        <button className="btn btn-md rounded-circle bg-light border mt-4" onClick={() => handleUpdateCartItem(item.cart_item_id, item.quantity)}>
                                             <i className="fa fa-save text-success"></i>
                                         </button>
                                     </td>
@@ -249,6 +245,33 @@ const ContentSection = () => {
                 )}
             </div>
             <ToastContainer />
+
+            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header>
+                    <Modal.Title>Ghi chú đơn hàng</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group controlId="formNote">
+                            <Form.Label>Ghi chú</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Nhập ghi chú cho đơn hàng"
+                                value={note}
+                                onChange={(e) => setNote(e.target.value)}
+                            />
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                        Đóng
+                    </Button>
+                    <Button variant="primary" onClick={handleSubmitOrder}>
+                        Xác nhận đặt hàng
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };
