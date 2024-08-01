@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import OwlCarousel from 'react-owl-carousel'; // Make sure you have installed react-owl-carousel
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Spinner from '../../components/Spinner.jsx';
-import { URL } from '../../utils/constant.js'
+import PopupSuccess from '../../components/PopupSuccess.jsx';
+import { URL } from '../../utils/constant.js';
 
 const ContentSection = () => {
     const { productId } = useParams();
     const [product, setProduct] = useState(null);
+    const [reviews, setReviews] = useState([]);
+    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+    const [quantity, setQuantity] = useState(1);
+    const [newComment, setNewComment] = useState('');
+    const [newRating, setNewRating] = useState(0);
+    const [ratingError, setRatingError] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -19,8 +27,109 @@ const ContentSection = () => {
             }
         };
 
+        const fetchReviews = async () => {
+            try {
+                const response = await axios.get(`${URL}/api/reviews/get-all`);
+                const filteredReviews = response.data.filter(review => 
+                    parseInt(review.product_id) === parseInt(productId)
+                );
+                setReviews(filteredReviews);
+            } catch (error) {
+                console.error('Error fetching reviews:', error);
+            }
+        };
+
         fetchProduct();
+        fetchReviews();
     }, [productId]);
+
+    const renderStars = (rating) => {
+        const fullStars = Math.floor(rating);
+        const halfStar = rating % 1 !== 0;
+        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+    
+        return (
+            <>
+                {[...Array(fullStars)].map((_, index) => (
+                    <i key={`full-${index}`} className="fa fa-star text-secondary"></i>
+                ))}
+                {halfStar && <i className="fa fa-star-half-alt text-secondary"></i>}
+                {[...Array(emptyStars)].map((_, index) => (
+                    <i key={`empty-${index}`} className="fa fa-star text-muted"></i>
+                ))}
+            </>
+        );
+    };
+
+    const handleAddToCart = async (productId, quantity) => {
+        try {
+            const token = sessionStorage.getItem("token");
+
+            if (token) {
+                const user = JSON.parse(sessionStorage.getItem('user'));
+
+                const response = await axios.put(`${URL}/api/cart/add-product`, {
+                    userId: user.user_id,
+                    productId: productId,
+                    quantity: quantity,
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response) {
+                    setShowSuccessPopup(true); // Show Popup Success
+
+                    // Automatically hide Popup after 3 seconds
+                    setTimeout(() => {
+                        setShowSuccessPopup(false);
+                    }, 3000);
+                }
+            } else {
+                navigate('/login');
+            }
+        } catch (error) {
+            console.error('Error adding product to cart:', error);
+        }
+    };
+
+    const handleCommentSubmit = async (e) => {
+        e.preventDefault();
+        if (newRating === 0) {
+            setRatingError('Please select at least one star.');
+            return;
+        }
+        setRatingError('');
+        try {
+            const token = sessionStorage.getItem("token");
+
+            if (token) {
+                const user = JSON.parse(sessionStorage.getItem('user'));
+
+                const response = await axios.post(`${URL}/api/reviews/create-new`, {
+                    user_id: user.user_id,
+                    product_id: productId,
+                    rating: newRating,
+                    comment: newComment,
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response) {
+                    setReviews([...reviews, response.data]);
+                    setNewComment('');
+                    setNewRating(0);
+                }
+            } else {
+                navigate('/login');
+            }
+        } catch (error) {
+            console.error('Error submitting comment:', error);
+        }
+    };
 
     const options = {
         autoplay: true,
@@ -65,8 +174,14 @@ const ContentSection = () => {
     const discount = (originalPrice * totalDiscountPercentage) / 100;
     const discountedPrice = originalPrice - discount;
 
+    // Calculate average rating
+    const averageRating = reviews.length > 0
+        ? reviews.reduce((total, review) => total + review.rating, 0) / reviews.length
+        : 0;
+
     return (
         <div className="container-fluid py-5 mt-5">
+            {showSuccessPopup && <PopupSuccess onClose={() => setShowSuccessPopup(false)} message={"Bạn đã thêm vào giỏ hàng thành công"} />}
             <div className="container py-5">
                 <div className="row g-4 mb-5">
                     <div className="col-lg-8 col-xl-9">
@@ -86,27 +201,28 @@ const ContentSection = () => {
                                     <h5 className="text-danger text-decoration-line-through">{originalPrice.toFixed(2)} $</h5>
                                 )}
                                 <div className="d-flex mb-4">
-                                    <i className="fa fa-star text-secondary"></i>
-                                    <i className="fa fa-star text-secondary"></i>
-                                    <i className="fa fa-star text-secondary"></i>
-                                    <i className="fa fa-star text-secondary"></i>
-                                    <i className="fa fa-star"></i>
+                                    {renderStars(averageRating)}
                                 </div>
                                 <p className="mb-4">{product.description}</p>
                                 <div className="input-group quantity mb-5" style={{ width: '100px' }}>
                                     <div className="input-group-btn">
-                                        <button className="btn btn-sm btn-minus rounded-circle bg-light border">
+                                        <button className="btn btn-sm btn-minus rounded-circle bg-light border" onClick={() => setQuantity(quantity > 1 ? quantity - 1 : 1)}>
                                             <i className="fa fa-minus"></i>
                                         </button>
                                     </div>
-                                    <input type="text" className="form-control form-control-sm text-center border-0" value="1" />
+                                    <input type="text" className="form-control form-control-sm text-center border-0" value={quantity} readOnly />
                                     <div className="input-group-btn">
-                                        <button className="btn btn-sm btn-plus rounded-circle bg-light border">
+                                        <button className="btn btn-sm btn-plus rounded-circle bg-light border" onClick={() => setQuantity(quantity + 1)}>
                                             <i className="fa fa-plus"></i>
                                         </button>
                                     </div>
                                 </div>
-                                <a href="#" className="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"><i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                <a href="#" className="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary" onClick={(e) => {
+                                    e.preventDefault();
+                                    handleAddToCart(product.product_id, quantity);
+                                }}>
+                                    <i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
+                                </a>
                             </div>
                             <div className="col-lg-12">
                                 <nav>
@@ -122,90 +238,29 @@ const ContentSection = () => {
                                 <div className="tab-content mb-5">
                                     <div className="tab-pane active" id="nav-about" role="tabpanel" aria-labelledby="nav-about-tab">
                                         <p>{product.description}</p>
-                                        <div className="px-2">
-                                            <div className="row g-4">
-                                                <div className="col-6">
-                                                    <div className="row bg-light align-items-center text-center justify-content-center py-2">
-                                                        <div className="col-6">
-                                                            <p className="mb-0">Weight</p>
-                                                        </div>
-                                                        <div className="col-6">
-                                                            <p className="mb-0">1 kg</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="row text-center align-items-center justify-content-center py-2">
-                                                        <div className="col-6">
-                                                            <p className="mb-0">Country of Origin</p>
-                                                        </div>
-                                                        <div className="col-6">
-                                                            <p className="mb-0">Agro Farm</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="row bg-light text-center align-items-center justify-content-center py-2">
-                                                        <div className="col-6">
-                                                            <p className="mb-0">Quality</p>
-                                                        </div>
-                                                        <div className="col-6">
-                                                            <p className="mb-0">Organic</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="row text-center align-items-center justify-content-center py-2">
-                                                        <div className="col-6">
-                                                            <p className="mb-0">Check</p>
-                                                        </div>
-                                                        <div className="col-6">
-                                                            <p className="mb-0">Healthy</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="row bg-light text-center align-items-center justify-content-center py-2">
-                                                        <div className="col-6">
-                                                            <p className="mb-0">Min Weight</p>
-                                                        </div>
-                                                        <div className="col-6">
-                                                            <p className="mb-0">250 Kg</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+
                                     </div>
                                     <div className="tab-pane" id="nav-mission" role="tabpanel" aria-labelledby="nav-mission-tab">
-                                        <div className="d-flex">
-                                            <img src="img/avatar.jpg" className="img-fluid rounded-circle p-3" style={{ width: '100px', height: '100px' }} alt="" />
-                                            <div>
-                                                <p className="mb-2" style={{ fontSize: '14px' }}>April 12, 2024</p>
-                                                <div className="d-flex justify-content-between">
-                                                    <h5>Jason Smith</h5>
-                                                    <div className="d-flex mb-3">
-                                                        <i className="fa fa-star text-secondary"></i>
-                                                        <i className="fa fa-star text-secondary"></i>
-                                                        <i className="fa fa-star text-secondary"></i>
-                                                        <i className="fa fa-star text-secondary"></i>
-                                                        <i className="fa fa-star"></i>
+                                        {reviews.map((review) => (
+                                            <div className="d-flex" key={review.id}>
+                                                <img 
+                                                    src={review.User && review.User.image ? `/images/avatar/${review.User.image}` : "/img/avatar.jpg"} 
+                                                    className="img-fluid rounded-circle p-3" 
+                                                    style={{ width: '100px', height: '100px' }} 
+                                                    alt="" 
+                                                />
+                                                <div>
+                                                    <p className="mb-2" style={{ fontSize: '14px' }}>{new Date(review.created_at).toLocaleDateString()}</p>
+                                                    <div className="d-flex justify-content-between">
+                                                        <h5>{review.User ? review.User.full_name : 'Anonymous'}</h5>
+                                                        <div className="d-flex mb-3">
+                                                            {renderStars(review.rating)}
+                                                        </div>
                                                     </div>
+                                                    <p>{review.comment}</p>
                                                 </div>
-                                                <p>The generated Lorem Ipsum is therefore always free from repetition injected humour, or non-characteristic 
-                                                    words etc. Suspendisse ultricies nisi vel quam suscipit </p>
                                             </div>
-                                        </div>
-                                        <div className="d-flex">
-                                            <img src="img/avatar.jpg" className="img-fluid rounded-circle p-3" style={{ width: '100px', height: '100px' }} alt="" />
-                                            <div>
-                                                <p className="mb-2" style={{ fontSize: '14px' }}>April 12, 2024</p>
-                                                <div className="d-flex justify-content-between">
-                                                    <h5>Sam Peters</h5>
-                                                    <div className="d-flex mb-3">
-                                                        <i className="fa fa-star text-secondary"></i>
-                                                        <i className="fa fa-star text-secondary"></i>
-                                                        <i className="fa fa-star text-secondary"></i>
-                                                        <i className="fa fa-star"></i>
-                                                        <i className="fa fa-star"></i>
-                                                    </div>
-                                                </div>
-                                                <p className="text-dark">The generated Lorem Ipsum is therefore always free from repetition injected humour, or non-characteristic 
-                                                    words etc. Suspendisse ultricies nisi vel quam suscipit </p>
-                                            </div>
-                                        </div>
+                                        ))}
                                     </div>
                                     <div className="tab-pane" id="nav-vision" role="tabpanel">
                                         <p className="text-dark">Tempor erat elitr rebum at clita. Diam dolor diam ipsum et tempor sit. Aliqu diam
@@ -215,22 +270,22 @@ const ContentSection = () => {
                                     </div>
                                 </div>
                             </div>
-                            <form action="#">
+                            <form onSubmit={handleCommentSubmit}>
                                 <h4 className="mb-5 fw-bold">Leave a Reply</h4>
                                 <div className="row g-4">
-                                    <div className="col-lg-6">
-                                        <div className="border-bottom rounded">
-                                            <input type="text" className="form-control border-0 me-4" placeholder="Your Name *" />
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-6">
-                                        <div className="border-bottom rounded">
-                                            <input type="email" className="form-control border-0" placeholder="Your Email *" />
-                                        </div>
-                                    </div>
                                     <div className="col-lg-12">
                                         <div className="border-bottom rounded my-4">
-                                            <textarea name="" id="" className="form-control border-0" cols="30" rows="8" placeholder="Your Review *" spellCheck="false"></textarea>
+                                            <textarea 
+                                                name="comment" 
+                                                id="comment" 
+                                                className="form-control border-0" 
+                                                cols="30" 
+                                                rows="8" 
+                                                placeholder="Your Review *" 
+                                                spellCheck="false"
+                                                value={newComment}
+                                                onChange={(e) => setNewComment(e.target.value)}
+                                            ></textarea>
                                         </div>
                                     </div>
                                     <div className="col-lg-12">
@@ -238,116 +293,22 @@ const ContentSection = () => {
                                             <div className="d-flex align-items-center">
                                                 <p className="mb-0 me-3">Please rate:</p>
                                                 <div className="d-flex align-items-center" style={{ fontSize: '12px' }}>
-                                                    <i className="fa fa-star text-muted"></i>
-                                                    <i className="fa fa-star"></i>
-                                                    <i className="fa fa-star"></i>
-                                                    <i className="fa fa-star"></i>
-                                                    <i className="fa fa-star"></i>
+                                                    {[...Array(5)].map((_, index) => (
+                                                        <i 
+                                                            key={index} 
+                                                            className={`fa fa-star ${newRating > index ? 'text-secondary' : 'text-muted'}`} 
+                                                            onClick={() => setNewRating(index + 1)}
+                                                        ></i>
+                                                    ))}
                                                 </div>
                                             </div>
-                                            <a href="#" className="btn border border-secondary text-primary rounded-pill px-4 py-3"> Post Comment</a>
+                                            <button type="submit" className="btn border border-secondary text-primary rounded-pill px-4 py-3">Post Comment</button>
                                         </div>
+                                        {ratingError && <p className="text-danger">{ratingError}</p>}
                                     </div>
                                 </div>
                             </form>
                         </div>
-                    </div>
-                    <div className="col-lg-4 col-xl-3">
-                        <div className="row g-4 fruite">
-                            <div className="col-lg-12">
-                                <div className="input-group w-100 mx-auto d-flex mb-4">
-                                    <input type="search" className="form-control p-3" placeholder="keywords" aria-describedby="search-icon-1" />
-                                    <span id="search-icon-1" className="input-group-text p-3"><i className="fa fa-search"></i></span>
-                                </div>
-                                <div className="mb-4">
-                                    <h4>Categories</h4>
-                                    <ul className="list-unstyled fruite-categorie">
-                                        <li>
-                                            <div className="d-flex justify-content-between fruite-name">
-                                                <a href="#"><i className="fas fa-apple-alt me-2"></i>Apples</a>
-                                                <span>(3)</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div className="d-flex justify-content-between fruite-name">
-                                                <a href="#"><i className="fas fa-apple-alt me-2"></i>Oranges</a>
-                                                <span>(5)</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div className="d-flex justify-content-between fruite-name">
-                                                <a href="#"><i className="fas fa-apple-alt me-2"></i>Strawberry</a>
-                                                <span>(2)</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div className="d-flex justify-content-between fruite-name">
-                                                <a href="#"><i className="fas fa-apple-alt me-2"></i>Banana</a>
-                                                <span>(8)</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div className="d-flex justify-content-between fruite-name">
-                                                <a href="#"><i className="fas fa-apple-alt me-2"></i>Pumpkin</a>
-                                                <span>(5)</span>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div className="col-lg-12">
-                                <h4 className="mb-4">Featured products</h4>
-                                <div className="d-flex align-items-center justify-content-start">
-                                    <div className="rounded" style={{ width: '100px', height: '100px' }}>
-                                        <img src="img/featur-1.jpg" className="img-fluid rounded" alt="Image" />
-                                    </div>
-                                    <div>
-                                        <h6 className="mb-2">Big Banana</h6>
-                                        <div className="d-flex mb-2">
-                                            <i className="fa fa-star text-secondary"></i>
-                                            <i className="fa fa-star text-secondary"></i>
-                                            <i className="fa fa-star text-secondary"></i>
-                                            <i className="fa fa-star text-secondary"></i>
-                                            <i className="fa fa-star"></i>
-                                        </div>
-                                        <div className="d-flex mb-2">
-                                            <h5 className="fw-bold me-2">2.99 $</h5>
-                                            <h5 className="text-danger text-decoration-line-through">4.11 $</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-lg-12">
-                                <div className="position-relative">
-                                    <img src="img/banner-fruits.jpg" className="img-fluid w-100 rounded" alt="" />
-                                    <div className="position-absolute" style={{ top: '50%', right: '10px', transform: 'translateY(-50%)' }}>
-                                        <h3 className="text-secondary fw-bold">Fresh <br /> Fruits <br /> Banner</h3>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <h1 className="fw-bold mb-0">Related products</h1>
-                <div className="vesitable">
-                    <div style={{ width: '70%', margin: '0 auto' }}>
-                        <OwlCarousel className="owl-carousel vegetable-carousel justify-content-center" {...options}>
-                            <div className="border border-primary rounded position-relative vesitable-item">
-                                <div className="vesitable-img">
-                                    <img src="img/vegetable-item-6.jpg" className="img-fluid w-100 rounded-top" alt="" />
-                                </div>
-                                <div className="text-white bg-primary px-3 py-1 rounded position-absolute" style={{ top: '10px', right: '10px' }}>Vegetable</div>
-                                <div className="p-4 pb-0 rounded-bottom">
-                                    <h4>Parsley</h4>
-                                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt</p>
-                                    <div className="d-flex justify-content-between flex-lg-wrap">
-                                        <p className="text-dark fs-5 fw-bold">$4.99 / kg</p>
-                                        <a href="#" className="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary"><i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
-                                    </div>
-                                </div>
-                            </div>
-                            {/* Add more items here */}
-                        </OwlCarousel>
                     </div>
                 </div>
             </div>

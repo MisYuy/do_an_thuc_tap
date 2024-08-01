@@ -14,10 +14,11 @@ const ContentSection = ({ products }) => {
     const [additionalFilter, setAdditionalFilter] = useState('all');
     const [sortOption, setSortOption] = useState('default');
     const [searchQuery, setSearchQuery] = useState('');
+    const [reviews, setReviews] = useState([]); // New state for reviews
     const productsPerPage = 9;
     const navigate = useNavigate();
 
-    // Fetch categories from backend when component mounts
+    // Fetch categories and reviews from backend when component mounts
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -32,13 +33,28 @@ const ContentSection = ({ products }) => {
             }
         };
 
+        const fetchReviews = async () => {
+            try {
+                const response = await axios.get(`${URL}/api/reviews/get-all`);
+                setReviews(response.data);
+            } catch (error) {
+                console.error('Error fetching reviews:', error);
+            }
+        };
+
         fetchCategories();
+        fetchReviews();
     }, [products]);
 
     // Function to get category name by category_id
     const getCategoryName = (categoryId) => {
         const category = categories.find(cat => cat.category_id === categoryId);
         return category ? category.name : 'Unknown';
+    };
+
+    // Function to get reviews for a product
+    const getProductReviews = (productId) => {
+        return reviews.filter(review => review.product_id === productId);
     };
 
     // Filter products based on selected category, price range, additional filter, and search query
@@ -147,6 +163,25 @@ const ContentSection = ({ products }) => {
         setSearchQuery(e.target.value);
     };
 
+    const renderStars = (rating, reviewCount) => {
+        const fullStars = Math.floor(rating);
+        const halfStar = rating % 1 !== 0;
+        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+    
+        return (
+            <>
+                {[...Array(fullStars)].map((_, index) => (
+                    <i key={`full-${index}`} className="fa fa-star text-secondary"></i>
+                ))}
+                {halfStar && <i className="fa fa-star-half-alt text-secondary"></i>}
+                {[...Array(emptyStars)].map((_, index) => (
+                    <i key={`empty-${index}`} className="fa fa-star text-muted"></i>
+                ))}
+                <span> ({reviewCount})</span>
+            </>
+        );
+    };
+
     return (
         <div className="container-fluid fruite py-5">
             {showSuccessPopup && <PopupSuccess onClose={handleClosePopup} message={"Bạn đã thêm vào giỏ hàng thành công"} />}
@@ -218,131 +253,59 @@ const ContentSection = ({ products }) => {
                                             </div>
                                         </div>
                                     </div>
-                                    {/* <div className="col-lg-12">
-                                        <h4 className="mb-3">Featured products</h4>
-                                        <div className="d-flex align-items-center justify-content-start">
-                                            <div className="rounded me-4" style={{ width: '100px', height: '100px' }}>
-                                                <img src="img/featur-1.jpg" className="img-fluid rounded" alt="" />
-                                            </div>
-                                            <div>
-                                                <h6 className="mb-2">Big Banana</h6>
-                                                <div className="d-flex mb-2">
-                                                    <i className="fa fa-star text-secondary"></i>
-                                                    <i className="fa fa-star text-secondary"></i>
-                                                    <i className="fa fa-star text-secondary"></i>
-                                                    <i className="fa fa-star text-secondary"></i>
-                                                    <i className="fa fa-star"></i>
-                                                </div>
-                                                <div className="d-flex mb-2">
-                                                    <h5 className="fw-bold me-2">2.99 $</h5>
-                                                    <h5 className="text-danger text-decoration-line-through">4.11 $</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="d-flex align-items-center justify-content-start">
-                                            <div className="rounded me-4" style={{ width: '100px', height: '100px' }}>
-                                                <img src="img/featur-2.jpg" className="img-fluid rounded" alt="" />
-                                            </div>
-                                            <div>
-                                                <h6 className="mb-2">Big Banana</h6>
-                                                <div className="d-flex mb-2">
-                                                    <i className="fa fa-star text-secondary"></i>
-                                                    <i className="fa fa-star text-secondary"></i>
-                                                    <i className="fa fa-star text-secondary"></i>
-                                                    <i className="fa fa-star text-secondary"></i>
-                                                    <i className="fa fa-star"></i>
-                                                </div>
-                                                <div className="d-flex mb-2">
-                                                    <h5 className="fw-bold me-2">2.99 ₫</h5>
-                                                    <h5 className="text-danger text-decoration-line-through">4.11 ₫</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="d-flex align-items-center justify-content-start">
-                                            <div className="rounded me-4" style={{ width: '100px', height: '100px' }}>
-                                                <img src="img/featur-3.jpg" className="img-fluid rounded" alt="" />
-                                            </div>
-                                            <div>
-                                                <h6 className="mb-2">Big Banana</h6>
-                                                <div className="d-flex mb-2">
-                                                    <i className="fa fa-star text-secondary"></i>
-                                                    <i className="fa fa-star text-secondary"></i>
-                                                    <i className="fa fa-star text-secondary"></i>
-                                                    <i className="fa fa-star text-secondary"></i>
-                                                    <i className="fa fa-star"></i>
-                                                </div>
-                                                <div className="d-flex mb-2">
-                                                    <h5 className="fw-bold me-2">2.99 $</h5>
-                                                    <h5 className="text-danger text-decoration-line-through">4.11 ₫</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="d-flex align-items-center justify-content-start">
-                                            <div className="rounded me-4" style={{ width: '100px', height: '100px' }}>
-                                                <img src="img/featur-4.jpg" className="img-fluid rounded" alt="" />
-                                            </div>
-                                            <div>
-                                                <h6 className="mb-2">Big Banana</h6>
-                                                <div className="d-flex mb-2">
-                                                    <i className="fa fa-star text-secondary"></i>
-                                                    <i className="fa fa-star text-secondary"></i>
-                                                    <i className="fa fa-star text-secondary"></i>
-                                                    <i className="fa fa-star text-secondary"></i>
-                                                    <i className="fa fa-star"></i>
-                                                </div>
-                                                <div className="d-flex mb-2">
-                                                    <h5 className="fw-bold me-2">2.99 ₫</h5>
-                                                    <h5 className="text-danger text-decoration-line-through">4.11 ₫</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div> */}
                                 </div>
                             </div>
                             <div className="col-lg-9">
                                 <div className="row g-4 justify-content-center">
-                                    {currentProducts.map((product, index) => {
-                                        const hasPromotion = product.promotions && product.promotions.length > 0;
-                                        const originalPrice = parseFloat(product.price);
-                                        const totalDiscountPercentage = hasPromotion
-                                            ? product.promotions.reduce((total, promo) => total + parseFloat(promo.discount_percentage), 0)
-                                            : 0;
-                                        const discount = (originalPrice * totalDiscountPercentage) / 100;
-                                        const discountedPrice = originalPrice - discount;
+                                {currentProducts.map((product, index) => {
+    const hasPromotion = product.promotions && product.promotions.length > 0;
+    const originalPrice = parseFloat(product.price);
+    const totalDiscountPercentage = hasPromotion
+        ? product.promotions.reduce((total, promo) => total + parseFloat(promo.discount_percentage), 0)
+        : 0;
+    const discount = (originalPrice * totalDiscountPercentage) / 100;
+    const discountedPrice = originalPrice - discount;
 
-                                        return (
-                                            <div
-                                                className="col-md-6 col-lg-6 col-xl-4"
-                                                key={index}
-                                                // Handle product item click
-                                                style={{ cursor: 'pointer' }} // Change cursor to pointer on hover
-                                            >
-                                                <div className="rounded position-relative fruite-item">
-                                                    <div className="fruite-img">
-                                                        <img onClick={() => handleProductClick(product.product_id)} src={product.image ? `/images/product/${product.image}` : "/img/none_image.png"} className="img-fluid w-100 rounded-top" alt="" />
-                                                    </div>
-                                                    <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{ top: '10px', left: '10px' }}>{getCategoryName(product.category_id)}</div>
-                                                    <div className="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                        <h4>{product.name}</h4>
-                                                        <p>{product.description.length > 100 ? `${product.description.substring(0, 100)}...` : product.description}</p>
-                                                        <div className="d-flex justify-content-between flex-lg-wrap">
-                                                            <h5 className="fw-bold me-2">{discountedPrice.toFixed(2)} ₫</h5>
-                                                            {hasPromotion && (
-                                                                <h5 className="text-danger text-decoration-line-through">{originalPrice.toFixed(2)} ₫</h5>
-                                                            )}
-                                                            <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary" onClick={(e) => {
-                                                                e.preventDefault(); // Prevent the default behavior of the link
-                                                                handleAddToCart(product.product_id); // Call your function to handle adding to cart
-                                                            }}
-                                                            >
-                                                                <i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
+    const productReviews = getProductReviews(product.product_id);
+    const averageRating = productReviews.length > 0
+        ? productReviews.reduce((total, review) => total + review.rating, 0) / productReviews.length
+        : 0;
+
+    return (
+        <div
+            className="col-md-6 col-lg-6 col-xl-4"
+            key={index}
+            style={{ cursor: 'pointer' }}
+        >
+            <div className="rounded position-relative fruite-item" onClick={() => handleProductClick(product.product_id)}>
+                <div className="fruite-img">
+                    <img  src={product.image ? `/images/product/${product.image}` : "/img/none_image.png"} className="img-fluid w-100 rounded-top" alt="" />
+                </div>
+                <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{ top: '10px', left: '10px' }}>{getCategoryName(product.category_id)}</div>
+                <div className="p-4 border border-secondary border-top-0 rounded-bottom">
+                    <h4>{product.name}</h4>
+                    <p>{product.description.length > 100 ? `${product.description.substring(0, 100)}...` : product.description}</p>
+                    <div className="d-flex mb-2">
+                        {renderStars(averageRating, productReviews.length)}
+                    </div>
+                    <div className="d-flex justify-content-between flex-lg-wrap">
+                        <h5 className="fw-bold me-2">{discountedPrice.toFixed(2)} ₫</h5>
+                        {hasPromotion && (
+                            <h5 className="text-danger text-decoration-line-through">{originalPrice.toFixed(2)} ₫</h5>
+                        )}
+                        <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary" onClick={(e) => {
+                            e.preventDefault();
+                            handleAddToCart(product.product_id);
+                        }}>
+                            <i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+})}
+
                                     <div className="col-12">
                                         <div className="pagination d-flex justify-content-center mt-5">
                                             <a href="#" className="rounded" onClick={() => handlePageChange(currentPage - 1)}>&laquo;</a>

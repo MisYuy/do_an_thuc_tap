@@ -24,6 +24,7 @@ db.OrderItem = require('./orderItems')(sequelize, DataTypes);
 db.Material = require('./material')(sequelize, DataTypes);
 db.MaterialOrder = require('./materialOrder')(sequelize, DataTypes);
 db.MaterialUsage = require('./materialUsage')(sequelize, DataTypes);
+db.Review = require('./review')(sequelize, DataTypes);
 
 // Setup associations
 Object.keys(db).forEach(modelName => {

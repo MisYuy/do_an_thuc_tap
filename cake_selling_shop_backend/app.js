@@ -10,6 +10,7 @@ const category = require('./routes/categoryRoutes');
 const material = require('./routes/materialRoutes');
 const orderMaterial = require('./routes/materialOrderRoutes');
 const statistics = require('./routes/statisticsRoutes');
+const reviews = require('./routes/reviewRoutes');
 const email = require('./routes/emailRoutes');
 
 // Middleware to parse JSON bodies
@@ -26,6 +27,7 @@ app.use('/api/category', category);
 app.use('/api/material', material);
 app.use('/api/order-material', orderMaterial);
 app.use('/api/statistic', statistics);
+app.use('/api/reviews', reviews);
 
 app.use('/api/email', email);
 

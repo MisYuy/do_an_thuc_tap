@@ -25,7 +25,7 @@ const OrderListSection = () => {
         }
     }, [user, navigate]);
 
-    useEffect(() => {
+    const fetchOrders = () => {
         if (!user) return;
 
         axios.get(`${URL}/api/order/get-all-by-user-id`, {
@@ -43,6 +43,10 @@ const OrderListSection = () => {
             setError(error);
             setLoading(false);
         });
+    };
+
+    useEffect(() => {
+        fetchOrders();
     }, []);
 
     const handleCancelOrder = async (orderId) => {
@@ -54,7 +58,7 @@ const OrderListSection = () => {
                 }
             });
             toast.success('Order canceled successfully');
-            setOrders(orders.map(order => order.order_id === orderId ? { ...order, status: 'canceled' } : order));
+            fetchOrders(); // Refetch orders after canceling
         } catch (error) {
             toast.error('Failed to cancel order');
         }
@@ -81,7 +85,7 @@ const OrderListSection = () => {
                 }
             });
             toast.success('Order placed successfully');
-            setOrders([...orders, newOrder.data]);
+            fetchOrders(); // Refetch orders after reordering
         } catch (error) {
             toast.error('Failed to place order');
         }
@@ -90,7 +94,7 @@ const OrderListSection = () => {
     const handleRowClick = (order) => {
         if (order.status === 'completed' || order.status === 'shipping') return;
         setSelectedOrder(order);
-        setNewNote(order.note || '');
+        setNewNote(order.notes || ''); // Ensure notes are loaded correctly
         const quantities = {};
         if (order.OrderItems) {
             order.OrderItems.forEach(item => {
@@ -140,7 +144,7 @@ const OrderListSection = () => {
                 }
             });
             toast.success('Order updated successfully');
-            setOrders(orders.map(order => order.order_id === selectedOrder.order_id ? { ...order, OrderItems: updatedOrderItems, note: newNote, total_amount: newTotalAmount } : order));
+            fetchOrders(); // Refetch orders after updating
             setShowModal(false);
         } catch (error) {
             toast.error('Failed to update order');
