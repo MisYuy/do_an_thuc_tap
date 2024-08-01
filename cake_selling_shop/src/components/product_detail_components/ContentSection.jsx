@@ -15,9 +15,19 @@ const ContentSection = () => {
     const [newComment, setNewComment] = useState('');
     const [newRating, setNewRating] = useState(0);
     const [ratingError, setRatingError] = useState('');
+    const [categories, setCategories] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get(`${URL}/api/category/get-all`);
+                setCategories(response.data);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
+
         const fetchProduct = async () => {
             try {
                 const response = await axios.get(`${URL}/api/product/get-by-id?id=${productId}`);
@@ -38,7 +48,7 @@ const ContentSection = () => {
                 console.error('Error fetching reviews:', error);
             }
         };
-
+        fetchCategories();
         fetchProduct();
         fetchReviews();
     }, [productId]);
@@ -131,6 +141,11 @@ const ContentSection = () => {
         }
     };
 
+    const getCategoryName = (categoryId) => {
+        const category = categories.find(cat => cat.category_id === categoryId);
+        return category ? category.name : 'Unknown';
+    };
+
     const options = {
         autoplay: true,
         smartSpeed: 2000,
@@ -195,7 +210,7 @@ const ContentSection = () => {
                             </div>
                             <div className="col-lg-6">
                                 <h4 className="fw-bold mb-3">{product.name}</h4>
-                                <p className="mb-3">Category: Vegetables</p>
+                                <p className="mb-3">Loại: {getCategoryName(product.category_id)}</p>
                                 <h5 className="fw-bold me-2">{discountedPrice.toFixed(2)} $</h5>
                                 {hasPromotion && (
                                     <h5 className="text-danger text-decoration-line-through">{originalPrice.toFixed(2)} $</h5>
@@ -221,7 +236,7 @@ const ContentSection = () => {
                                     e.preventDefault();
                                     handleAddToCart(product.product_id, quantity);
                                 }}>
-                                    <i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
+                                    <i className="fa fa-shopping-bag me-2 text-primary"></i> Thêm vào giỏ hàng
                                 </a>
                             </div>
                             <div className="col-lg-12">
@@ -229,10 +244,10 @@ const ContentSection = () => {
                                     <div className="nav nav-tabs mb-3">
                                         <button className="nav-link active border-white border-bottom-0" type="button" role="tab"
                                             id="nav-about-tab" data-bs-toggle="tab" data-bs-target="#nav-about"
-                                            aria-controls="nav-about" aria-selected="true">Description</button>
+                                            aria-controls="nav-about" aria-selected="true">Mô tả</button>
                                         <button className="nav-link border-white border-bottom-0" type="button" role="tab"
                                             id="nav-mission-tab" data-bs-toggle="tab" data-bs-target="#nav-mission"
-                                            aria-controls="nav-mission" aria-selected="false">Reviews</button>
+                                            aria-controls="nav-mission" aria-selected="false">Đánh giá</button>
                                     </div>
                                 </nav>
                                 <div className="tab-content mb-5">
@@ -262,16 +277,10 @@ const ContentSection = () => {
                                             </div>
                                         ))}
                                     </div>
-                                    <div className="tab-pane" id="nav-vision" role="tabpanel">
-                                        <p className="text-dark">Tempor erat elitr rebum at clita. Diam dolor diam ipsum et tempor sit. Aliqu diam
-                                            amet diam et eos labore. 3</p>
-                                        <p className="mb-0">Diam dolor diam ipsum et tempor sit. Aliqu diam amet diam et eos labore.
-                                            Clita erat ipsum et lorem et sit</p>
-                                    </div>
                                 </div>
                             </div>
                             <form onSubmit={handleCommentSubmit}>
-                                <h4 className="mb-5 fw-bold">Leave a Reply</h4>
+                                <h4 className="mb-5 fw-bold">Để lại đánh giá</h4>
                                 <div className="row g-4">
                                     <div className="col-lg-12">
                                         <div className="border-bottom rounded my-4">
@@ -281,7 +290,7 @@ const ContentSection = () => {
                                                 className="form-control border-0" 
                                                 cols="30" 
                                                 rows="8" 
-                                                placeholder="Your Review *" 
+                                                placeholder="Bình luận của bạn... *" 
                                                 spellCheck="false"
                                                 value={newComment}
                                                 onChange={(e) => setNewComment(e.target.value)}
@@ -291,7 +300,7 @@ const ContentSection = () => {
                                     <div className="col-lg-12">
                                         <div className="d-flex justify-content-between py-3 mb-5">
                                             <div className="d-flex align-items-center">
-                                                <p className="mb-0 me-3">Please rate:</p>
+                                                <p className="mb-0 me-3">Đánh giá sao:</p>
                                                 <div className="d-flex align-items-center" style={{ fontSize: '12px' }}>
                                                     {[...Array(5)].map((_, index) => (
                                                         <i 
@@ -302,7 +311,7 @@ const ContentSection = () => {
                                                     ))}
                                                 </div>
                                             </div>
-                                            <button type="submit" className="btn border border-secondary text-primary rounded-pill px-4 py-3">Post Comment</button>
+                                            <button type="submit" className="btn border border-secondary text-primary rounded-pill px-4 py-3">Đăng bình luận</button>
                                         </div>
                                         {ratingError && <p className="text-danger">{ratingError}</p>}
                                     </div>

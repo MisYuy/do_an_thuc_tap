@@ -277,9 +277,9 @@ const ContentSection = ({ products }) => {
             key={index}
             style={{ cursor: 'pointer' }}
         >
-            <div className="rounded position-relative fruite-item" onClick={() => handleProductClick(product.product_id)}>
+            <div className="rounded position-relative fruite-item" >
                 <div className="fruite-img">
-                    <img  src={product.image ? `/images/product/${product.image}` : "/img/none_image.png"} className="img-fluid w-100 rounded-top" alt="" />
+                    <img onClick={() => handleProductClick(product.product_id)} src={product.image ? `/images/product/${product.image}` : "/img/none_image.png"} className="img-fluid w-100 rounded-top" alt="" />
                 </div>
                 <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{ top: '10px', left: '10px' }}>{getCategoryName(product.category_id)}</div>
                 <div className="p-4 border border-secondary border-top-0 rounded-bottom">
@@ -297,7 +297,7 @@ const ContentSection = ({ products }) => {
                             e.preventDefault();
                             handleAddToCart(product.product_id);
                         }}>
-                            <i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
+                            <i className="fa fa-shopping-bag me-2 text-primary"></i> Thêm vào giỏ hàng
                         </a>
                     </div>
                 </div>
