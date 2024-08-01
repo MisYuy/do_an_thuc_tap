@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { URL } from '../utils/constant.js';
 import VerificationCode from '../components/authenticate_components/VerificationCode.jsx'; // Import the VerificationCode component
+import { useNavigate } from 'react-router-dom';
 
 const ProfileSection = () => {
     const [profile, setProfile] = useState({
@@ -24,9 +25,16 @@ const ProfileSection = () => {
         confirmNewPassword: ''
     });
     const [showVerificationCode, setShowVerificationCode] = useState(false); // State to manage verification code popup
+    const navigate = useNavigate();
 
     const user = JSON.parse(sessionStorage.getItem("user"));
     const token = sessionStorage.getItem("token");
+
+    useEffect(() => {
+        if (!user) {
+            navigate('/login');
+        }
+    }, [user, navigate]);
 
     useEffect(() => {
         if (!user) {

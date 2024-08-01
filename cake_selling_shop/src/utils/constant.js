@@ -2,7 +2,8 @@ export const Nav_Item = Object.freeze({
     HOME: "Home",
     PRODUCTS: "Products",
     PRODUCT_DETAIL: "Product-Detail",
-    ORDER: "Order"
+    ORDER: "Order",
+    POLICY: "Policy"
 });
 
 

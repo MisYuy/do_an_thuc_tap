@@ -48,9 +48,7 @@ const Navbar = ({ select }) => {
                         </small>
                     </div>
                     <div className="top-link pe-2">
-                        <a href="#" className="text-white"><small className="text-white mx-2">Chính sách</small>/</a>
-                        <a href="#" className="text-white"><small className="text-white mx-2">Điều khoản sử dụng</small>/</a>
-                        <a href="#" className="text-white"><small className="text-white ms-2">Bán hàng và hoàn tiền</small></a>
+                        <a href="#" className="text-white"><small className="text-white mx-2">Chính sách - Điều khoản sử dụng</small></a>
                     </div>
                 </div>
             </div>
@@ -65,6 +63,7 @@ const Navbar = ({ select }) => {
                             <a href="/home" className={`nav-item nav-link ${select === Nav_Item.HOME ? 'active' : ''}`}>Trang chủ</a>
                             <a href={`${select === Nav_Item.PRODUCT_DETAIL ? '../products' : 'products'}`} className={`nav-item nav-link ${select === Nav_Item.PRODUCTS ? 'active' : ''}`}>Sản phẩm</a>
                             <a href="/order-list" className={`nav-item nav-link ${select === Nav_Item.ORDER ? 'active' : ''}`}>Đơn hàng</a>
+                            <a href="/policy" className={`nav-item nav-link ${select === Nav_Item.POLICY ? 'active' : ''}`}>Chính sách và điều khoản sử dụng</a>
                         </div>
                         <div className="d-flex m-3 me-0">
                             <a href="/cart" className="position-relative me-4 my-auto">

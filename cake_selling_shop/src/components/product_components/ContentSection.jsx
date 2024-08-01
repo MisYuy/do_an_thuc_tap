@@ -199,9 +199,9 @@ const ContentSection = ({ products }) => {
                             <div className="col-6"></div>
                             <div className="col-xl-3">
                                 <div className="bg-light ps-3 py-3 rounded d-flex justify-content-between mb-4">
-                                    <label htmlFor="fruits">Default Sorting:</label>
+                                    <label htmlFor="fruits">Sắp xếp:</label>
                                     <select id="fruits" name="fruitlist" className="border-0 form-select-sm bg-light me-3" form="fruitform" onChange={handleSortOptionChange}>
-                                        <option value="default">Default</option>
+                                        <option value="default">Mặc định</option>
                                         <option value="priceAsc">Giá: Thấp tới cao</option>
                                         <option value="priceDesc">Giá: Cao tới thấp</option>
                                     </select>
@@ -213,7 +213,7 @@ const ContentSection = ({ products }) => {
                                 <div className="row g-4">
                                     <div className="col-lg-12">
                                         <div className="mb-3">
-                                            <h4>Categories</h4>
+                                            <h4>Loại bánh</h4>
                                             <ul className="list-unstyled fruite-categorie">
                                                 {categories.map(category => (
                                                     <li key={category.category_id}>
@@ -233,7 +233,7 @@ const ContentSection = ({ products }) => {
                                     </div>
                                     <div className="col-lg-12">
                                         <div className="mb-3">
-                                            <h4 className="mb-2">Price</h4>
+                                            <h4 className="mb-2">Giá</h4>
                                             <input type="range" className="form-range w-100" id="minPrice" name="minPrice" min="0" max="10000000" value={minPrice} onChange={handlePriceChange} />
                                             <output id="minAmount" name="minAmount" htmlFor="minPrice">{minPrice}</output>
                                             <input type="range" className="form-range w-100" id="maxPrice" name="maxPrice" min="0" max="10000000" value={maxPrice} onChange={handlePriceChange} />
@@ -242,7 +242,7 @@ const ContentSection = ({ products }) => {
                                     </div>
                                     <div className="col-lg-12">
                                         <div className="mb-3">
-                                            <h4>Additional</h4>
+                                            <h4>Bộ lọc</h4>
                                             <div className="mb-2">
                                                 <input type="radio" className="me-2" id="additional-all" name="additionalFilter" value="all" checked={additionalFilter === 'all'} onChange={handleAdditionalFilterChange} />
                                                 <label htmlFor="additional-all"> All</label>
