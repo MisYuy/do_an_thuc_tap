@@ -72,9 +72,9 @@ const AuthenticatePage = () => {
                 else if(user.role === 'admin')
                     navigate(`../m/statistic-revenue`)
                 else if(user.role === 'sale staff')
-                    navigate(`../m/home`)
-                else if(user.role === 'werehouse staff')
-                    navigate(`../m/home`)
+                    navigate(`../m/order`)
+                else if(user.role === 'warehouse staff')
+                    navigate(`../m/statistic-material`)
                 setError(null);
             }
 

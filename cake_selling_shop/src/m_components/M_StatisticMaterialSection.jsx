@@ -11,6 +11,9 @@ import {
     Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import Arimo from '../components/Arimo/Arimo-VariableFont_wght.ttf'
 
 // Register the necessary components
 ChartJS.register(
@@ -180,6 +183,55 @@ const M_StatisticMaterialSection = () => {
         return !dateFrom || !dateTo || !materialId;
     };
 
+    // Function to convert font to base64
+    const loadFont = async (url) => {
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        const base64String = btoa(
+            new Uint8Array(arrayBuffer)
+                .reduce((data, byte) => data + String.fromCharCode(byte), '')
+        );
+        return base64String;
+    };
+
+    // Helper function to format numbers
+    const formatNumber = (number) => {
+        return new Intl.NumberFormat('vi-VN').format(number) + ' unit';
+    };
+
+    const exportPDF = async () => {
+        const doc = new jsPDF();
+    
+        // Load the Arimo font
+        const arimoBase64 = await loadFont(Arimo);
+        doc.addFileToVFS('Arimo.ttf', arimoBase64);
+        doc.addFont('Arimo.ttf', 'Arimo', 'normal');
+        doc.setFont('Arimo');
+    
+        const selectedMaterial = materials.find(material => String(material.material_id) === String(materialId));
+    
+        // Format the date range for the title
+        const formattedDateFrom = new Date(dateFrom).toLocaleDateString('vi-VN');
+        const formattedDateTo = new Date(dateTo).toLocaleDateString('vi-VN');
+        const title = `Thống kê vật liệu (${formattedDateFrom} - ${formattedDateTo})`;
+    
+        doc.text(title, 20, 10);
+        doc.autoTable({
+            head: [['Material ID', 'Material Name', 'Current Stock', 'Total Ordered', 'Total Used']],
+            body: [
+                [
+                    selectedMaterial.material_id,
+                    selectedMaterial.name,
+                    formatNumber(statistics.currentStock),
+                    formatNumber(statistics.totalOrdered),
+                    formatNumber(statistics.totalUsed)
+                ]
+            ],
+        });
+        doc.save('material_report.pdf');
+    };
+    
+
     return (
         <div className="content">
             <div className="animated fadeIn">
@@ -229,6 +281,7 @@ const M_StatisticMaterialSection = () => {
                                                 },
                                             }}
                                         />
+                                        <button onClick={exportPDF} style={{marginTop: '50px'}}>Xuất báo cáo PDF</button>
                                     </div>
                                 )}
                             </div>

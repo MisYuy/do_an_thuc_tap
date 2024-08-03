@@ -12,6 +12,9 @@ import {
     Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import Arimo from '../components/Arimo/Arimo-VariableFont_wght.ttf'
 
 // Register the necessary components
 ChartJS.register(
@@ -226,6 +229,49 @@ const M_StatisticRevenueSection = () => {
         return !dateFrom || !dateTo;
     };
 
+    // Function to convert font to base64
+    const loadFont = async (url) => {
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        const base64String = btoa(
+            new Uint8Array(arrayBuffer)
+                .reduce((data, byte) => data + String.fromCharCode(byte), '')
+        );
+        return base64String;
+    };
+
+    // Helper function to format numbers
+    const formatNumber = (number) => {
+        return new Intl.NumberFormat('vi-VN').format(number) + ' vnd';
+    };
+
+    const exportPDF = async () => {
+        const doc = new jsPDF();
+    
+        // Load the Arimo font
+        const arimoBase64 = await loadFont(Arimo);
+        doc.addFileToVFS('Arimo.ttf', arimoBase64);
+        doc.addFont('Arimo.ttf', 'Arimo', 'normal');
+        doc.setFont('Arimo');
+    
+        // Determine the time range based on the selected statType
+        let timeRange = '';
+        if (statType === 'by-quarter') {
+            timeRange = `Từ quý ${quarterFrom.quarter} ${quarterFrom.year} đến quý ${quarterTo.quarter} ${quarterTo.year}`;
+        } else {
+            timeRange = `Từ ${dateFrom} đến ${dateTo}`;
+        }
+    
+        // Add the title with the time range
+        doc.text(`Thống kê doanh thu (${timeRange})`, 20, 10);
+        doc.autoTable({
+            head: [['Time', 'Doanh thu']],
+            body: Object.entries(statistics[`revenue_by_${statType.split('-')[1]}`]).map(([key, value]) => [key, formatNumber(value)]),
+        });
+        doc.save('report_revenue.pdf');
+    };
+    
+
     return (
         <div className="content">
             <div className="animated fadeIn">
@@ -254,6 +300,7 @@ const M_StatisticRevenueSection = () => {
                                 {statistics && (
                                     <div>
                                         <Line data={getChartData()} />
+                                        <button onClick={exportPDF} style={{marginTop: '50px'}}>Xuất báo cáo PDF</button>
                                     </div>
                                 )}
                             </div>

@@ -11,6 +11,9 @@ import {
     Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import Arimo from '../components/Arimo/Arimo-VariableFont_wght.ttf'
 
 // Register the necessary components
 ChartJS.register(
@@ -136,6 +139,49 @@ const M_StatisticProductSection = () => {
         return !dateFrom || !dateTo || !productId;
     };
 
+    // Function to convert font to base64
+    const loadFont = async (url) => {
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        const base64String = btoa(
+            new Uint8Array(arrayBuffer)
+                .reduce((data, byte) => data + String.fromCharCode(byte), '')
+        );
+        return base64String;
+    };
+
+    // Helper function to format numbers
+    const formatNumber = (number) => {
+        return new Intl.NumberFormat('vi-VN').format(number) + ' vnd';
+    };
+
+    const exportPDF = async () => {
+        const doc = new jsPDF();
+    
+        // Load the Arimo font
+        const arimoBase64 = await loadFont(Arimo);
+        doc.addFileToVFS('Arimo.ttf', arimoBase64);
+        doc.addFont('Arimo.ttf', 'Arimo', 'normal');
+        doc.setFont('Arimo');
+    
+        const selectedProduct = products.find(product => String(product.product_id) === String(productId));
+    
+        // Add the time range to the text
+        doc.text(`Thống kê doanh thu và sl bán ra theo sản phẩm (${dateFrom} - ${dateTo})`, 20, 10);
+        doc.autoTable({
+            head: [['Product ID', 'Product Name', 'Month', 'Total Revenue', 'Total Quantity Sold']],
+            body: Object.entries(statistics.monthly_data).map(([key, value]) => [
+                selectedProduct.product_id,
+                selectedProduct.name,
+                key, 
+                formatNumber(value.total_revenue), 
+                value.total_quantity
+            ]),
+        });
+        doc.save('product_report.pdf');
+    };
+    
+
     return (
         <div className="content">
             <div className="animated fadeIn">
@@ -191,6 +237,7 @@ const M_StatisticProductSection = () => {
                                                 },
                                             }}
                                         />
+                                        <button onClick={exportPDF} style={{marginTop: '50px'}}>Xuất báo cáo PDF</button>
                                     </div>
                                 )}
                             </div>

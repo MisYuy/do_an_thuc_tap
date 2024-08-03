@@ -20,6 +20,7 @@
     "firebase": "^10.12.4",
     "firebase-admin": "^12.3.0",
     "jsonwebtoken": "^9.0.2",
+    "jspdf-autotable": "^3.8.2",
     "mailbit-library-nodejs": "^1.0.3",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.10.2",

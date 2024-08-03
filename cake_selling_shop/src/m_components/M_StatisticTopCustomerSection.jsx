@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { URL } from '../utils/constant.js';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import Arimo from '../components/Arimo/Arimo-VariableFont_wght.ttf';
 
 const M_StatisticTopCustomerSection = () => {
     const [topCustomers, setTopCustomers] = useState([]);
@@ -68,6 +71,42 @@ const M_StatisticTopCustomerSection = () => {
         return !dateFrom || !dateTo;
     };
 
+    const loadFont = async (url) => {
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        const base64String = btoa(
+            new Uint8Array(arrayBuffer)
+                .reduce((data, byte) => data + String.fromCharCode(byte), '')
+        );
+        return base64String;
+    };
+
+    const exportPDF = async () => {
+        const doc = new jsPDF();
+    
+        // Load the Arimo font
+        const arimoBase64 = await loadFont(Arimo);
+        doc.addFileToVFS('Arimo.ttf', arimoBase64);
+        doc.addFont('Arimo.ttf', 'Arimo', 'normal');
+        doc.setFont('Arimo');
+    
+        // Add the time range to the text
+        doc.text(`Thống kê khách hàng hàng đầu từ ${dateFrom} đến ${dateTo}`, 20, 10);
+        doc.autoTable({
+            head: [['ID', 'Email', 'Name', 'PhoneNumber', 'Address', 'Total']],
+            body: topCustomers.map(customer => [
+                customer.user_id,
+                customer.User.email,
+                customer.User.full_name,
+                customer.User.phone_number,
+                customer.User.address,
+                customer.total_spent + " vnd"
+            ]),
+        });
+        doc.save('top_customers_report.pdf');
+    };
+    
+
     return (
         <div className="content">
             <div className="animated fadeIn">
@@ -120,6 +159,7 @@ const M_StatisticTopCustomerSection = () => {
                                                 ))}
                                             </tbody>
                                         </table>
+                                        <button onClick={exportPDF} style={{ marginTop: '50px' }}>Xuất báo cáo PDF</button>
                                     </div>
                                 )}
                             </div>
