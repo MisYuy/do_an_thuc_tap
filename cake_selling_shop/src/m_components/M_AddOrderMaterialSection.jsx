@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { URL } from '../utils/constant.js';
 import { useNavigate } from 'react-router-dom';
+import * as XLSX from 'xlsx';
 
 const M_AddOrderMaterialSection = () => {
     const [formData, setFormData] = useState({
@@ -11,14 +12,14 @@ const M_AddOrderMaterialSection = () => {
     });
     const [error, setError] = useState(null);
     const [validationErrors, setValidationErrors] = useState({});
+    const [materials, setMaterials] = useState([]);
+    const token = sessionStorage.getItem("token");
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
-        console.log(value);
     };
-
-    const navigate = useNavigate();
 
     const validateInputs = () => {
         const errors = {};
@@ -31,10 +32,6 @@ const M_AddOrderMaterialSection = () => {
         if (!formData.status) errors.status = 'Status is required';
         return errors;
     };
-
-    const [materials, setMaterials] = useState([]);
-
-    const token = sessionStorage.getItem("token");
 
     useEffect(() => {
         const fetchMaterials = async () => {
@@ -67,8 +64,38 @@ const M_AddOrderMaterialSection = () => {
                 }
             });
             navigate('/m/order-material');
-            console.log('Material order added successfully:', response.data);
             setError(null); // Clear any previous errors
+        } catch (error) {
+            setError(error.response ? error.response.data : 'Error adding material order');
+        }
+    };
+
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const data = new Uint8Array(event.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet);
+            processExcelData(jsonData);
+        };
+        reader.readAsArrayBuffer(file);
+    };
+
+    const processExcelData = async (data) => {
+        try {
+            for (const row of data) {
+                const { material_id, quantity, status } = row;
+                const response = await axios.post(`${URL}/api/order-material/add-new`, { material_id, quantity, status }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                console.log('Material order added successfully:', response.data);
+            }
+            navigate('/m/order-material');
         } catch (error) {
             setError(error.response ? error.response.data : 'Error adding material order');
         }
@@ -115,6 +142,13 @@ const M_AddOrderMaterialSection = () => {
                                             </select>
                                             <small className="help-block form-text">Please select the status</small>
                                             {validationErrors.status && <div className="text-danger">{validationErrors.status}</div>}
+                                        </div>
+                                    </div>
+                                    <div className="row form-group" style={{paddingBottom: '25px'}}>
+                                        <div className="col col-md-3"><label htmlFor="fileUpload" className="form-control-label">Upload Excel File</label></div>
+                                        <div className="col-12 col-md-9">
+                                            <input type="file" id="fileUpload" name="fileUpload" className="form-control" onChange={handleFileUpload} />
+                                            <small className="help-block form-text">Upload an Excel file to import data</small>
                                         </div>
                                     </div>
                                     {error && (
