@@ -73,6 +73,10 @@ const M_ProductSection = () => {
         return finalPrice;
     };
 
+    const formatNumber = (number) => {
+        return new Intl.NumberFormat('vi-VN').format(number);
+    };
+
     // Filter products based on search term and selected statuses
     const filteredProducts = products.filter(product => {
         const valueToCheck = 
@@ -226,7 +230,7 @@ const M_ProductSection = () => {
                                                 </td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>{product.name}</td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>{getCategoryName(product.category_id)}</td>
-                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>{product.price}</td>
+                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>{formatNumber(product.price)}₫</td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>
                                                     {product.promotions.map(promotion => (
                                                         <div key={promotion.promotion_id}>
@@ -235,9 +239,9 @@ const M_ProductSection = () => {
                                                     ))}
                                                 </td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>
-                                                    {calculateFinalPrice(product.price, product.promotions)}
+                                                    {formatNumber(calculateFinalPrice(product.price, product.promotions))}₫
                                                 </td>
-                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>{product.stock_quantity}</td>
+                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>{formatNumber(product.stock_quantity)}</td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>
                                                     <button className="badge badge-complete" style={{ backgroundColor: product.status === 'available' ? '#1ecc02' : product.status === 'low of stock' ? '#ebb134' : '#ff0000' }}>
                                                         {getStatusText(product.status)}

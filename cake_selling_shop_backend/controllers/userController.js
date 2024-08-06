@@ -87,6 +87,7 @@ exports.checkLogin = async (req, res) => {
     let user = await User.findOne({
       where: {
           email: email,
+          status: 'active',
           delete: 0
       }
     });

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Modal from 'react-modal';
 import { URL } from '../utils/constant.js';
+
+Modal.setAppElement('#root'); // Set the root element for accessibility
 
 const M_OrderSection = () => {
     const [orders, setOrders] = useState([]);
@@ -16,11 +19,18 @@ const M_OrderSection = () => {
         completed: false,
         canceled: false,
     });
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState(null);
 
+    const user = JSON.parse(sessionStorage.getItem('user'));
     const token = sessionStorage.getItem("token");
 
     useEffect(() => {
-        axios.get(`${URL}/api/order/get-all`)
+        axios.get(`${URL}/api/order/get-all`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
         .then(response => {
             setOrders(response.data);
         })
@@ -33,13 +43,14 @@ const M_OrderSection = () => {
         return <div>Error: {error.message}</div>;
     }
 
-    const handleToggleDropdown = (orderId) => {
-        setVisibleOrderId(visibleOrderId === orderId ? null : orderId);
+    const handleRowClick = (order) => {
+        setSelectedOrder(order);
+        setModalIsOpen(true);
     };
 
     const handleChangeStatus = async (orderId, newStatus) => {
         try {
-            await axios.put(`${URL}/api/order/change-status?id=${orderId}`, { status: newStatus }, {
+            await axios.put(`${URL}/api/order/change-status?id=${orderId}`, { status: newStatus, userId: user.user_id }, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -49,6 +60,11 @@ const M_OrderSection = () => {
             console.error('Error changing order status:', error);
             setError(error);
         }
+    };
+
+    // Helper function to format numbers
+    const formatNumber = (number) => {
+        return new Intl.NumberFormat('vi-VN').format(number);
     };
 
     // Filter orders based on search term, selected criteria, and selected statuses
@@ -169,45 +185,28 @@ const M_OrderSection = () => {
                                             <th style={{ textAlign: 'center' }}>Email</th>
                                             <th style={{ textAlign: 'center' }}>Số điện thoại</th>
                                             <th style={{ textAlign: 'center' }}>Địa chỉ</th>
+                                            <th style={{ textAlign: 'center' }}>Địa chỉ giao hàng</th> {/* Add this line */}
                                             <th style={{ textAlign: 'center' }}>Ngày đặt</th>
                                             <th style={{ textAlign: 'center' }}>Tổng tiền</th>
                                             <th style={{ textAlign: 'center' }}>Trạng thái</th>
-                                            <th style={{ textAlign: 'center' }}>Chi tiết sản phẩm</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {sortedOrders.map(order => (
-                                            <tr key={order.order_id}>
+                                            <tr key={order.order_id} onClick={() => handleRowClick(order)}>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>{order.order_id}</td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>{order.User.user_id}</td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>{order.User.full_name}</td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>{order.User.email}</td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>{order.User.phone_number}</td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>{order.User.address}</td>
+                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>{order.shipping_address}</td> {/* Add this line */}
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>{new Date(order.created_at).toLocaleString()}</td>
-                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>{order.total_amount}</td>
+                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>{formatNumber(order.total_amount)}₫</td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>
-                                                    <div className="dropdown-container">
-                                                        <button onClick={() => handleToggleDropdown(order.order_id)} className="badge badge-complete" style={{ backgroundColor: getStatusColor(order.status) }}>
-                                                            {getStatusText(order.status)}
-                                                        </button>
-                                                        {visibleOrderId === order.order_id && (
-                                                            <div className="dropdown-content">
-                                                                {['pending', 'shipping', 'completed', 'canceled'].map(status => (
-                                                                    <a key={status} href="#" onClick={() => handleChangeStatus(order.order_id, status)}>
-                                                                        {getStatusText(status)}
-                                                                    </a>
-                                                                ))}
-                                                            </div>
-                                                        )}
+                                                    <div className="badge badge-complete" style={{ backgroundColor: getStatusColor(order.status) }}>
+                                                        {getStatusText(order.status)}
                                                     </div>
-                                                </td>
-                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>
-                                                    {order.OrderItems.map(item => (
-                                                        <div key={item.order_item_id}>
-                                                            {item.Product.name} - SL: {item.quantity} - Giá: {item.price}
-                                                        </div>
-                                                    ))}
                                                 </td>
                                             </tr>
                                         ))}
@@ -236,6 +235,75 @@ const M_OrderSection = () => {
                     Back to Top
                 </button>
             </div>
+            {selectedOrder && (
+                <Modal
+                    isOpen={modalIsOpen}
+                    onRequestClose={() => setModalIsOpen(false)}
+                    contentLabel="Order Details"
+                    style={{
+                        content: {
+                            top: '50%',
+                            left: '50%',
+                            right: 'auto',
+                            bottom: 'auto',
+                            marginRight: '-50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: '1000px',
+                            height: '700px',
+                            overflow: 'auto',
+                            borderRadius: '10px',
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                            padding: '20px',
+                            backgroundColor: '#f9f9f9',
+                            animation: 'fadeIn 0.5s'
+                        },
+                        overlay: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }}
+                >
+                    <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Chi tiết đơn hàng</h2>
+                    <button 
+                        onClick={() => setModalIsOpen(false)} 
+                        style={{
+                            position: 'absolute',
+                            top: '10px',
+                            right: '10px',
+                            backgroundColor: '#ff5c5c',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '30px',
+                            height: '30px',
+                            cursor: 'pointer',
+                            textAlign: 'center',
+                            lineHeight: '30px'
+                        }}
+                    >
+                        &times;
+                    </button>
+                    <div>
+                        <p><strong>ID Đơn hàng:</strong> {selectedOrder.order_id}</p>
+                        <p><strong>ID Người đặt:</strong> {selectedOrder.User.user_id}</p>
+                        <p><strong>Tên Người đặt:</strong> {selectedOrder.User.full_name}</p>
+                        <p><strong>Email:</strong> {selectedOrder.User.email}</p>
+                        <p><strong>Số điện thoại:</strong> {selectedOrder.User.phone_number}</p>
+                        <p><strong>Địa chỉ:</strong> {selectedOrder.User.address}</p>
+                        <p><strong>Địa chỉ giao hàng:</strong> {selectedOrder.shipping_address}</p> {/* Add this line */}
+                        <p><strong>Ngày đặt:</strong> {new Date(selectedOrder.created_at).toLocaleString()}</p>
+                        <p><strong>Tổng tiền:</strong> {formatNumber(selectedOrder.total_amount)}₫</p>
+                        <p><strong>Trạng thái:</strong> {getStatusText(selectedOrder.status)}</p>
+                        <p><strong>ID nhân viên thao tác cuối:</strong> {selectedOrder.ResponsibleUser ? selectedOrder.ResponsibleUser.user_id : 'none'}</p>
+                        <p><strong>Tên nhân viên thao tác cuối:</strong> {selectedOrder.ResponsibleUser ? selectedOrder.ResponsibleUser.full_name : 'none'}</p>
+                        <h3>Chi tiết sản phẩm</h3>
+                        {selectedOrder.OrderItems.map(item => (
+                            <div key={item.order_item_id} style={{ marginBottom: '10px' }}>
+                                <strong>{item.Product.name}</strong> - SL: {item.quantity} - Giá: {formatNumber(item.price)}₫
+                            </div>
+                        ))}
+                    </div>
+                </Modal>
+            )}
         </div>
     );
 };

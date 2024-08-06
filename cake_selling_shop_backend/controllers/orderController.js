@@ -35,22 +35,32 @@ exports.getOrdersByUserId = async (req, res) => {
 exports.getAllOrdersWithItems = async (req, res) => {
   try {
       const orders = await Order.findAll({
-          include: [{
-              model: OrderItem,
-              required: true, // This ensures that only OrderItems with a valid Order are returned
-              include: [{
-                  model: Product,
-                  attributes: ['product_id', 'name', 'description', 'price', 'stock_quantity', 'category_id', 'status', 'created_at', 'updated_at']
-              }],
-          },
-          {
-            model: User, // Include the User model
-            attributes: ['user_id', 'email', 'full_name', 'phone_number', 'address', 'role', 'status'] // Specify the attributes you want to retrieve
-        }]
+          include: [
+              {
+                  model: OrderItem,
+                  required: true,
+                  include: [
+                      {
+                          model: Product,
+                          attributes: ['product_id', 'name', 'description', 'price', 'stock_quantity', 'category_id', 'status', 'created_at', 'updated_at']
+                      }
+                  ]
+              },
+              {
+                  model: User,
+                  attributes: ['user_id', 'email', 'full_name', 'phone_number', 'address', 'role', 'status']
+              },
+              {
+                  model: User,
+                  as: 'ResponsibleUser',
+                  attributes: ['user_id', 'email', 'full_name', 'phone_number', 'address', 'role', 'status']
+              }
+          ]
       });
 
       res.json(orders);
   } catch (error) {
+    console.error("@@", error);
       res.status(500).json({ error: error.message });
   }
 };
@@ -58,7 +68,7 @@ exports.getAllOrdersWithItems = async (req, res) => {
 exports.changeOrderStatus = async (req, res) => {
   try {
     const orderId = req.query.id; // Assuming the ID is passed as a URL parameter
-    const { status } = req.body; // Expecting the new status from the request body
+    const { status, userId } = req.body; // Expecting the new status and userId from the request body
 
     if (!orderId) {
       return res.status(400).json({ error: 'Order ID is required' });
@@ -75,10 +85,11 @@ exports.changeOrderStatus = async (req, res) => {
       return res.status(400).json({ error: `Invalid status value. Use one of the following: ${validStatuses.join(', ')}.` });
     }
 
-    // Update the order's status
+    // Update the order's status and id_responsible
     await order.update({
       status: status,
-      updated_at: new Date()
+      updated_at: new Date(),
+      id_responsible: userId
     });
 
     console.log("Order status updated successfully:", order);
@@ -91,13 +102,14 @@ exports.changeOrderStatus = async (req, res) => {
 
 exports.createOrder = async (req, res) => {
   try {
-      const { user_id, total_amount, status, notes, orderItems } = req.body;
+      const { user_id, total_amount, status, shippingAddress, notes, orderItems } = req.body;
 
       // Create the order
       const newOrder = await Order.create({
           user_id,
           total_amount,
           status,
+          shipping_address: shippingAddress,
           created_at: new Date(),
           updated_at: new Date(),
           notes

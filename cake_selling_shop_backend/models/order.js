@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DECIMAL(10, 0),
             allowNull: true
         },
+        shipping_address: {
+            type: DataTypes.STRING(1000),
+            allowNull: true
+        },
         status: {
             type: DataTypes.STRING,
             allowNull: true
@@ -26,9 +30,13 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
         notes: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(1000),
             allowNull: true
-          },
+        },
+        id_responsible: {
+            type: DataTypes.INTEGER,
+            allowNull: true
+        }
     }, {
         tableName: 'orders',
         timestamps: false
@@ -36,7 +44,8 @@ module.exports = (sequelize, DataTypes) => {
 
     Order.associate = models => {
         Order.belongsTo(models.User, { foreignKey: 'user_id' });
-        Order.hasMany(models.OrderItem, { foreignKey: 'order_id' }); // Add this line
+        Order.belongsTo(models.User, { foreignKey: 'id_responsible', as: 'ResponsibleUser' });
+        Order.hasMany(models.OrderItem, { foreignKey: 'order_id' });
     };
 
     return Order;
