@@ -128,6 +128,8 @@ const M_AddAccountSection = () => {
                                                 <option value="">Please select</option>
                                                 <option value="customer">Customer</option>
                                                 <option value="admin">Admin</option>
+                                                <option value="sale staff">Sale Staff</option>
+                                                <option value="warehouse staff">Warehouse Staff</option>
                                             </select>
                                             {errors.role && <small className="form-text text-danger">{errors.role}</small>}
                                             <small className="form-text text-muted">Please select the role</small>

@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 const M_OperationAccountSection = () => {
     const { userId } = useParams();
     const [user, setUser] = useState(null);
+    const [orders, setOrders] = useState([]);
     const [previewImage, setPreviewImage] = useState(null); // State for preview image
     const [formData, setFormData] = useState({
         email: '',
@@ -20,9 +21,26 @@ const M_OperationAccountSection = () => {
     });
     const [errors, setErrors] = useState({});
     const [showModal, setShowModal] = useState(false); // State for modal visibility
+    const [showOrdersModal, setShowOrdersModal] = useState(false); // State for orders modal visibility
     const navigate = useNavigate();
 
     const token = sessionStorage.getItem("token");
+
+    useEffect(() => {
+        axios.get(`${URL}/api/order/get-all`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => {
+            const filteredOrders = response.data.filter(order => order.ResponsibleUser && String(order.ResponsibleUser.user_id) === userId);
+            setOrders(filteredOrders);
+            
+        })
+        .catch(error => {
+            //setError(error);
+        });
+    }, [token]);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -34,6 +52,11 @@ const M_OperationAccountSection = () => {
             setFormData({ ...formData, [name]: value });
         }
     };
+
+    const formatNumber = (number) => {
+        return new Intl.NumberFormat('vi-VN').format(number);
+    };
+
 
     const validate = () => {
         const newErrors = {};
@@ -86,7 +109,6 @@ const M_OperationAccountSection = () => {
                     'Authorization': `Bearer ${token}`
                 }
             });
-            console.log('User deleted successfully');
             navigate('/m/account/customer');
             setShowModal(false); // Close the modal
         } catch (error) {
@@ -137,6 +159,11 @@ const M_OperationAccountSection = () => {
                                 <button type="button" className="btn btn-danger" style={{ marginRight: '20px' }} onClick={() => setShowModal(true)}>
                                     <i className="fa fa-trash"></i>&nbsp; Xóa
                                 </button>
+                                {user.role === 'sale staff' && (
+                                <button type="button" className="btn btn-success" style={{ marginRight: '20px' }} onClick={() => setShowOrdersModal(true)}>
+                                    <i className="fa fa-eye"></i>&nbsp; Xem danh sách đơn hàng của nhân viên
+                                </button>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -201,12 +228,17 @@ const M_OperationAccountSection = () => {
                                     <div className="row form-group" style={{ paddingBottom: '25px' }}>
                                         <div className="col col-md-3"><label htmlFor="role" className="form-control-label">Vai trò</label></div>
                                         <div className="col-12 col-md-9">
-                                            <select name="role" id="role" className="form-control" value={formData.role} onChange={handleChange}>
-                                                <option value="">Please select</option>
-                                                <option value="Customer">Customer</option>
-                                                <option value="Admin">Admin</option>
-                                                <option value="Staff">Staff</option>
-                                            </select>
+                                        <select name="role" id="role" className="form-control" value={formData.role} onChange={handleChange}>
+    {user.role === 'customer' && (<option value="customer">Customer</option>)}
+    {user.role !== 'customer' && (
+        <>
+            <option value="admin">Admin</option>
+            <option value="sale staff">Sale Staff</option>
+            <option value="warehouse staff">Warehouse Staff</option>
+        </>
+    )}
+</select>
+
                                             {errors.role && <small className="form-text text-danger">{errors.role}</small>}
                                             <small className="form-text text-muted">Please select the role</small>
                                         </div>
@@ -216,7 +248,7 @@ const M_OperationAccountSection = () => {
                                         <div className="col-12 col-md-9">
                                             <select name="status" id="status" className="form-control" value={formData.status} onChange={handleChange}>
                                                 <option value="active">Active</option>
-                                                <option value="inactive">Inactive</option>
+                                                <option value="deactive">Inactive</option>
                                             </select>
                                             {errors.status && <small className="form-text text-danger">{errors.status}</small>}
                                             <small className="form-text text-muted">Please select the status</small>
@@ -243,7 +275,7 @@ const M_OperationAccountSection = () => {
                 </div>
             </div>
 
-            {/* Modal */}
+            {/* Modal for delete confirmation */}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header>
                     <Modal.Title>Xác nhận xóa</Modal.Title>
@@ -255,6 +287,41 @@ const M_OperationAccountSection = () => {
                     </Button>
                     <Button variant="danger" onClick={handleDelete}>
                         Yes
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* Modal for orders */}
+            <Modal show={showOrdersModal} onHide={() => setShowOrdersModal(false)}>
+                <Modal.Header>
+                    <Modal.Title>Danh sách đơn hàng nhân viên đã xử lí</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {orders.length > 0 ? (
+                        <ul style={{paddingLeft: '20px'}}>
+                            {orders.map(order => (
+                                <li key={order.order_id}>
+                                    <strong>ID đơn hàng:</strong> {order.order_id}<br />
+                                    <strong>Tổng tiền: </strong> {formatNumber(order.total_amount)} ₫<br />
+                                    <strong>Sản phẩm:</strong>
+                                    <ul>
+                                        {order.OrderItems.map(item => (
+                                            <li key={item.order_item_id}>
+                                                {item.Product.name} - {item.quantity} x {item.price}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <strong>------------------------------------------------------------------------</strong>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>Không có đơn hàng nào để hiện thị cho nhân viên này.</p>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowOrdersModal(false)}>
+                        Close
                     </Button>
                 </Modal.Footer>
             </Modal>
