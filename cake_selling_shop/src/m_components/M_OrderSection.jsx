@@ -43,6 +43,10 @@ const M_OrderSection = () => {
         return <div>Error: {error.message}</div>;
     }
 
+    const handleToggleDropdown = (orderId) => {
+        setVisibleOrderId(visibleOrderId === orderId ? null : orderId);
+    }
+
     const handleRowClick = (order) => {
         setSelectedOrder(order);
         setModalIsOpen(true);
@@ -193,19 +197,30 @@ const M_OrderSection = () => {
                                     </thead>
                                     <tbody>
                                         {sortedOrders.map(order => (
-                                            <tr key={order.order_id} onClick={() => handleRowClick(order)}>
-                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>{order.order_id}</td>
-                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>{order.User.user_id}</td>
-                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>{order.User.full_name}</td>
-                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>{order.User.email}</td>
-                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>{order.User.phone_number}</td>
-                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>{order.User.address}</td>
-                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>{order.shipping_address}</td> {/* Add this line */}
-                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>{new Date(order.created_at).toLocaleString()}</td>
-                                                <td style={{ alignContent: 'center', textAlign: 'center' }}>{formatNumber(order.total_amount)}₫</td>
+                                            <tr key={order.order_id}>
+                                                <td style={{ alignContent: 'center', textAlign: 'center' }} onClick={() => handleRowClick(order)}>{order.order_id}</td>
+                                                <td style={{ alignContent: 'center', textAlign: 'center' }} onClick={() => handleRowClick(order)}>{order.User.user_id}</td>
+                                                <td style={{ alignContent: 'center', textAlign: 'center' }} onClick={() => handleRowClick(order)}>{order.User.full_name}</td>
+                                                <td style={{ alignContent: 'center', textAlign: 'center' }} onClick={() => handleRowClick(order)}>{order.User.email}</td>
+                                                <td style={{ alignContent: 'center', textAlign: 'center' }} onClick={() => handleRowClick(order)}>{order.User.phone_number}</td>
+                                                <td style={{ alignContent: 'center', textAlign: 'center' }} onClick={() => handleRowClick(order)}>{order.User.address}</td>
+                                                <td style={{ alignContent: 'center', textAlign: 'center' }} onClick={() => handleRowClick(order)}>{order.shipping_address}</td> {/* Add this line */}
+                                                <td style={{ alignContent: 'center', textAlign: 'center' }} onClick={() => handleRowClick(order)}>{new Date(order.created_at).toLocaleString()}</td>
+                                                <td style={{ alignContent: 'center', textAlign: 'center' }} onClick={() => handleRowClick(order)}>{formatNumber(order.total_amount)}₫</td>
                                                 <td style={{ alignContent: 'center', textAlign: 'center' }}>
-                                                    <div className="badge badge-complete" style={{ backgroundColor: getStatusColor(order.status) }}>
-                                                        {getStatusText(order.status)}
+                                                <div className="dropdown-container">
+                                                        <button onClick={() => handleToggleDropdown(order.order_id)} className="badge badge-complete" style={{ backgroundColor: getStatusColor(order.status) }}>
+                                                            {getStatusText(order.status)}
+                                                        </button>
+                                                        {visibleOrderId === order.order_id && order.status !== 'completed' && (
+                                                            <div className="dropdown-content">
+                                                                {['pending', 'shipping', 'completed', 'canceled'].map(status => (
+                                                                    <a key={status} href="#" onClick={() => handleChangeStatus(order.order_id, status)}>
+                                                                        {getStatusText(status)}
+                                                                    </a>
+                                                                ))}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </td>
                                             </tr>
