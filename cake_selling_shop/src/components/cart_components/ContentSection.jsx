@@ -47,7 +47,7 @@ const ContentSection = () => {
             setError(error);
             setLoading(false);
         });
-    }, []);
+    }, [user, token]);
 
     const handlePaymentMethodChange = (event) => {
         setPaymentMethod(event.target.value);
@@ -130,6 +130,10 @@ const ContentSection = () => {
         return shippingFee;
     };
 
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+    };
+
     if (loading) {
         return <Spinner />;
     }
@@ -165,7 +169,7 @@ const ContentSection = () => {
                                         <p className="mb-0 mt-4">{item.Product.name}</p>
                                     </td>
                                     <td>
-                                        <p className="mb-0 mt-4">{item.Product.price}₫</p>
+                                        <p className="mb-0 mt-4">{formatPrice(item.Product.price)}</p>
                                     </td>
                                     <td>
                                         <div className="input-group quantity mt-4" style={{ width: '100px' }}>
@@ -183,7 +187,7 @@ const ContentSection = () => {
                                         </div>
                                     </td>
                                     <td>
-                                        <p className="mb-0 mt-4">{item.Product.price * item.quantity}₫</p>
+                                        <p className="mb-0 mt-4">{formatPrice(item.Product.price * item.quantity)}</p>
                                     </td>
                                     <td>
                                         <button className="btn btn-md rounded-circle bg-light border mt-4" onClick={() => handleUpdateCartItem(item.cart_item_id, item.quantity)}>
@@ -204,20 +208,20 @@ const ContentSection = () => {
                                     <h1 className="display-6 mb-4">Giỏ hàng <span className="fw-normal">Tổng tiền</span></h1>
                                     <div className="d-flex justify-content-between mb-4">
                                         <h5 className="mb-0 me-4">Giá tiền sản phẩm:</h5>
-                                        <p className="mb-0">{calculateTotalPrice()}₫</p>
+                                        <p className="mb-0">{formatPrice(calculateTotalPrice())}</p>
                                     </div>
                                     <div className="d-flex justify-content-between">
                                         <h5 className="mb-0 me-4">Phí ship</h5>
                                         <div>
-                                            <p className="mb-0">50.000₫</p>
+                                            <p className="mb-0">{formatPrice(50000)}</p>
                                         </div>
                                     </div>
-                                    <p className="mb-0 text-end">0₫ nếu giá trị đơn hàng lớn hơn 1.000.000₫</p>
+                                    <p className="mb-0 text-end">0₫ nếu giá trị đơn hàng lớn hơn {formatPrice(1000000)}</p>
                                     <p className="mb-0 text-end">Giao hàng tận nơi TP HCM.</p>
                                 </div>
                                 <div className="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
                                     <h5 className="mb-0 ps-4 me-4">Tổng tiền</h5>
-                                    <p className="mb-0 pe-4">{calculateTotalPrice() + calculateShippingFee()}₫</p>
+                                    <p className="mb-0 pe-4">{formatPrice(calculateTotalPrice() + calculateShippingFee())}</p>
                                 </div>
                                 <div className="mb-4 ms-4">
                                     <h5 className="mb-3">Lựa chọn phương thức thanh toán:</h5>

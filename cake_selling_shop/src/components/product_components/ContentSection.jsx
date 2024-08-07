@@ -15,10 +15,16 @@ const ContentSection = ({ products }) => {
     const [sortOption, setSortOption] = useState('default');
     const [searchQuery, setSearchQuery] = useState('');
     const [reviews, setReviews] = useState([]); // New state for reviews
+    const [cartItems, setCartItems] = useState([]);
     const productsPerPage = 9;
     const navigate = useNavigate();
 
-    // Fetch categories and reviews from backend when component mounts
+    // Helper function to format prices in Vietnamese format
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('vi-VN').format(price) + ' ₫';
+    };
+
+    // Fetch categories, reviews, and cart items from backend when component mounts
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -42,8 +48,27 @@ const ContentSection = ({ products }) => {
             }
         };
 
+        const fetchCartItems = async () => {
+            try {
+                const token = sessionStorage.getItem("token");
+                const user = JSON.parse(sessionStorage.getItem("user"));
+                if (token && user) {
+                    const response = await axios.get(`${URL}/api/cart/get-all`, {
+                        params: { userId: user.user_id },
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    setCartItems(response.data);
+                }
+            } catch (error) {
+                console.error('Error fetching cart items:', error);
+            }
+        };
+
         fetchCategories();
         fetchReviews();
+        fetchCartItems();
     }, [products]);
 
     // Function to get category name by category_id
@@ -105,7 +130,7 @@ const ContentSection = ({ products }) => {
                     userId: user.user_id,
                     productId: productId,
                     quantity: 1,
-                },{
+                }, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -118,6 +143,9 @@ const ContentSection = ({ products }) => {
                     setTimeout(() => {
                         setShowSuccessPopup(false);
                     }, 3000);
+
+                    // Update cart items
+                    setCartItems(prevCartItems => [...prevCartItems, response.data]);
                 }
             } else {
                 navigate('/login');
@@ -127,18 +155,48 @@ const ContentSection = ({ products }) => {
         }
     };
 
-    // Handle category selection
+    const handleQuantityChange = async (cartItemId, newQuantity) => {
+        try {
+            const token = sessionStorage.getItem("token");
+
+            if (token) {
+                const response = await axios.put(`${URL}/api/cart/update-cart-item`, {
+                    cartItemId,
+                    quantity: newQuantity
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response) {
+                    setCartItems(prevCartItems => prevCartItems.map(item => 
+                        item.cart_item_id === cartItemId ? { ...item, quantity: newQuantity } : item
+                    ));
+                }
+            }
+        } catch (error) {
+            console.error('Error updating cart item:', error);
+        }
+    };
+
+    const handleClosePopup = () => {
+        setShowSuccessPopup(false);
+    };
+
+    const handleSearchQueryChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
+    const handleSortOptionChange = (e) => {
+        setSortOption(e.target.value);
+    };
+
     const handleCategorySelect = (categoryId) => {
         setSelectedCategory(categoryId);
         setCurrentPage(1); // Reset to the first page when category changes
     };
 
-    // Handle closing Popup Success
-    const handleClosePopup = () => {
-        setShowSuccessPopup(false);
-    };
-
-    // Handle price range change
     const handlePriceChange = (e) => {
         const { name, value } = e.target;
         if (name === 'minPrice') {
@@ -148,26 +206,15 @@ const ContentSection = ({ products }) => {
         }
     };
 
-    // Handle additional filter change
     const handleAdditionalFilterChange = (e) => {
         setAdditionalFilter(e.target.value);
-    };
-
-    // Handle sort option change
-    const handleSortOptionChange = (e) => {
-        setSortOption(e.target.value);
-    };
-
-    // Handle search query change
-    const handleSearchQueryChange = (e) => {
-        setSearchQuery(e.target.value);
     };
 
     const renderStars = (rating, reviewCount) => {
         const fullStars = Math.floor(rating);
         const halfStar = rating % 1 !== 0;
         const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-    
+
         return (
             <>
                 {[...Array(fullStars)].map((_, index) => (
@@ -235,9 +282,9 @@ const ContentSection = ({ products }) => {
                                         <div className="mb-3">
                                             <h4 className="mb-2">Giá</h4>
                                             <input type="range" className="form-range w-100" id="minPrice" name="minPrice" min="0" max="10000000" value={minPrice} onChange={handlePriceChange} />
-                                            <output id="minAmount" name="minAmount" htmlFor="minPrice">{minPrice}</output>
+                                            <output id="minAmount" name="minAmount" htmlFor="minPrice">{formatPrice(minPrice)}</output>
                                             <input type="range" className="form-range w-100" id="maxPrice" name="maxPrice" min="0" max="10000000" value={maxPrice} onChange={handlePriceChange} />
-                                            <output id="maxAmount" name="maxAmount" htmlFor="maxPrice">{maxPrice}</output>
+                                            <output id="maxAmount" name="maxAmount" htmlFor="maxPrice">{formatPrice(maxPrice)}</output>
                                         </div>
                                     </div>
                                     <div className="col-lg-12">
@@ -257,54 +304,72 @@ const ContentSection = ({ products }) => {
                             </div>
                             <div className="col-lg-9">
                                 <div className="row g-4 justify-content-center">
-                                {currentProducts.map((product, index) => {
-    const hasPromotion = product.promotions && product.promotions.length > 0;
-    const originalPrice = parseFloat(product.price);
-    const totalDiscountPercentage = hasPromotion
-        ? product.promotions.reduce((total, promo) => total + parseFloat(promo.discount_percentage), 0)
-        : 0;
-    const discount = (originalPrice * totalDiscountPercentage) / 100;
-    const discountedPrice = originalPrice - discount;
+                                    {currentProducts.map((product, index) => {
+                                        const hasPromotion = product.promotions && product.promotions.length > 0;
+                                        const originalPrice = parseFloat(product.price);
+                                        const totalDiscountPercentage = hasPromotion
+                                            ? product.promotions.reduce((total, promo) => total + parseFloat(promo.discount_percentage), 0)
+                                            : 0;
+                                        const discount = (originalPrice * totalDiscountPercentage) / 100;
+                                        const discountedPrice = originalPrice - discount;
 
-    const productReviews = getProductReviews(product.product_id);
-    const averageRating = productReviews.length > 0
-        ? productReviews.reduce((total, review) => total + review.rating, 0) / productReviews.length
-        : 0;
+                                        const productReviews = getProductReviews(product.product_id);
+                                        const averageRating = productReviews.length > 0
+                                            ? productReviews.reduce((total, review) => total + review.rating, 0) / productReviews.length
+                                            : 0;
 
-    return (
-        <div
-            className="col-md-6 col-lg-6 col-xl-4"
-            key={index}
-            style={{ cursor: 'pointer' }}
-        >
-            <div className="rounded position-relative fruite-item" >
-                <div className="fruite-img">
-                    <img onClick={() => handleProductClick(product.product_id)} src={product.image ? `/images/product/${product.image}` : "/img/none_image.png"} className="img-fluid w-100 rounded-top" alt="" />
-                </div>
-                <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{ top: '10px', left: '10px' }}>{getCategoryName(product.category_id)}</div>
-                <div className="p-4 border border-secondary border-top-0 rounded-bottom">
-                    <h4>{product.name}</h4>
-                    <p>{product.description.length > 100 ? `${product.description.substring(0, 100)}...` : product.description}</p>
-                    <div className="d-flex mb-2">
-                        {renderStars(averageRating, productReviews.length)}
-                    </div>
-                    <div className="d-flex justify-content-between flex-lg-wrap">
-                        <h5 className="fw-bold me-2">{discountedPrice.toFixed(2)} ₫</h5>
-                        {hasPromotion && (
-                            <h5 className="text-danger text-decoration-line-through">{originalPrice.toFixed(2)} ₫</h5>
-                        )}
-                        <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary" onClick={(e) => {
-                            e.preventDefault();
-                            handleAddToCart(product.product_id);
-                        }}>
-                            <i className="fa fa-shopping-bag me-2 text-primary"></i> Thêm vào giỏ hàng
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-})}
+                                        const cartItem = cartItems.find(item => item.product_id === product.product_id);
+
+                                        return (
+                                            <div
+                                                className="col-md-6 col-lg-6 col-xl-4"
+                                                key={index}
+                                                style={{ cursor: 'pointer' }}
+                                            >
+                                                <div className="rounded position-relative fruite-item" >
+                                                    <div className="fruite-img">
+                                                        <img onClick={() => handleProductClick(product.product_id)} src={product.image ? `/images/product/${product.image}` : "/img/none_image.png"} className="img-fluid w-100 rounded-top" alt="" />
+                                                    </div>
+                                                    <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{ top: '10px', left: '10px' }}>{getCategoryName(product.category_id)}</div>
+                                                    <div className="p-4 border border-secondary border-top-0 rounded-bottom">
+                                                        <h4>{product.name}</h4>
+                                                        <p>{product.description.length > 100 ? `${product.description.substring(0, 100)}...` : product.description}</p>
+                                                        <div className="d-flex mb-2">
+                                                            {renderStars(averageRating, productReviews.length)}
+                                                        </div>
+                                                        <div className="d-flex justify-content-between flex-lg-wrap">
+                                                            <h5 className="fw-bold me-2">{formatPrice(discountedPrice)}</h5>
+                                                            {hasPromotion && (
+                                                                <h5 className="text-danger text-decoration-line-through">{formatPrice(originalPrice)}</h5>
+                                                            )}
+                                                            {cartItem ? (
+                                                                <div className="input-group quantity" style={{ width: '100px', marginTop: '30px' }}>
+                                                                    <div className="input-group-btn">
+                                                                        <button className="btn btn-sm btn-minus rounded-circle bg-light border" onClick={() => handleQuantityChange(cartItem.cart_item_id, cartItem.quantity - 1)}>
+                                                                            <i className="fa fa-minus"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                    <input type="text" className="form-control form-control-sm text-center border-0" value={cartItem.quantity} readOnly />
+                                                                    <div className="input-group-btn">
+                                                                        <button className="btn btn-sm btn-plus rounded-circle bg-light border" onClick={() => handleQuantityChange(cartItem.cart_item_id, cartItem.quantity + 1)}>
+                                                                            <i className="fa fa-plus"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <a  style={{marginTop: '30px'}} href="#" className="btn border border-secondary rounded-pill px-3 text-primary" onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    handleAddToCart(product.product_id);
+                                                                }}>
+                                                                    <i className="fa fa-shopping-bag me-2 text-primary"></i> Thêm vào giỏ hàng
+                                                                </a>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
 
                                     <div className="col-12">
                                         <div className="pagination d-flex justify-content-center mt-5">

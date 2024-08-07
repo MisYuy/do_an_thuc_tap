@@ -194,6 +194,11 @@ const ContentSection = () => {
         ? reviews.reduce((total, review) => total + review.rating, 0) / reviews.length
         : 0;
 
+    // Utility function to format prices
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+    };
+
     return (
         <div className="container-fluid py-5 mt-5">
             {showSuccessPopup && <PopupSuccess onClose={() => setShowSuccessPopup(false)} message={"Bạn đã thêm vào giỏ hàng thành công"} />}
@@ -211,9 +216,9 @@ const ContentSection = () => {
                             <div className="col-lg-6">
                                 <h4 className="fw-bold mb-3">{product.name}</h4>
                                 <p className="mb-3">Loại: {getCategoryName(product.category_id)}</p>
-                                <h5 className="fw-bold me-2">{discountedPrice.toFixed(2)} $</h5>
+                                <h5 className="fw-bold me-2">{formatPrice(discountedPrice)}</h5>
                                 {hasPromotion && (
-                                    <h5 className="text-danger text-decoration-line-through">{originalPrice.toFixed(2)} $</h5>
+                                    <h5 className="text-danger text-decoration-line-through">{formatPrice(originalPrice)}</h5>
                                 )}
                                 <div className="d-flex mb-4">
                                     {renderStars(averageRating)}
