@@ -1,5 +1,6 @@
 // Create a new order
 const { Order, OrderItem, Product, User, CartItem } = require('../models');
+const axios = require('axios');
 
 exports.getOrdersByUserId = async (req, res) => {
   try {
@@ -79,6 +80,11 @@ exports.changeOrderStatus = async (req, res) => {
       return res.status(404).json({ error: 'Order not found' });
     }
 
+    const customer = await User.findByPk(order.user_id);
+    if (!customer) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
     // Validate the status value
     const validStatuses = ['pending', 'shipping', 'completed', 'canceled']; // Define valid statuses
     if (!validStatuses.includes(status)) {
@@ -91,6 +97,33 @@ exports.changeOrderStatus = async (req, res) => {
       updated_at: new Date(),
       id_responsible: userId
     });
+    console.log("@@" + customer.email);
+
+    if (status === 'completed' || status === 'shipping') {
+      const formData = new URLSearchParams();
+      formData.append('service_id', 'service_f8pe2cl');
+      formData.append('template_id', 'template_9oorry7');
+      formData.append('user_id', 'HXGYG1VBulNzebI2B');
+      formData.append('accessToken', 'DT7lSHtH6iXTI6xS0qd5F');
+      formData.append('email', customer.email);
+      formData.append('status', status === 'completed' ? 'đã được giao thành công' : 'đang được giao tới bạn');
+      formData.append('order_id', order.order_id);
+      formData.append('total_amount', order.total_amount);
+      formData.append('shipping_address', order.shipping_address);
+      formData.append('shipping_date', order.updated_at);
+
+      try {
+        await axios.post('https://api.emailjs.com/api/v1.0/email/send-form', formData, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        });
+        console.log('Verification code sent');
+      } catch (error) {
+        console.error('Error sending email:', error);
+        return res.status(500).json({ error: 'Error sending email' });
+      }
+    }
 
     console.log("Order status updated successfully:", order);
     res.json(order);
@@ -99,6 +132,7 @@ exports.changeOrderStatus = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 exports.createOrder = async (req, res) => {
   try {
