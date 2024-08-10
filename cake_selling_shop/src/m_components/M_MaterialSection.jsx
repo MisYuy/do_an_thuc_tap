@@ -125,16 +125,21 @@ const M_MaterialSection = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {sortedMaterials.map(material => (
-                                            <tr key={material.material_id} onClick={() => handleMaterialClick(material.material_id)} style={{ cursor: 'pointer' }}>
-                                                <td style={{ textAlign: 'center' }}>{material.material_id}</td>
-                                                <td style={{ textAlign: 'center' }}>{material.name}</td>
-                                                <td style={{ textAlign: 'center' }}>{material.description}</td>
-                                                <td style={{ textAlign: 'center' }}>{material.quantity}</td>
-                                                <td style={{ textAlign: 'center' }}>{material.created_at}</td>
-                                                <td style={{ textAlign: 'center' }}>{material.updated_at}</td>
-                                            </tr>
-                                        ))}
+                                    {sortedMaterials.map(material => (
+    <tr 
+        key={material.material_id} 
+        onClick={material.status === 'pending' ? () => handleMaterialClick(material.material_id) : null} 
+        style={{ cursor: material.status === 'pending' ? 'pointer' : 'default' }}
+    >
+        <td style={{ textAlign: 'center' }}>{material.material_id}</td>
+        <td style={{ textAlign: 'center' }}>{material.name}</td>
+        <td style={{ textAlign: 'center' }}>{material.description}</td>
+        <td style={{ textAlign: 'center' }}>{material.quantity}</td>
+        <td style={{ textAlign: 'center' }}>{material.created_at}</td>
+        <td style={{ textAlign: 'center' }}>{material.updated_at}</td>
+    </tr>
+))}
+
                                     </tbody>
                                 </table>
                             </div>

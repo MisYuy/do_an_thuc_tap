@@ -126,7 +126,7 @@ const M_OrderMaterialSection = () => {
                                     </thead>
                                     <tbody>
                                         {sortedMaterialOrders.map(order => (
-                                            <tr key={order.material_order_id} onClick={() => handleMaterialOrderClick(order.material_order_id)} style={{ cursor: 'pointer' }}>
+                                            <tr key={order.material_order_id} onClick={order.status === 'pending' ? () => handleMaterialOrderClick(order.material_order_id) : null} style={{ cursor: 'pointer' }}>
                                                 <td style={{ textAlign: 'center' }}>{order.material_order_id}</td>
                                                 <td style={{ textAlign: 'center' }}>{order.Material.name}</td>
                                                 <td style={{ textAlign: 'center' }}>{order.quantity}</td>

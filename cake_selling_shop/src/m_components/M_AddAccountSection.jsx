@@ -108,7 +108,7 @@ const M_AddAccountSection = () => {
                                     <div className="row form-group" style={{paddingBottom: '25px'}}>
                                         <div className="col col-md-3"><label htmlFor="phone" className="form-control-label">Số điện thoại</label></div>
                                         <div className="col-12 col-md-9">
-                                            <input type="text" id="phone" name="phone" placeholder="Enter phone number" className="form-control" value={formData.phone} onChange={handleChange} />
+                                            <input type="number" id="phone" name="phone" placeholder="Enter phone number" className="form-control" value={formData.phone} onChange={handleChange} />
                                             {errors.phone && <small className="form-text text-danger">{errors.phone}</small>}
                                             <small className="form-text text-muted">Please enter the phone number</small>
                                         </div>

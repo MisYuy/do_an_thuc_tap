@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { URL, Nav_Item } from '../utils/constant';
+import { Modal, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = ({ select }) => {
     const [cartItems, setCartItems] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const navigate = useNavigate();
 
     const user = JSON.parse(sessionStorage.getItem("user"));
     const token = sessionStorage.getItem("token");
@@ -32,6 +36,15 @@ const Navbar = ({ select }) => {
             setLoading(false);
         });
     }, []);
+
+    const handleLogout = () => {
+        // Clear all data in sessionStorage
+        sessionStorage.clear();
+        // Redirect to the login page
+        navigate('/login');
+        // Close the modal
+        setShowModal(false);
+    };
 
     return (
         <div className="container-fluid fixed-top">
@@ -75,10 +88,26 @@ const Navbar = ({ select }) => {
                             <a href="/profile" className="my-auto">
                                 <i className="fas fa-user fa-2x"></i>
                             </a>
+                            <button className="my-auto" style={{marginLeft: '30px'}} onClick={() => setShowModal(true)}><strong style={{cursor: 'pointer'}}>Đăng xuất</strong></button>
                         </div>
                     </div>
                 </nav>
             </div>
+
+            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header>
+                    <Modal.Title>Xác nhận đăng xuất</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Bạn chắc chắn muốn đăng xuất?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                        No
+                    </Button>
+                    <Button variant="danger" onClick={handleLogout}>
+                        Yes
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };

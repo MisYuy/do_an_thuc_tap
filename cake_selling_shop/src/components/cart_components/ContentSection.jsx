@@ -47,7 +47,7 @@ const ContentSection = () => {
             setError(error);
             setLoading(false);
         });
-    }, [user, token]);
+    }, []);
 
     const handlePaymentMethodChange = (event) => {
         setPaymentMethod(event.target.value);

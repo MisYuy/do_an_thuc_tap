@@ -206,12 +206,6 @@ const AuthenticatePage = () => {
                         <div className="line" style={{ position: 'relative', height: '1px', width: '100%', margin: '36px 0', backgroundColor: '#d4d4d4' }}>
                             <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: '#FFF', color: '#8b8b8b', padding: '0 15px' }}>Or</span>
                         </div>
-                        <div className="media-options" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <a href="#" className="field google" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%'}}>
-                                <img src="logo_google.png" alt="" className="google-img" style={{ height: '20px', width: '20px', objectFit: 'cover' }} />
-                                <span style={{ fontWeight: '500', opacity: '0.6', color: '#232836' }}>Login with Google</span>
-                            </a>
-                        </div>
                     </div>
                 ) : (
                     <div className="form signup" style={{ position: 'absolute', maxWidth: '430px', width: '100%', padding: '30px', borderRadius: '6px', background: '#FFF' }}>
@@ -274,12 +268,6 @@ const AuthenticatePage = () => {
                         </div>
                         <div className="line" style={{ position: 'relative', height: '1px', width: '100%', margin: '36px 0', backgroundColor: '#d4d4d4' }}>
                             <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: '#FFF', color: '#8b8b8b', padding: '0 15px' }}>Or</span>
-                        </div>
-                        <div className="media-options" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <a href="#" className="field google" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-                                <img src="logo_google.png" alt="" className="google-img" style={{ height: '20px', width: '20px', objectFit: 'cover' }} />
-                                <span style={{ fontWeight: '500', opacity: '0.6', color: '#232836' }}>Signup with Google</span>
-                            </a>
                         </div>
                     </div>
                 )}

@@ -174,9 +174,14 @@ const AccountsSection = ({ role }) => {
                                                         <td className="serial">{user.user_id}</td>
                                                         <td className="avatar">
                                                             <div className="round-img">
-                                                                <a href={`/m/operation-account/${user.user_id}`}>
-                                                                    <img className="rounded-circle" src={user.avatarUrl || "/img/avatar.jpg"} alt="avatar" />
-                                                                </a>
+                                                            <a href={`/m/operation-account/${user.user_id}`}>
+    <img 
+        className="rounded-circle" 
+        src={user.image ? `/images/avatar/${user.image}` : "/img/avatar.jpg"} 
+        alt="avatar" 
+    />
+</a>
+
                                                             </div>
                                                         </td>
                                                         <td>{user.full_name}</td>

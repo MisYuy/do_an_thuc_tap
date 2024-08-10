@@ -97,7 +97,6 @@ exports.changeOrderStatus = async (req, res) => {
       updated_at: new Date(),
       id_responsible: userId
     });
-    console.log("@@" + customer.email);
 
     if (status === 'completed' || status === 'shipping') {
       const formData = new URLSearchParams();

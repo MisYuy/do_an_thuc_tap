@@ -180,7 +180,7 @@ const M_OperationAccountSection = () => {
                                         <div className="col col-md-3"></div>
                                         <div className="col-12 col-md-9" style={{ textAlign: 'center' }}>
                                             <img
-                                                src={previewImage || (user.image ? `/images/product/${user.image}` : "/img/avatar.jpg")}
+                                                src={previewImage || (user.image ? `/images/avatar/${user.image}` : "/img/avatar.jpg")}
                                                 className="img-fluid rounded"
                                                 alt=""
                                                 style={{ minWidth: '200px', minHeight: "200px", textAlign: 'center', maxWidth: '200px', maxHeight: "200px" }}
@@ -212,7 +212,7 @@ const M_OperationAccountSection = () => {
                                     <div className="row form-group" style={{ paddingBottom: '25px' }}>
                                         <div className="col col-md-3"><label htmlFor="phone_number" className="form-control-label">Số điện thoại</label></div>
                                         <div className="col-12 col-md-9">
-                                            <input type="text" id="phone_number" name="phone_number" placeholder="Enter phone number" className="form-control" value={formData.phone_number} onChange={handleChange} />
+                                            <input type="number" id="phone_number" name="phone_number" placeholder="Enter phone number" className="form-control" value={formData.phone_number} onChange={handleChange} />
                                             {errors.phone_number && <small className="form-text text-danger">{errors.phone_number}</small>}
                                             <small className="form-text text-muted">Please enter the phone number</small>
                                         </div>

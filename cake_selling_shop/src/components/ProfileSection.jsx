@@ -183,8 +183,9 @@ const ProfileSection = () => {
     }
 
     return (
-        <div style={{ paddingTop: '150px' }}>
+        <div style={{ paddingTop: '170px' }}>
             <Container className="py-5">
+                
                 <Row className="justify-content-md-center">
                     <Col md={6}>
                         <h1 className="mb-4">Hồ sơ cá nhân</h1>
