@@ -231,12 +231,12 @@ const ContentSection = () => {
                                             Thanh toán bằng tiền mặt
                                         </label>
                                     </div>
-                                    <div className="form-check">
+                                    {/* <div className="form-check">
                                         <input className="form-check-input" type="radio" name="paymentMethod" id="online" value="online" checked={paymentMethod === 'online'} onChange={handlePaymentMethodChange} />
                                         <label className="form-check-label" htmlFor="online">
                                             Thanh toán online
                                         </label>
-                                    </div>
+                                    </div> */}
                                 </div>
                                 <div className="mb-4 ms-4">
                                     <h5 className="mb-3">Địa chỉ giao hàng:</h5>

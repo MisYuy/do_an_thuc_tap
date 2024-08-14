@@ -88,7 +88,9 @@ const Navbar = ({ select }) => {
                             <a href="/profile" className="my-auto">
                                 <i className="fas fa-user fa-2x"></i>
                             </a>
-                            <button className="my-auto" style={{marginLeft: '30px'}} onClick={() => setShowModal(true)}><strong style={{cursor: 'pointer'}}>Đăng xuất</strong></button>
+                            {user && (
+                                <button className="my-auto" style={{marginLeft: '30px'}} onClick={() => setShowModal(true)}><strong style={{cursor: 'pointer'}}>Đăng xuất</strong></button>
+                            )}
                         </div>
                     </div>
                 </nav>
